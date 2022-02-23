@@ -1,3 +1,4 @@
+<!-- 感觉这里就是那个大框框，然后只需要更改权限和用户登录的接口在这改了。-->
 <template>
   <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
   <el-container style="height: 100%">
@@ -73,19 +74,19 @@ body {
 }
 </style>
 
-<script>
-import CommonAside from "../components/CommonAside.vue";
-export default {
-  components: {
-    CommonAside,
-  },
-  data() {
-    return {
-      radio: "1",
-    };
-  },
-};
-</script>
+// <script>
+// import CommonAside from "../components/CommonAside.vue";
+// export default {
+//   components: {
+//     CommonAside,
+//   },
+//   data() {
+//     return {
+//       radio: "1",
+//     };
+//   },
+// };
+// </script>
 <script>
 import CommonAside from "../components/CommonAside.vue";
 import CommonHeader from "../components/CommonHeader.vue";

@@ -10,7 +10,7 @@
     text-color="#fff"
     :collapse="isCollapse"
   >
-        <h3>{{isCollapse ? '后台':'通用后台管理系统'}}</h3>
+        <h3>{{isCollapse ? '点餐':'点餐系统'}}</h3>
     <el-menu-item @click="clickMenu(item)" v-for="item in noChildren" :index="item.path+''" :key="item.path">
 
       <i :class="'el-icon-'+item.icon"></i>
@@ -21,8 +21,8 @@
         <i :class="'el-icon-'+item.icon"></i>
         <span slot="title">{{item.label}}</span>
       </template>
-      <el-menu-item-group v-for="(subItem,subIndex) in item.children " :key="subItem.path">
-        <el-menu-item :index="subIndex+''">{{subItem.label}}</el-menu-item>
+      <el-menu-item-group  v-for="(subItem,subIndex) in item.children " :key="subItem.path">
+        <el-menu-item @click="clickMenu(subItem)" :index="subIndex+''">{{subItem.label}}</el-menu-item>
       </el-menu-item-group>
     </el-submenu>
   </el-menu>
@@ -61,41 +61,49 @@ export default {
         {
           path:'/',
           name:'home',
-          label:'首页',
+          label:'主页',
           icon:'s-home',
           url:'Home/Home'
         },
         {
-          path:'/mall',
-          name:'mall',
-          label:'商品管理',
-          icon:'video-play',
-          url:'MallManage/MallManage'
+          path:'/table',
+          name:'table',
+          label:'桌台管理',
+          icon:'video-play',//自己记得改icon
+          url:'TableManage/TabelManage'//?
         },
         {
-          path:'/user',
-          name:'user',
-          label:'用户管理',
-          icon:'user',
-          url:'UserManage/UserManage'
+          path:'/case',
+          name:'case',
+          label:'订单管理',
+          icon:'user',//自己记得改icon
+          url:'CaseManage/CaseManage'
         },
+        {
+          path:'/food',
+          name:'food',
+          label:'菜品管理',
+          icon:'user',//自己记得改icon
+          url:'FoodManage/FoodManage'
+        },
+        
         {
           label:'其他',
           icon:'location',
           children:[
             {
-              path:'page1',
-              name:'page1',
-              label:'页面1',
-              icon:'setting',
-              url:'Other/PageOne'
+              path:'/vip',
+              name:'vip',
+              label:'会员管理',
+              icon:'setting',//自己记得改icon
+              url:'VipManager/VipManager'
             },
             {
-              path:'page2',
-              name:'page2',
-              label:'页面2',
-              icon:'setting',
-              url:'Other/PageTwo'
+              path:'/setting',
+              name:'setting',
+              label:'系统设置',
+              icon:'setting',//自己记得改icon
+              url:'SystemSetting/SystemSetting'
             }
           ]
         }
@@ -109,6 +117,10 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
+    test(item){
+      console.log(item.name)
+    },
+    //应该就是通过这玩意，通过name推过去
     clickMenu(item){
       console.log(item.name)
       this.$router.push({
