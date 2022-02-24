@@ -1,24 +1,17 @@
 <template>
   <el-row class="home" :gutter="20">
-    <el-col :span="8" style="margin-top: 20px">
-      <el-card shadow="hover">
-        <div class="user">
-          <i
-            class="el-icon-user-solid"
-            style="width: 100px; font-size: 36px"
-          ></i>
-          <!-- 不用icon就用 -->
-          <!-- <img :src="userImage"/> -->
-          <div class="userInfo">
-            <p class="name">Admain</p>
-            <p class="access">超级管理员</p>
-          </div>
-        </div>
-        <div class="login-info">
-          <p>上次登录时间：<span>2022.02.06</span></p>
-          <p>上次登录地点：<span>四川广安</span></p>
-        </div>
-      </el-card>
+    <div class="operation">
+      <div>
+        <p style="margin-left:20px;color:#545C64">查找到{{find}}条</p>
+      </div>
+      <div style="margin-right:20px;display:flex;">
+        <el-input placeholder="请输入内容" v-model="input" clearable>
+           <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+         <el-button plain style="margin-left :20px;">上架菜品</el-button>
+      </div>
+    </div>
+    <el-col :span="15">
       <el-card style="margin-top: 20px; height: 460px">
         <el-table :data="tableData">
           <el-table-column
@@ -31,43 +24,18 @@
         </el-table>
       </el-card>
     </el-col>
-    <el-col :span="16" style="margin-top: 20px">
-      <div class="num">
-        <el-card
-          v-for="item in countData"
-          :key="item.name"
-          :body-style="{ display: 'flex', padding: 0 }"
-        >
-          <i
-            class="icon"
-            :class="'el-icon-'+item.icon"
-            :style="{ background: item.color }"
-          ></i>
-          <div class="detail">
-            <p class="num">￥{{ item.value }}</p>
-            <p class="txt">{{ item.name }}</p>
-          </div>
-        </el-card>
-      </div>
-      <el-card style="height: 280px">
-        <div style="height:280px" ref="echarts"></div>
-      </el-card>
-      <div class="graph">
-        <el-card style="height: 260px"></el-card>
-        <el-card style="height: 260px"></el-card>
-      </div>
-    </el-col>
   </el-row>
 </template>
 <script>
-import {getMenu} from '../../../api/data.js'
-import {getData} from '../../../api/data.js'
-import * as echarts from 'echarts'
+import { getMenu } from "../../../api/data.js";
+import { getData } from "../../../api/data.js";
+import * as echarts from "echarts";
 export default {
   name: "home",
   data() {
     return {
-      // userImage:require('../')
+       input: '',
+       find:'22',
       tableData: [
         {
           name: "oppo",
@@ -152,41 +120,36 @@ export default {
       ],
     };
   },
-  mounted(){
-      getData().then(res =>{
-        const {code, data} = res.data
-        if(code===20000){
-          this.tableData = data.tableData
-          const order = data.orderData
-          const keyArray = Object.keys(order.data[0])
-          const series = []
-          keyArray.forEach(key=>{
-              series.push({
-                name:key,
-                data:order.data.map(item=>item[key]),
-                type:'line' 
-              })
-          })
-          const option = {
-            xA
-          }
-        }
-          console.log(res)
-      })
-  }
+  mounted() {
+    getData().then((res) => {
+      const { code, data } = res.data;
+      if (code === 20000) {
+        this.tableData = data.tableData;
+        const order = data.orderData;
+        const keyArray = Object.keys(order.data[0]);
+        const series = [];
+        keyArray.forEach((key) => {
+          series.push({
+            name: key,
+            data: order.data.map((item) => item[key]),
+            type: "line",
+          });
+        });
+        const option = {
+          xA,
+        };
+      }
+      console.log(res);
+    });
+  },
 };
 </script>
 <style lang="less" scoped>
-.userInfo {
-  text-align: left;
-  .name {
-    font-size: 36px;
-  }
-  .access {
-    color: #8f8f8f;
-  }
-}
-.login-info {
-  text-align: left;
+.operation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
 }
 </style>
