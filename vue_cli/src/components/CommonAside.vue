@@ -92,18 +92,18 @@ export default {
           icon:'location',
           children:[
             {
-              path:'/vip',
-              name:'vip',
-              label:'会员管理',
+              path:'/worker',
+              name:'worker',
+              label:'员工管理',
               icon:'setting',//自己记得改icon
-              url:'VipManager/VipManager'
+              url:'WorkerManager/WorkerManager'
             },
             {
-              path:'/setting',
-              name:'setting',
-              label:'系统设置',
+              path:'/perCen',
+              name:'perCen',
+              label:'个人中心',
               icon:'setting',//自己记得改icon
-              url:'SystemSetting/SystemSetting'
+              url:'PersonCenter/PersonCenter'
             }
           ]
         }

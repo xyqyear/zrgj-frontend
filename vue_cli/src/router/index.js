@@ -33,14 +33,14 @@ const routes = [
         component:()=>import('../views/food')
       },
       {
-        path:'/vip',
-        name:'vip',
-        component:()=>import('../views/vip')
+        path:'/worker',
+        name:'worker',
+        component:()=>import('../views/worker')
       },
       {
-        path:'/setting',
-        name:'setting',
-        component:()=>import('../views/setting')
+        path:'/perCen',
+        name:'perCen',
+        component:()=>import('../views/perCen')
       },
       {
         path: '/user',//这个可能是访问路径，和本地文件夹下的相对路径无关，规定这样打可以访问到下面import里指定路径的页面
