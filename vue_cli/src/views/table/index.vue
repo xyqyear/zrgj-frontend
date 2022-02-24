@@ -22,7 +22,8 @@
     </div>
     <el-col :span="24">
       <div class="tables">
-        <el-card
+        <el-card 
+        @click="clickCard(item)"
           v-for="item in spotData"
           :key="item.name"
           :body-style="{ display: 'flex', padding: 0 }"
