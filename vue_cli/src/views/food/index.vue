@@ -11,15 +11,60 @@
          <el-button plain style="margin-left :20px;">上架菜品</el-button>
       </div>
     </div>
-    <el-col :span="15">
+    <el-col :span="24">
       <el-card style="margin-top: 20px; height: 460px">
-        <el-table :data="tableData">
+        <el-table :data="tableData" height:300 style="width: 100%">
           <el-table-column
-            v-for="(val, key) in tableLabel"
-            :key="key"
-            :prop="key"
-            :label="val"
-          >
+      prop="index"
+      label="序号"
+      width="100"
+      sortable="true">
+          </el-table-column>
+          <el-table-column
+      prop="name"
+      label="菜品名称"
+      width="120">
+          </el-table-column>
+          <el-table-column
+      label="菜品图片"
+      width="100">
+      <template slot-scope="scope">
+        <el-popover trigger="hover" placement="top">
+          <img :src="scope.row.img" style="width:100px;height:100px;" />
+          <div slot="reference" class="name-wrapper">
+            <el-tag size="medium" style="color:#3A96FF">查看图片</el-tag>
+          </div>
+        </el-popover>
+      </template>
+          </el-table-column>
+          <el-table-column
+      prop="type"
+      label="菜品类别"
+      width="100">
+          </el-table-column>
+          <el-table-column
+      prop="price"
+      label="菜品价格"
+      width="100">
+          </el-table-column>
+          <el-table-column
+      prop="describe"
+      label="菜品描述"
+      width="430">
+          </el-table-column>
+          <el-table-column
+      label="操作"
+      width="100">
+      <template slot-scope="scope">
+        <el-button
+          size="mini"
+          type="text"
+          @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+        <el-button
+          size="mini"
+          type="text"
+          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+      </template>
           </el-table-column>
         </el-table>
       </el-card>
@@ -27,9 +72,6 @@
   </el-row>
 </template>
 <script>
-import { getMenu } from "../../../api/data.js";
-import { getData } from "../../../api/data.js";
-import * as echarts from "echarts";
 export default {
   name: "home",
   data() {
@@ -38,109 +80,26 @@ export default {
        find:'22',
       tableData: [
         {
-          name: "oppo",
-          todayBuy: 500,
-          monthBuy: 3500,
-          totalBuy: 22000,
+          index:'1',
+          name: "麻婆豆腐",
+          img:require("../../assets/images/logo.png"),
+          type: '素菜',
+          price: '12',
+          describe: '好吃！',
+          operation:'哇哩哇',
         },
         {
-          name: "vivo",
-          todayBuy: 300,
-          monthBuy: 2200,
-          totalBuy: 24000,
+         index:'0',
+          name: "麻婆豆腐",
+          img:require("../../assets/images/logo.png"),
+          type: '素菜',
+          price: '12',
+          describe: '好吃！',
+          operation:'哇哩哇',
         },
-        {
-          name: "苹果",
-          todayBuy: 800,
-          monthBuy: 4500,
-          totalBuy: 65000,
-        },
-        {
-          name: "小米",
-          todayBuy: 1200,
-          monthBuy: 6500,
-          totalBuy: 45000,
-        },
-        {
-          name: "三星",
-          todayBuy: 300,
-          monthBuy: 2000,
-          totalBuy: 34000,
-        },
-        {
-          name: "魅族",
-          todayBuy: 350,
-          monthBuy: 3000,
-          totalBuy: 22000,
-        },
-      ],
-      tableLabel: {
-        name: "课程",
-        todayBuy: "今日购买",
-        monthBuy: "本月购买",
-        totalBuy: "总购买",
-      },
-      countData: [
-        {
-          name: "今日支付订单",
-          value: "1234",
-          icon: "success",
-          color: "#2ec7c9",
-        },
-        {
-          name: "今日收藏订单",
-          value: "210",
-          icon: "star-on",
-          color: "#ffb980",
-        },
-        {
-          name: "今日未支付订单",
-          value: "1234",
-          icon: "s-goods",
-          color: "#5ab1ef",
-        },
-        {
-          name: "本月支付订单",
-          value: "1234",
-          icon: "success",
-          color: "#2ec7c9",
-        },
-        {
-          name: "本月收藏订单",
-          value: "210",
-          icon: "star-on",
-          color: "#ffb980",
-        },
-        {
-          name: "本月未支付订单",
-          value: "1234",
-          icon: "s-goods",
-          color: "#5ab1ef",
-        },
+        
       ],
     };
-  },
-  mounted() {
-    getData().then((res) => {
-      const { code, data } = res.data;
-      if (code === 20000) {
-        this.tableData = data.tableData;
-        const order = data.orderData;
-        const keyArray = Object.keys(order.data[0]);
-        const series = [];
-        keyArray.forEach((key) => {
-          series.push({
-            name: key,
-            data: order.data.map((item) => item[key]),
-            type: "line",
-          });
-        });
-        const option = {
-          xA,
-        };
-      }
-      console.log(res);
-    });
   },
 };
 </script>

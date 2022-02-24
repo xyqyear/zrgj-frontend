@@ -3,7 +3,7 @@
     <!-- <router-link to="/main">Main</router-link>
     <router-link to="/about">About</router-link> -->
    <!-- <div>This is App.vue</div> -->
-   <!-- 路由出口 -->
+   <!-- 路由出口,为什么是默认Main.vue呢 -->
    <!-- 路由匹配到的组件将渲染在这里 -->
     <router-view></router-view>
     <!-- <div id="nav">
