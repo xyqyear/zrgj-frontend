@@ -1,9 +1,9 @@
 <template>
-    <div>This is a vip Page</div>
+    <div>This is a worker Page</div>
 </template>
 <script>
 export default ({
-    name:'vip',
+    name:'worker',
     data(){
         return {}
     }

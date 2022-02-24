@@ -1,9 +1,9 @@
 <template>
-    <div>This is a setting Page</div>
+    <div>This is a perCen Page</div>
 </template>
 <script>
 export default ({
-    name:'setting',
+    name:'perCen',
     data(){
         return {}
     }
