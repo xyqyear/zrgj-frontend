@@ -4,13 +4,14 @@
   <el-container style="height: 100%">
     <el-aside width="auto">
       <common-aside></common-aside>
-      <!-- 驼峰命名 -->
+      <!-- 驼峰命名，注意这里，不过可能也用不到了 -->
     </el-aside>
     <el-container>
       <el-header>
         <common-header></common-header>
       </el-header>
       <el-main>
+        <!-- 这就是嵌套路由 -->
         <router-view></router-view>
       </el-main>
     </el-container>

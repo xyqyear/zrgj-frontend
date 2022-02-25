@@ -151,6 +151,9 @@
     justify-content: space-between;
     justify-items: space-between;
     text-align: left;
+    .phone{
+      line-height: 30px;
+    }
   }
 }
 //第二行
