@@ -50,8 +50,8 @@
             <div class="total">共10种，共10个商品，总计：￥200</div>
             </div>
             <div class="down">
-            <!-- <el-tag :type="{item.state=='1'?'success':'info'}">{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
-            <el-tag type='success'>{{item.state=='1'?'已支付':'未支付'}}</el-tag>
+            <el-tag :type="item.state=='1'?'success':'info'">{{item.state=='1'?'已支付':'未支付'}}</el-tag>
+            <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
             </div>
         </div>
       </el-card>

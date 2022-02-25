@@ -14,7 +14,7 @@ import '../api/mock.js'
 //按需引入
 import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
-Row,Col,Card,Table,TableColumn,Input,Popover,Tag } from 'element-ui';
+Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog } from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
@@ -42,6 +42,7 @@ Vue.use(TableColumn);
 Vue.use(Input);
 Vue.use(Popover);
 Vue.use(Tag);
+Vue.use(Dialog);
 
 
 Vue.prototype.$http = http

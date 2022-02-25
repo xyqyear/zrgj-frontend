@@ -7,38 +7,89 @@
           <i
             class="el-icon-circle-plus-outline"
             style="width: 50px; font-size: 16px"
-          >添加桌台</i>
-          
+            >添加桌台</i
+          >
         </el-button>
-         <el-button type="text" style="margin-right: 50px">
-          <i
-            class="el-icon-edit"
-            style="width: 50px; font-size: 16px"
-          >桌台编辑</i>
-          
+        <el-button type="text" style="margin-right: 50px">
+          <i class="el-icon-edit" style="width: 50px; font-size: 16px"
+            >桌台编辑</i
+          >
         </el-button>
       </div>
-      
     </div>
     <el-col :span="24">
       <div class="tables">
-        <el-card 
-        @click="clickCard(item)"
+        <el-card
+          @click="dialogVisible = true"
           v-for="item in spotData"
           :key="item.name"
           :body-style="{ display: 'flex', padding: 0 }"
-          style="margin-bottom: 20px;margin-right: 40px;"
+          style="margin-bottom: 20px; margin-right: 40px"
         >
-          <div class="info">
-            <div :style="{ background:item.state ? '#82AAFF' : '#FFFFFF' } ">
+       
+          <el-button class="info" @click="ClickCard(item)" :disabled="item.state?false:true">
+            <div :style="{ background: item.state ? '#82AAFF' : '#FFFFFF' }">
               <p class="floor">{{ item.floor }}</p>
               <p class="tableNum">{{ item.tableNum }}</p>
             </div>
             <div>
               <p class="state">{{ item.state ? item.state : "空闲" }}</p>
             </div>
-          </div>
+          </el-button>
         </el-card>
+          <!-- ------------------------------------- -->
+         <el-dialog
+          title="提示"
+          :visible.sync="dialogVisible"
+          width="50%"
+          :before-close="handleClose"
+        >
+          <!-- ---------------------------------------------- -->
+           <el-card 
+        style="margin-top: 20px; height: 460px"
+      >
+        <div class="order-header">
+          <div class="left">
+            <div class="order-num">订单号 {{ currItem.name }}</div>
+          </div>
+          <div class="right">
+            <div class="time">2小时前</div>
+          </div>
+        </div>
+        <div class="order-content">
+            <div class="order-item"
+            v-for="item in currItem.orders" :index="item.id+''" :key="item.id"
+            >
+            <div class="left">
+                <img :src="img" style="width:30px;height:30px;"/>
+                <div class="orderItem-name" style="margin-left:20px">名字+（dishid:{{item.dishId}}）</div>
+                </div>
+                <div class="right">
+                    <div class="amount" style="margin-right:30px">X {{item.amount}}</div>
+                    <div class="count">￥23.0</div>
+                </div>
+            </div>
+        </div>
+        <div class="order-bottom">
+            <div class="up">
+            <div class="total">共10种，共10个商品，总计：￥200</div>
+            </div>
+            <div class="down">
+            <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
+            </div>
+        </div>
+      </el-card>
+          <!-- ------------------------------------------------ -->
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="dialogVisible = false"
+              >结 算</el-button
+            >
+          </span>
+        </el-dialog>
+        <!-- ------------------------------------- -->
+        
+       
       </div>
       <!-- <div class="grid-content bg-purple">
                 <el-card v-for="item in rows" :key="item.name" :body-style="{ display: 'flex', padding: '50px'}">
@@ -59,6 +110,10 @@
   justify-content: space-between;
   align-items: center;
   text-align: center;
+}
+.el-button{
+  padding:0;
+  border:0;
 }
 .tables {
   width: 100%;
@@ -84,18 +139,146 @@
     }
   }
 }
+
+.order-header {
+    width:100%;
+    height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  border-bottom: 2px solid #C1C1C1;
+  .left{
+      width:200px;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      text-align: center;
+      .order-num{
+          margin-left: 20px;
+      }
+  }
+}
+.order-content {
+    width:100%;
+    height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll; 
+  .order-item{
+      width:100%;
+      border-bottom: 2px solid #EFEFEF;
+      display: flex;
+      justify-content: space-between;
+  }
+  .left{
+      margin-left: 30px;
+      width:200px;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      text-align: center;
+      line-height: 50px;
+      .order-num{
+          margin-left: 20px;
+      }
+  }
+  .right{
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      text-align: center;
+  }
+
+}
+.order-bottom{
+    width:100%;
+    height: 60px;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    .up{
+        width:100%;
+        display: flex;
+        justify-content: right;
+        align-items: center;
+        
+
+    }
+    .down{
+        width:100%;
+        display: flex;
+        justify-content: right;
+        align-items: center;
+
+
+    }
+}
 </style>
 <script>
 export default {
   name: "table",
   data() {
     return {
+      dialogVisible: false,
+      buttonVisible:true,
+      currItem:{},
       spotData: [
         {
           name: "11",
           floor: "一楼",
           tableNum: "1号桌",
           state: "540",
+          orders:[
+            {
+                  id:'1',
+                  dishId:'1',
+                  amount:1,
+              },
+              {
+                  id:'2',
+                  dishId:'2',
+                  amount:2,
+              },
+              {
+                  id:'1',
+                  dishId:'1',
+                  amount:1,
+              },
+              {
+                  id:'2',
+                  dishId:'2',
+                  amount:2,
+              },
+              {
+                  id:'1',
+                  dishId:'1',
+                  amount:1,
+              },
+              {
+                  id:'2',
+                  dishId:'2',
+                  amount:2,
+              },
+              {
+                  id:'1',
+                  dishId:'1',
+                  amount:1,
+              },
+              {
+                  id:'2',
+                  dishId:'2',
+                  amount:2,
+              },
+              {
+                  id:'1',
+                  dishId:'1',
+                  amount:1,
+              },
+          ]
         },
         {
           name: "12",
@@ -204,6 +387,27 @@ export default {
 
       this.branchData = arr;
     },
+    ClickCard(item){
+      console.log(item);
+      if(item.state){
+        this.dialogVisible = true;
+        this.currItem={
+          name: item.name,
+          floor: item.floor,
+          tableNum:item.tableNum,
+          state:item.state,
+          orders:item.orders
+        }
+        console.log(this.currItem.name)
+      }
+    },
+     handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      }
   },
 };
 </script>
