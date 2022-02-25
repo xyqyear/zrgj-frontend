@@ -27,10 +27,10 @@
           v-for="item in spotData"
           :key="item.name"
           :body-style="{ display: 'flex', padding: 0 }"
-          style="margin-bottom: 20px"
+          style="margin-bottom: 20px;margin-right: 40px;"
         >
           <div class="info">
-            <div style="border-bottom: 1px solid #545c64">
+            <div :style="{ background:item.state ? '#82AAFF' : '#FFFFFF' } ">
               <p class="floor">{{ item.floor }}</p>
               <p class="tableNum">{{ item.tableNum }}</p>
             </div>
@@ -64,7 +64,7 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
 }
 .info {
