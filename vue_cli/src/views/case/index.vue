@@ -9,7 +9,7 @@
       background-color="#fff"
       text-color="#545C64"
       active-text-color="#3A96FF"
-      style="display: flex; justify-content: space-between"
+      style="display: flex; justify-content: space-between;margin-bottom:20px;"
     >
       <el-menu-item @click="clickMenu('1')" index="1">今日订单</el-menu-item>
       <el-menu-item @click="clickMenu('2')" index="2">订单列表</el-menu-item>
