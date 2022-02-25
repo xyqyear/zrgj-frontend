@@ -58,17 +58,10 @@
     </el-col>
     <!-- ------------表格哇------------------- -->
     <el-col :span="24" style="margin-top: 20px">
-      <el-card shadow="hover">
-        <div class="user">
+      <el-card shadow="hover" style="height: 280px">
+        <div style="height: 280px" ref="echarts">
           <!-- ------------------------------------------------ -->
-          <div class="img" style="height: 100%; width: 20%">
-            <img :src="roomImage" style="width: 80px; height: 80px" />
-          </div>
-          <div class="userInfo">
-            <p class="name">{{ name }}</p>
-            <p class="phone">联系电话: {{ phone }}</p>
-            <p class="location">公司地址: {{ location }}</p>
-          </div>
+          
         </div>
         <!-- <div class="login-info">
           <p>上次登录时间：<span>2022.02.06</span></p>
@@ -323,6 +316,7 @@ export default {
       if (code === 20000) {
         this.tableData = data.tableData;
         const order = data.orderData;
+        const xData = order.date;
         const keyArray = Object.keys(order.data[0]);
         const series = [];
         keyArray.forEach((key) => {
@@ -332,9 +326,20 @@ export default {
             type: "line",
           });
         });
+
         const option = {
-          xA,
+          xAxis:{
+            data: xData
+          },
+          yAxis:{},
+          legend:{
+            data: keyArray
+          },
+          series
         };
+
+        const E = echarts.init(this.$refs.echarts)
+        E.setOption(option)
       }
       console.log(res);
     });
