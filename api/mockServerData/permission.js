@@ -11,70 +11,71 @@ export default {
         code: 20000,
         data: {
           menu: [
-            {
-              path: '/',
-              name: 'home',
-              label: '首页',
-              icon: 's-home',
-              url: 'Home/Home'
-            },
-            {
-              path: '/mall',
-              name: 'mall',
-              label: '商品管理',
-              icon: 'video-play',
-              url: 'Mall/Mall'
-            },
-            {
-              path: '/user',
-              name: 'user',
-              label: '用户管理',
-              icon: 'user',
-              url: 'User/User'
-            },
-            {
-              label: '其他',
-              icon: 'location',
-              children: [
-                {
-                  path: '/page1',
-                  name: 'page1',
-                  label: '页面1',
-                  icon: 'setting',
-                  url: 'Other/PageOne'
-                },
-                {
-                  path: '/page2',
-                  name: 'page2',
-                  label: '页面2',
-                  icon: 'setting',
-                  url: 'Other/PageTwo'
-                }
-              ]
-            }
+          {
+            path:'/',
+            name:'home',
+            label:'主页',
+            icon:'s-home',
+            url:'Home/Home'
+          },
+          {
+            path:'/table',
+            name:'table',
+            label:'桌台管理',
+            icon:'video-play',//自己记得改icon
+            url:'TableManage/TabelManage'//?
+          },
+          {
+            path:'/case',
+            name:'case',
+            label:'订单管理',
+            icon:'user',//自己记得改icon
+            url:'CaseManage/CaseManage'
+          },
+          {
+            path:'/food',
+            name:'food',
+            label:'菜品管理',
+            icon:'user',//自己记得改icon
+            url:'FoodManage/FoodManage'
+          },
+          {
+            label:'其他',
+            icon:'location',
+            children:[
+              {
+                path:'/worker',
+                name:'worker',
+                label:'员工管理',
+                icon:'setting',//自己记得改icon
+                url:'WorkerManager/WorkerManager'
+              },
+              {
+                path:'/perCen',
+                name:'perCen',
+                label:'个人中心',
+                icon:'setting',//自己记得改icon
+                url:'PersonCenter/PersonCenter'
+              }
+            ]
+          }
+          
           ],
           token: Mock.Random.guid(),
           message: '获取成功'
         }
       }
-    } else if (username === 'xiaoxiao' && password === 'xiaoxiao') {
+    } else if (username === 'chefchef' && password === 'chefchef') {
       return {
         code: 20000,
         data: {
           menu: [
             {
-              path: '/',
-              name: 'home',
-              label: '首页',
-              icon: 's-home',
-              url: 'Home/Home'
-            },
-            {
-              path: '/video',
-              name: 'video',
-              label: '商品管理',
+              path: '/chef',
+              name: 'chef',
+              label: '订单查看与烹饪',
               icon: 'video-play',
-              url: 'VideoManage/VideoManage'
+              url: 'ChefManage/ChefManage'
             }
           ],
           token: Mock.Random.guid(),

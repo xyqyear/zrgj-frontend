@@ -58,55 +58,7 @@ export default {
   data() {
     return {
       menu:[
-        {
-          path:'/',
-          name:'home',
-          label:'主页',
-          icon:'s-home',
-          url:'Home/Home'
-        },
-        {
-          path:'/table',
-          name:'table',
-          label:'桌台管理',
-          icon:'video-play',//自己记得改icon
-          url:'TableManage/TabelManage'//?
-        },
-        {
-          path:'/case',
-          name:'case',
-          label:'订单管理',
-          icon:'user',//自己记得改icon
-          url:'CaseManage/CaseManage'
-        },
-        {
-          path:'/food',
-          name:'food',
-          label:'菜品管理',
-          icon:'user',//自己记得改icon
-          url:'FoodManage/FoodManage'
-        },
         
-        {
-          label:'其他',
-          icon:'location',
-          children:[
-            {
-              path:'/worker',
-              name:'worker',
-              label:'员工管理',
-              icon:'setting',//自己记得改icon
-              url:'WorkerManager/WorkerManager'
-            },
-            {
-              path:'/perCen',
-              name:'perCen',
-              label:'个人中心',
-              icon:'setting',//自己记得改icon
-              url:'PersonCenter/PersonCenter'
-            }
-          ]
-        }
       ]
     };
   },
@@ -132,14 +84,17 @@ export default {
   },
   computed:{
     noChildren(){
-      return this.menu.filter(item =>!item.children)//如果当前item没有子项目就直接return
+      return this.asyncMenu.filter(item =>!item.children)//如果当前item没有子项目就直接return
 
     },
     hasChildren(){
-      return this.menu.filter(item =>item.children)//如果当前item没有子项目就直接return
+      return this.asyncMenu.filter(item =>item.children)//如果当前item没有子项目就直接return
     },
     isCollapse(){
       return this.$store.state.tab.isCollapse
+    },
+    asyncMenu(){
+      return this.$store.state.tab.menu
     }
   }
 };
