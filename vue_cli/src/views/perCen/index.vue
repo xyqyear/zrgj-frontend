@@ -11,6 +11,7 @@
                 </div>
             </div>
         </el-card>
+        
     </div>
 </template>
 <script>
@@ -38,4 +39,17 @@ export default ({
     flex-direction: column;
     line-height: 30px;
 }
+ .text {
+    font-size: 14px;
+  }
+
+  .item {
+    padding: 18px 0;
+  }
+
+  .box-card {
+    width: 480px;
+    height: 200px;
+    overflow: scroll; 
+  }
 </style>
