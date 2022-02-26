@@ -14,7 +14,7 @@ import '../api/mock.js'
 //按需引入
 import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
-Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog } from 'element-ui';
+Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,Collapse,Form,FormItem,Tabs,TabPane,InputNumber } from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
@@ -43,9 +43,24 @@ Vue.use(Input);
 Vue.use(Popover);
 Vue.use(Tag);
 Vue.use(Dialog);
-
+Vue.use(Collapse);
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Tabs);
+Vue.use(TabPane);
+Vue.use(InputNumber);
 
 Vue.prototype.$http = http
+
+router.beforeEach((to,from,next)=>{
+  store.commit('getToken')
+  const token = store.state.user.token
+  if(!token && to.name !== 'login'){
+    next({name:'login'})
+  }else{
+    next()
+  }
+})
 
 new Vue({
   router,

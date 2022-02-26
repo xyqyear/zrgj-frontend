@@ -32,7 +32,6 @@
         </div>
         <div class="order-content">
             <div class="order-item"
-             @click="clickTest(subitem)"
             v-for="subitem in item.orderItems" :index="subitem.id+''" :key="subitem.id"
             >
             <div class="left">
