@@ -12,7 +12,7 @@ class HttpRequst {
     const config = {
       baseURL: this.baseUrl,
       header: {
-
+        
       }
     }
     return config

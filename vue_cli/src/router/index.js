@@ -11,7 +11,9 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Main.vue'),
+    redirect:'/home',
     children: [
+      ///////////////管理员端页面////////////////////////
       {
         path: '/home',
         name: 'home',
@@ -67,8 +69,41 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ '../views/user')
+      },
+      ///////////////服务员端页面////////////////////////
+      {
+        path:'/serFood',
+        name:'serFood',
+        component:()=>import('../views/serFood')
+      },
+      {
+        path:'/serMain',
+        name:'serMain',
+        component:()=>import('../views/serMain')
+      },
+      {
+        path:'/serOrder',
+        name:'serOrder',
+        component:()=>import('../views/serOrder')
+      },
+      {
+        path:'/serShopping',
+        name:'serShopping',
+        component:()=>import('../views/serShopping')
+      },
+      ///////////////厨师端页面////////////////////////
+      {
+        path:'/chef',
+        name:'chef',
+        component:()=>import('../views/chef')
       }
-    ]
+    ],
+    
+  },
+  {
+    path:'/login',
+    name:'login',
+    component:()=>import('../views/login/login.vue')
   }
 
 ]

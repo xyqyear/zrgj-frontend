@@ -30,7 +30,7 @@ export const getData = () => {
 
 export const getMenu = (param) => {
   return axios.request({
-    url: '/permission/getMenu',
+    url: 'http://www.muzi.fun:5678/api/v1/account/login',
     method: 'post',
     data: param
   })
