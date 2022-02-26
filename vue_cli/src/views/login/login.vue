@@ -42,6 +42,7 @@ import Mock from 'mockjs'
 import {getMenu} from '../../../api/data'
 export default ({
     name:'login',
+    token:'',
     data(){
         return {
             form:{
@@ -64,21 +65,42 @@ export default ({
     },
     methods:{
         login(){
+
           getMenu(this.form).then(res=>{
-            console.log(res,'res')
-            if(res.code === 20000){
+            console.log(res)
+            if(res.status === 200){
               this.$store.commit('clearMenu')
-              this.$store.commit('setMenu',res.data.menu)
-              this.$store.commit('setToken',res.data.token)
+              console.log(res.data.data.account.position)
+              this.$store.commit('setMenu',res.data.data.account.position)
+              this.$store.commit('setToken',res.data.data.token)
+              //console.log(res.data.data.token)
+              localStorage.setItem('position',res.data.data.account.position)
+              localStorage.setItem('token','Bearer '+ res.data.data.token)
+              //console.log(localStorage.getItem('token'))
               this.$store.commit('addMenu',this.$router)
-              this.$router.push({name:'home'})
+              if(res.data.data.account.position==0){
+                this.$router.push({name:'home'})
+              }else if(res.data.data.account.position==2){
+                this.$router.push({name:'chef'})
+              }else if(res.data.data.account.position==1){
+                this.$router.push({name:'serMain'})
+              }
             }else{
               this.$message.warning(res.data.message)
             }
+            this.token = res.data.data.token
           })
-            const token = Mock.random.guid()
-            this.$store.commit('setToken',token)
-            this.$router.push({name:'home'})
+            this.$store.commit('setToken',this.token)
+            // if(localStorage.getItem('position') == 0){
+            //   console.log('position'+localStorage.getItem('position'))
+            //   this.$router.push({name:'home'})
+            // }else if(localStorage.getItem('position') == 2){
+            //   console.log('position'+localStorage.getItem('position')) 
+            //   this.$router.push({name:'chef'})
+            // }else if(localStorage.getItem('position') == 1){
+            //   this.$router.push({name:'serMain'})
+            // }
+
         }
     }
 })

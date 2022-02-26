@@ -94,7 +94,10 @@ export default {
       return this.$store.state.tab.isCollapse
     },
     asyncMenu(){
+      this.$store.commit('setMenu',localStorage.getItem('position'))
+      //console(this.$store.state.tab.menu)
       return this.$store.state.tab.menu
+      // return localStorage.getItem('menu')
     }
   }
 };
