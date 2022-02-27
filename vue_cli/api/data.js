@@ -99,34 +99,6 @@ export const getAccount = (param) => {//这个接口名称需要改
     data: param
   })
 }
-//获取帐号信息
-/*
-Body:
-{
-    "username": "manager0"
-}
-*/
-export const getAccount = (param) => {//这个接口名称需要改
-  return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'post',
-    data: param
-  })
-}
-//获取用户列表
-/*
-Body:
-{
-    "restaurantId":1
-}
-*/
-export const getUserlist = (param) => {//这个接口名称需要改
-  return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account/list',
-    method: 'post',
-    data: param
-  })
-}
 //获取用户列表
 /*
 Body:
