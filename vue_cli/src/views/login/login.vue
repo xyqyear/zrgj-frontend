@@ -40,7 +40,7 @@
 <script>
 import axios from 'axios'
 import Mock from 'mockjs'
-import {getMenu} from '../../../api/data'
+import {postLogin} from '../../../api/data'
 export default ({
     name:'login',
     token:'',
@@ -66,7 +66,7 @@ export default ({
     },
     methods:{
         login(){
-          getMenu(this.form).then(res=>{
+          postLogin(this.form).then(res=>{
             console.log(res)
             if(res.status === 200){
               this.$store.commit('clearMenu')
