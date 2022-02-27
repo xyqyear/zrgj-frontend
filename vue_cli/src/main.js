@@ -15,7 +15,7 @@ import '../api/mock.js'
 import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
 Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,Collapse,Form,
-FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer } from 'element-ui';
+FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer,Descriptions,DescriptionsItem} from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
@@ -23,6 +23,8 @@ Vue.config.productionTip = false
 Vue.component(Button.name, Button);
 Vue.component(Select.name, Select);
 // Vue.component(Radio.name, Radio);
+Vue.use(Descriptions);
+Vue.use(DescriptionsItem);
 Vue.use(Radio);
 Vue.use(Container);
 Vue.use(Aside);

@@ -133,7 +133,7 @@ Body:
             "note": "加一斤香菜"
         }
     ]
-  
+
 }
 */
 export const createOrders = (param) => {
@@ -287,7 +287,7 @@ Body:none
 export const getAllFood = () => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/dish/all',
-    method:'post',
+    method: 'POST'
   })
 }
 

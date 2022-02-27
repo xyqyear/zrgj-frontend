@@ -39,7 +39,6 @@
 </template>
 <script>
 import axios from 'axios'
-import Mock from 'mockjs'
 import {postLogin} from '../../../api/data'
 export default ({
     name:'login',
