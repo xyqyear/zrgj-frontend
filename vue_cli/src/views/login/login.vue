@@ -38,6 +38,7 @@
   </el-form>
 </template>
 <script>
+import axios from 'axios'
 import Mock from 'mockjs'
 import {getMenu} from '../../../api/data'
 export default ({
@@ -65,7 +66,6 @@ export default ({
     },
     methods:{
         login(){
-
           getMenu(this.form).then(res=>{
             console.log(res)
             if(res.status === 200){
@@ -76,6 +76,7 @@ export default ({
               //console.log(res.data.data.token)
               localStorage.setItem('position',res.data.data.account.position)
               localStorage.setItem('token','Bearer '+ res.data.data.token)
+              axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
               //console.log(localStorage.getItem('token'))
               this.$store.commit('addMenu',this.$router)
               if(res.data.data.account.position==0){
@@ -86,7 +87,8 @@ export default ({
                 this.$router.push({name:'serMain'})
               }
             }else{
-              this.$message.warning(res.data.message)
+              console.log('错误啦')
+              this.$message.warning(res.reason)
             }
             this.token = res.data.data.token
           })

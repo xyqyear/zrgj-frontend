@@ -207,6 +207,7 @@
 <script>
 import { getMenu } from "../../../api/data.js";
 import { getData } from "../../../api/data.js";
+import { getGivenTimeOrders } from "../../../api/data.js";
 import * as echarts from "echarts";
 export default {
   name: "home",
@@ -218,7 +219,7 @@ export default {
       location: "哇哩哇市哇哩哇区哇哩哇县",
       roomImage: require("../../assets/images/logo.png"),
       //第二行
-      countNum: "500",
+      //countNum: "500",
       //第三行
       //第四行
       sale_kinds:'46',
@@ -309,6 +310,27 @@ export default {
         },
       ],
     };
+  },
+  computed:{
+    countNum(){
+      let fromTime = new Date(
+       new Date(new Date().toLocaleDateString()).getTime() 
+       - 24*3600*1000 ).getTime() / 1000;
+         let toTime = new Date(
+       new Date(new Date().toLocaleDateString()).getTime()
+     ).getTime() / 1000;
+        var body={
+          from:null,
+          to:null
+        }
+        body.from = fromTime
+        body.to = toTime
+        console.log('body'+body)
+      getGivenTimeOrders(body).then((res) => {
+        console.log(res)
+      })
+      return '300'
+    }
   },
   mounted() {
     getData().then((res) => {

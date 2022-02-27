@@ -27,6 +27,13 @@ export const getData = () => {
     url: '/home/getData'
   })
 }
+export const getGivenTimeOrders = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/order/range',
+    method:'get',
+    data:param
+  })
+}
 
 export const getMenu = (param) => {
   return axios.request({
