@@ -14,6 +14,7 @@ import '../api/mock.js'
 //按需引入
 import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
+Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,Collapse,Form,FormItem,Tabs,TabPane,InputNumber } from 'element-ui';
 Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,Collapse,Form,
 FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer } from 'element-ui';
 
@@ -52,7 +53,6 @@ Vue.use(TabPane);
 Vue.use(InputNumber);
 Vue.use(CollapseItem);
 Vue.use(Drawer);
-
 
 Vue.prototype.$http = http
 
