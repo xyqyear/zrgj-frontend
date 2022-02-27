@@ -56,6 +56,7 @@ Vue.use(CollapseItem);
 Vue.use(Drawer);
 
 Vue.prototype.$http = http
+Vue.prototype.$message = Message
 
 router.beforeEach((to,from,next)=>{
   store.commit('getToken')
