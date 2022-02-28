@@ -55,6 +55,7 @@ Vue.use(InputNumber);
 Vue.use(Drawer);
 Vue.use(DatePicker);
 Vue.use(Alert);
+Vue.use(CollapseItem);
 
 Vue.prototype.$http = http
 Vue.prototype.$confirm = MessageBox.confirm
