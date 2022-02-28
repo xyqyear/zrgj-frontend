@@ -51,7 +51,7 @@
   </div>
 </template>
 <script>
-import {getRestaurantInfo, getCurrOrders, getAllFood, getObjectMap} from "../../../api/data";
+import {getRestaurant, getCurrOrders, getAllFood, getObjectMap} from "../../../api/data";
 
 export default {
   name: "home",
@@ -68,7 +68,7 @@ export default {
   },
   mounted() {
     // 获取餐厅最大桌号
-    getRestaurantInfo()
+    getRestaurant()
       .then(res => {
         this.totalTableNum = res.data.data.tableNum;
 
