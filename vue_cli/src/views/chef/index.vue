@@ -1,6 +1,6 @@
 <template>
   <el-collapse accordion>
-    <el-collapse-item v-for="(item, index) in OrderData" :key="item.id">
+    <el-collapse-item v-for="item in orderData" :key="item.id">
       <template slot="title">
         <div class="header">
           <div style="width: 100px; border-right: 2px solid #d5d5d5">
@@ -14,14 +14,16 @@
           </div>
           <div style="width: 200px">
             烹饪进度：{{
-              item.orderItems.filter((item) => item.state === 0).length
+              Object.values(item.orderItems).filter(
+                (orderItem) => orderItem.state === 0
+              ).length
             }}
-            / {{ item.orderItems.length }}
+            / {{ Object.keys(item.orderItems).length }}
           </div>
         </div>
       </template>
       <el-table
-        :data="item.orderItems"
+        :data="Object.values(item.orderItems)"
         height:300
         style="width: 100%; margin-left: 30px"
       >
@@ -41,7 +43,7 @@
             <el-button
               v-if="scope.row.state !== 0"
               size="mini"
-              @click="handle(scope.row.state, index, scope.$index)"
+              @click="handle(scope.row.state, item.id, scope.row.id)"
               >{{ [null, "烹饪", "完成"][scope.row.state] }}</el-button
             >
           </template>
@@ -83,8 +85,8 @@ export default {
   name: "table",
   data() {
     return {
-      OrderData: [],
-      RawOrderData: [],
+      orderData: {},
+      rawOrderData: {},
     };
   },
   mounted() {
@@ -92,51 +94,69 @@ export default {
   },
   methods: {
     populateData() {
-      getAllFood().then((res) => {
-        let dishMap = res.data.data.reduce((acc, curr) => {
-          acc[curr.id] = curr.name;
-          return acc;
-        }, {});
-        getCurrOrders().then((res) => {
-          let orders = res.data.data;
-          this.RawOrderData = orders;
+      Promise.all([getAllFood(), getCurrOrders()]).then((res) => {
+        let dishMap = res[0].data.data.reduce((acc, curr) => {
+                  acc[curr.id] = curr.name;
+                  return acc;
+                }, {});
+        let orders = res[1].data.data;
           for (let order of orders) {
+            // if all items are finished, skip
+            if (order.orderItems.every((item) => item.state === 0)) {
+              continue;
+            }
+
             let displayOrder = {
               id: order.id,
               time: new Date(order.createTime).toLocaleTimeString(),
               tableId: order.tableId,
-              orderItems: [],
+              orderItems: {},
             };
+
             for (let orderItem of order.orderItems) {
-              displayOrder.orderItems.push({
+              displayOrder.orderItems[orderItem.id] = {
                 id: orderItem.id,
                 name: dishMap[orderItem.dishId],
                 amount: orderItem.amount,
                 note: orderItem.note,
                 state: orderItem.state,
-              });
+              };
             }
-            this.OrderData.push(displayOrder);
+
+            order.orderItems = order.orderItems.reduce((acc, curr) => {
+              acc[curr.id] = curr;
+              return acc;
+            }, {});
+
+            this.$set(this.orderData, order.id, displayOrder);
+            this.$set(this.rawOrderData, order.id, order);
           }
-        });
-      });
+      })
     },
-    handle(state, orderIndex, orderItemIndex) {
+    handle(state, orderId, orderItemId) {
       switch (state) {
         case 1:
-          this.RawOrderData[orderIndex].orderItems[orderItemIndex].state = 2;
+          this.rawOrderData[orderId].orderItems[orderItemId].state = 2;
           updateOrderItem(
-            this.RawOrderData[orderIndex].orderItems[orderItemIndex]
+            this.rawOrderData[orderId].orderItems[orderItemId]
           ).then(() => {
-            this.OrderData[orderIndex].orderItems[orderItemIndex].state = 2;
+            this.orderData[orderId].orderItems[orderItemId].state = 2;
           });
           break;
         case 2:
-          this.RawOrderData[orderIndex].orderItems[orderItemIndex].state = 0;
+          this.rawOrderData[orderId].orderItems[orderItemId].state = 0;
           updateOrderItem(
-            this.RawOrderData[orderIndex].orderItems[orderItemIndex]
+            this.rawOrderData[orderId].orderItems[orderItemId]
           ).then(() => {
-            this.OrderData[orderIndex].orderItems[orderItemIndex].state = 0;
+            this.orderData[orderId].orderItems[orderItemId].state = 0;
+            // if all items are finished, remove it from the list
+            if (
+              Object.values(this.rawOrderData[orderId].orderItems).every(
+                (item) => item.state === 0
+              )
+            ) {
+              delete this.orderData[orderId];
+            }
           });
           break;
       }

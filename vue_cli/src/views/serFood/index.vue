@@ -67,8 +67,7 @@
 </template>
 
 <script>
-import axios from "axios";
-import {getAllFood, addOrder} from "../../../api/data";
+import {addOrder, getAllFood} from "../../../api/data";
 
 export default {
   name: "perCen",
@@ -86,67 +85,15 @@ export default {
       tableId: 5
     };
   },
-  created() {
-    //访问接口，加请求头
-    axios.defaults.headers.common["Authorization"] =
-      localStorage.getItem("token");
-  },
+
   mounted() {
-    this.dishList = []
-    // get menu through API
-
     this.refreshDishList()
-    /*this.dishList = [
-      {
-        dishId: "01",
-        imageUrl: require("../../assets/images/restaurant.jpg"),
-        name: "葱爆鸭肠",
-        price: 25,
-        category: "荤菜",
-      },
-      {
-        dishId: "02",
-        imageUrl: require("../../assets/images/restaurant.jpg"),
-        name: "清炒莲白",
-        price: 25,
-        category: "素菜",
-      },
-      {
-        dishId: "03",
-        imageUrl: require("../../assets/images/restaurant.jpg"),
-        name: "番茄蛋汤",
-        price: 25,
-        category: "汤类",
-      },
-      {
-        dishId: "04",
-        imageUrl: require("../../assets/images/restaurant.jpg"),
-        name: "拍黄瓜",
-        price: 25,
-        category: "素菜",
-      },
-      {
-        dishId: "05",
-        imageUrl: require("../../assets/images/restaurant.jpg"),
-        name: "一口肠",
-        price: 25,
-        category: "小吃",
-      },
-      {
-        dishId: "06",
-        imageUrl: require("../../assets/images/restaurant.jpg"),
-        name: "杨枝甘露",
-        price: 25,
-        category: "饮品",
-      }
-    ];*/
 
-
-    // 菜品分类
-    // this.classifiedDishList.push(this.dishList)
-    // for (let i = 1; i < this.dishCategories.length; i++) {
-    //   this.classifiedDishList.push(this.getDishOfCategory(this.dishCategories[i]))
-    // }
+    /*    菜品分类
+        this.classifiedDishList.push(this.dishList)
+        for (let i = 1; i < this.dishCategories.length; i++) {
+          this.classifiedDishList.push(this.getDishOfCategory(this.dishCategories[i]))
+        }*/
   },
   methods: {
     createNewOrder() {
@@ -183,23 +130,22 @@ export default {
     },
     refreshDishList() {
       getAllFood()
-        .then(res => {
-          this.dishList = res.data.data
-          console.log(this.dishList)
-          // 给每个菜品加上amount属性
-          for (let i = 0; i < this.dishList.length; i++) {
-            this.dishList[i].amount = 0;
-            this.dishList[i].note = "";
-            this.dishList[i].dishId = this.dishList[i].id;
-          }
-        })
+      .then(res =>{
+        this.dishList = res.data.data;
+        // 给每个菜品加上orderItem所需属性
+        for (let i = 0; i < this.dishList.length; i++) {
+          this.dishList[i].amount = 0;
+          this.dishList[i].note = "";
+          this.dishList[i].dishId = this.dishList[i].id;
+        }
+      })
     },
     handleChange(dishIndex) {
       // this.dishList[dishIndex].amount += 1;
       this.$forceUpdate();
       console.log(dishIndex);
     },
-    getDishOfCategory(targetCategory) {
+/*    getDishOfCategory(targetCategory) {
       let targetDishList = [];
       for (const dish of this.$data.dishList) {
         if (dish.category === targetCategory) {
@@ -207,7 +153,7 @@ export default {
         }
       }
       return targetDishList;
-    },
+    },*/
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then((_) => {
