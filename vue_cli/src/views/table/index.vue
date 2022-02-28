@@ -7,12 +7,12 @@
           <i
             class="el-icon-circle-plus-outline"
             style="width: 50px; font-size: 16px"
-            >添加桌台</i
+          >添加桌台</i
           >
         </el-button>
         <el-button type="text" style="margin-right: 50px">
           <i class="el-icon-edit" style="width: 50px; font-size: 16px"
-            >桌台编辑</i
+          >桌台编辑</i
           >
         </el-button>
       </div>
@@ -89,21 +89,12 @@
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false"
-              >结 算</el-button
+            >结 算</el-button
             >
           </span>
         </el-dialog>
         <!-- ------------------------------------- -->
       </div>
-      <!-- <div class="grid-content bg-purple">
-                <el-card v-for="item in rows" :key="item.name" :body-style="{ display: 'flex', padding: '50px'}">
-                    <div class="info">
-                        <p class="floor">{{item.floor}}</p>
-                        <p class="tableNum">{{item.tableNum}}</p>
-                        <p class="tableMoney">{{item.tableMoney}}</p>
-                    </div>
-                </el-card>
-            </div> -->
     </el-col>
   </el-row>
 </template>  
@@ -415,3 +406,134 @@ export default {
   },
 };
 </script>
+
+<style lang="less" scoped>
+.header {
+  font-weight: 400;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.el-button {
+  padding: 0;
+  border: 0;
+}
+
+.tables {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.info {
+  width: 200px;
+  height: 200px;
+
+  div {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    .floor {
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.order-header {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  border-bottom: 2px solid #C1C1C1;
+
+  .left {
+    width: 200px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    text-align: center;
+
+    .order-num {
+      margin-left: 20px;
+    }
+  }
+}
+
+.order-content {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+
+  .order-item {
+    width: 100%;
+    border-bottom: 2px solid #EFEFEF;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .left {
+    margin-left: 30px;
+    width: 200px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    text-align: center;
+    line-height: 50px;
+
+    .order-num {
+      margin-left: 20px;
+    }
+  }
+
+  .right {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    text-align: center;
+  }
+
+}
+
+.order-bottom {
+  width: 100%;
+  height: 60px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  .up {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+
+
+  }
+
+  .down {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+
+
+  }
+}
+</style>

@@ -70,8 +70,8 @@ Body:
 */
 export const deAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account/delete',
-    method: 'POST',
+    url: 'http://www.muzi.fun:5678/api/v1/account',
+    method: 'DELETE',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -176,8 +176,8 @@ Body:
 export const addOrder = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/add',
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -193,8 +193,8 @@ Body:
 export const payOrders = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/checkout',
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -207,7 +207,7 @@ export const payOrders = (param) => {
 export const getCurrOrders = () => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/ongoing',
-    method:'POST',
+    method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -225,8 +225,8 @@ Body:
 export const getGivenTimeOrders = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/range',
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -240,7 +240,7 @@ Body: None
 export const getUncompletedOrderItems = () => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order_item/uncompleted',
-    method:'POST',
+    method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -361,6 +361,13 @@ export const getAllFood = () => {
   })
 }
 
+export const getObjectMap = (objList) => {
+  return objList.reduce((acc, curr) => {
+    acc[curr.id] = curr;
+    return acc;
+  }, {});
+}
+
 //////////////////////文件///////////////////////////
 //上传文件
 /*
@@ -369,8 +376,8 @@ Body:见文档
 export const upload = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/upload',
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
