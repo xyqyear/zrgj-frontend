@@ -9,7 +9,35 @@
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
-      <el-button plain style="margin-left: 20px">添加人员</el-button>
+      <el-button
+        plain
+        style="margin-left: 20px"
+        @click="dialogFormVisible = true"
+        >添加人员</el-button
+      >
+      <el-dialog title="添加员工" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+          <el-form-item label="员工姓名" :label-width="formLabelWidth">
+            <el-input v-model="form.username" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" :label-width="formLabelWidth">
+            <el-input v-model="form.password" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="类型" :label-width="formLabelWidth">
+            <el-radio v-model="radio" label="1">服务员</el-radio>
+            <el-radio v-model="radio" label="2">厨师</el-radio>
+          </el-form-item>
+          <el-form-item label="手机号码" :label-width="formLabelWidth">
+            <el-input v-model="form.telephone" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormVisible = false"
+            >确 定</el-button
+          >
+        </div>
+      </el-dialog>
     </div>
     <el-col :span="24">
       <el-card style="margin-top: 20px; height: 460px">
@@ -40,6 +68,31 @@
                 @click="handleEdit(scope.$index, scope.row)"
                 >修改</el-button
               >
+              <el-dialog title="修改员工信息" :visible.sync="dialogChangeVisible">
+                <el-form :model="formChange">
+                  <el-form-item label="员工姓名" :label-width="formLabelWidth">
+                    <el-input v-model="formChange.username" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="类型" :label-width="formLabelWidth">
+                    <el-radio v-model="radio" label="1">服务员</el-radio>
+                    <el-radio v-model="radio" label="2">厨师</el-radio>
+                  </el-form-item>
+                  <el-form-item label="手机号码" :label-width="formLabelWidth">
+                    <el-input
+                      v-model="formChange.telephone"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                  <el-button @click="dialogChangeVisible = false"
+                    >取 消</el-button
+                  >
+                  <el-button type="primary" @click="dialogChangeVisible = false"
+                    >确 定</el-button
+                  >
+                </div>
+              </el-dialog>
               <el-button
                 size="mini"
                 type="text"
@@ -77,37 +130,78 @@ export default {
         //     phone:'1234567881'
         //   },
       ],
+      radio: "1",
+      dialogFormVisible: false,
+      dialogChangeVisible: false,
+      form: {
+        username: "",
+        password: "",
+        telephone: "",
+      },
+      formChange:{
+        username: "",
+        password: "",
+        telephone: "",
+      },
+      formLabelWidth: "120px",
     };
   },
   mounted() {
-      console.log("???");
-      // axios.defaults.headers.common["Authorization"] =
-      //         localStorage.getItem("token");
-      getUserlist()
-        .then((res) => {
-          console.log(res);
-           for(let i = 0;i<=res.data.data.length;i++){
-            var item = {
-              index : i+1,
-              id : res.data.data[i].id,
-              username : res.data.data[i].username,
-              position : res.data.data[i].position,
-              type : "",
-              telephone : res.data.data[i].telephone,
-            }
-            if(item.position ==1){
-              item.type = "服务员"
-            }
-            else {
-              item.type = "厨师"
-            }
-            this.tableData.push(item);
+    console.log("???");
+    // axios.defaults.headers.common["Authorization"] =
+    //         localStorage.getItem("token");
+    getUserlist()
+      .then((res) => {
+        console.log(res);
+        for (let i = 0; i <= res.data.data.length; i++) {
+          var item = {
+            index: i + 1,
+            id: res.data.data[i].id,
+            username: res.data.data[i].username,
+            position: res.data.data[i].position,
+            type: "",
+            telephone: res.data.data[i].telephone,
+          };
+          if (item.position == 1) {
+            item.type = "服务员";
+          } else {
+            item.type = "厨师";
           }
-          console.log(this.tableData);
-        })
-        .catch((error) => {
-          console.log(error.response.data.reason);
+          this.tableData.push(item);
+        }
+        console.log(this.tableData);
+      })
+      .catch((error) => {
+        console.log(error.response.data.reason);
+      });
+  },
+  methods: {
+    handleEdit(index, row) {
+      console.log(index);
+      console.log(row);
+      console.log(row.password);
+      this.dialogChangeVisible = true;
+      this.formChange.username = row.username;
+      this.formChange.telephone = row.telephone;
+    },
+    handleDelete(index, row){
+      console.log(index);
+      this.$confirm('此操作将删除该员工, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
         });
+    }
   },
 };
 </script>

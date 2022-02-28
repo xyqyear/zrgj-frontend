@@ -106,11 +106,10 @@ Body:
     "restaurantId":1
 }
 */
-export const getUserlist = (param) => {//这个接口名称需要改
+export const getUserlist = () => {//这个接口名称需要改
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/account/list',
     method: 'post',
-    data: param
   })
 }
 
