@@ -2,38 +2,38 @@
   <div style="position: relative">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(category, index) in dishCategories" :label="category" :name="category">
-        <el-row :gutter="30">
-          <el-col :span="24">
-            <div class="tables">
-              <div
-                v-for="(item, dishIndex) in dishList"
-                :key="item.id"
-                :style="{ display: 'flex', padding: 0, width: '200px' }"
-              >
-                <el-card v-if="item.category===category || index===0">
-                  <div>
-                    <img :src="item.imageUrl" height="90px" width="90px"/>
-                  </div>
-                  <div>
-                    <el-input-number
-                      v-model="dishList[dishIndex].amount"
-                      @change="handleChange($event, dishIndex)"
-                      :min="0"
-                      :max="20"
-                    ></el-input-number>
-                  </div>
-                  <div>
-                    <span>{{ item.name }}</span>
-                  </div>
-                  <div>
-                    <span>￥{{ item.price }}</span>
-                  </div>
-                </el-card>
+        <div>
+          <el-row :gutter="10">
+            <el-col :span="4"
+              v-for="(item, dishIndex) in dishList"
+              :key="item.id"
+              style="{ margin: 0 }"
+            >
+              <el-card v-if="item.category===category || index===0" style="padding: 0; width: 220px; margin-left: 10px">
+                <div>
+                  <img :src="item.imageUrl" height="90px" width="90px"/>
+                </div>
 
-              </div>
-            </div>
-          </el-col>
-        </el-row>
+                <div>
+                  <span>{{ item.name }}</span>
+                </div>
+                <div>
+                  <span>￥{{ item.price }}</span>
+                </div>
+                <div>
+                  <el-input-number
+                    v-model="dishList[dishIndex].amount"
+                    @change="handleChange($event, dishIndex)"
+                    :min="0"
+                    :max="20"
+                  ></el-input-number>
+                </div>
+              </el-card>
+
+            </el-col>
+          </el-row>
+        </div>
+
       </el-tab-pane>
     </el-tabs>
     <el-button
@@ -202,8 +202,6 @@ export default {
 .tables {
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
 }
 </style>
