@@ -24,6 +24,8 @@ Vue.config.productionTip = false
 Vue.component(Button.name, Button);
 Vue.component(Select.name, Select);
 // Vue.component(Radio.name, Radio);
+Vue.use(Descriptions);
+Vue.use(DescriptionsItem);
 Vue.use(Radio);
 Vue.use(Container);
 Vue.use(Aside);
@@ -55,6 +57,7 @@ Vue.use(Drawer);
 Vue.use(DatePicker);
 Vue.use(Alert);
 Vue.use(Option);
+Vue.use(CollapseItem);
 
 Vue.prototype.$http = http
 Vue.prototype.$confirm = MessageBox.confirm
