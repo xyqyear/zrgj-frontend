@@ -39,7 +39,7 @@
             </p>
             <p>哇哩哇</p>
           </div>
-          <div class="countNum">{{ countNum }}</div>
+          <div class="countNum">{{ todayAmount.Money }}</div>
         </div>
       </el-card>
     </el-col>
@@ -52,7 +52,7 @@
             </p>
             <p>哇哩哇</p>
           </div>
-          <div class="countNum">{{ countNum }}</div>
+          <div class="countNum">{{ todayAmount.Order }}</div>
         </div>
       </el-card>
     </el-col>
@@ -86,7 +86,7 @@
         <div class="numCount">
           <div class="item">
             <p style="font-size: 40px; font-weight: 400; margin-bottom: 20px">
-              {{ sale_count }}
+              {{ statistic.goods }}
             </p>
             <p>商品数量</p>
           </div>
@@ -98,7 +98,7 @@
         <div class="numCount">
           <div class="item">
             <p style="font-size: 40px; font-weight: 400; margin-bottom: 20px">
-              {{ worker_count }}
+              {{ statistic.worker }}
             </p>
             <p>员工数量</p>
           </div>
@@ -210,6 +210,7 @@ import { getMenu } from "../../../api/data.js";
 import { getData } from "../../../api/data.js";
 import { getGivenTimeOrders } from "../../../api/data.js";
 import { getUserlist } from "../../../api/data";
+import { getAllFood } from "../../../api/data";
 import * as echarts from "echarts";
 export default {
   name: "home",
@@ -220,8 +221,16 @@ export default {
       phone: "15608209829",
       location: "哇哩哇市哇哩哇区哇哩哇县",
       roomImage: require("../../assets/images/logo.png"),
-      //第二行
-      //countNum: "500",
+      //第二行,今日营业额，今日有效订单数
+      todayAmount: {
+        Money:0,
+        Order:0
+      },
+      //商品数量，员工数量
+      statistic:{
+        goods:0,
+        worker:0
+      },
       //第三行
       //第四行
       sale_kinds: "46",
@@ -314,45 +323,17 @@ export default {
     };
   },
   created() {
+    
     //访问接口，加请求头
     axios.defaults.headers.common["Authorization"] =
       localStorage.getItem("token");
+    this.getTodayAmount();
+    this.getStatistic();
   },
-  computed: {
-    countNum() {
-      /////////////////////获取所有订单/////////////////////
-      let fromTime =
-        new Date(
-          new Date(new Date().toLocaleDateString()).getTime() - 24 * 3600 * 1000
-        ).getTime() / 1000;
-      let toTime =
-        new Date(
-          new Date(new Date().toLocaleDateString()).getTime()
-        ).getTime() / 1000;
-      var body = {};
-      body.from = '0';
-      body.to = toTime;
-      //////////////////////////////////////////
-      var todayMoney=0;
-      var todayOrder = 0;
-      getGivenTimeOrders(body)
-        .then((res) => {
-          console.log(res)
-          console.log("getGivenTimeOrders then"+res );
-          for(let i = 0;i<res.data.data.length;i++){
-            todayMoney+=res.data.data[i].totalPrice//加上啦
-            console.log(res.data.data[i].totalPrice)
-          }
-          // res.data.forEach(item => {
-          //   console.log('item.totalPrice:'+item.totalPrice)
-          // });
-        })
-        .catch((error) => {
-          console.log("getGivenTimeOrders error" + error.response);
-        });
-      return "300";
-    },
-  },
+  // mounted(){
+    
+  //   console.log(this.todayAmount)
+  // },
   mounted() {
     console.log("这个运行了吗");
     getData().then((res) => {
@@ -389,6 +370,69 @@ export default {
     });
   },
   methods: {
+    //获取今日的数据
+    getTodayAmount() {
+      /////////////////////获取所有订单/////////////////////
+      let fromTime =
+        new Date(
+          new Date(new Date().toLocaleDateString()).getTime() - 24 * 3600 * 1000
+        ).getTime() / 1000;
+      let toTime =
+        new Date(
+          new Date(new Date().toLocaleDateString()).getTime()
+        ).getTime() / 1000;
+      var body = {};
+      body.from = '0';
+      body.to = toTime;
+      /////////////////返回值/////////////////////////
+      var todayMoney=0;
+      var todayOrder = 0;
+      //////////////////////////////////////////
+      getGivenTimeOrders(body)
+        .then((res) => {
+          for(let i = 0;i<res.data.data.length;i++){
+            todayMoney+=res.data.data[i].totalPrice//今日营业额
+            if(res.data.data[i].state==0)
+            todayOrder+=1//今日有效订单
+          }
+          this.todayAmount.Money = todayMoney
+          this.todayAmount.Order = todayOrder
+          // res.data.forEach(item => {
+          //   console.log('item.totalPrice:'+item.totalPrice)
+          // });
+        })
+        .catch((error) => {
+          console.log("getGivenTimeOrders error" + error.response);
+        });
+    },
+    getStatistic(){
+      var worker = 0;
+      var good = 0;
+      //////////////////////获取员工数量///////////////////////////////
+      getUserlist()
+        .then((res) => {
+          worker = res.data.data.length
+          console.log('worker'+res.data.data.length);
+        })
+        .catch((error) => {
+          console.log(error.response.data.reason);
+        });
+     //////////////////////获取商品数量///////////////////////////////
+     getAllFood()
+        .then((res) => {
+          good = res.data.data.length
+          console.log('getAllFood'+res.data.data.length);
+        })
+        .catch((error) => {
+          console.log(error.response.data.reason);
+        });
+        this.statistic={
+          goods:good,
+          worker:worker
+        }
+        console.log('哇哩哇老师扑街了')
+        console.log(this.statistic)
+    },
     testButton() {
       console.log("???");
       // axios.defaults.headers.common["Authorization"] =

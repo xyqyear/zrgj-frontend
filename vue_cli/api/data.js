@@ -291,7 +291,7 @@ Body:none
 */
 export const getAllFood = () => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/dish/all',
+    url: 'http://www.muzi.fun:5678/api/v1/dish/list',
     method: 'post',
   })
 }
