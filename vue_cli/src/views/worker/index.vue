@@ -9,7 +9,33 @@
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
-      <el-button plain style="margin-left: 20px">添加人员</el-button>
+      <el-button
+        plain
+        style="margin-left: 20px"
+        @click="dialogFormVisible = true"
+        >添加人员</el-button
+      >
+      <el-dialog title="添加员工" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+          <el-form-item label="员工姓名" :label-width="formLabelWidth">
+            <el-input v-model="form.username" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" :label-width="formLabelWidth">
+            <el-input v-model="form.password" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="类型" :label-width="formLabelWidth">
+            <el-radio v-model="radio1" label="1">服务员</el-radio>
+            <el-radio v-model="radio1" label="2">厨师</el-radio>
+          </el-form-item>
+          <el-form-item label="手机号码" :label-width="formLabelWidth">
+            <el-input v-model="form.telephone" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="handleAdd()">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
     <el-col :span="24">
       <el-card style="margin-top: 20px; height: 460px">
@@ -17,18 +43,6 @@
           <el-table-column prop="index" label="序号" sortable="true">
           </el-table-column>
           <el-table-column prop="id" label="员工号"> </el-table-column>
-          <!-- <el-table-column
-      label="菜品图片"
-      width="100">
-      <template slot-scope="scope">
-        <el-popover trigger="hover" placement="top">
-          <img :src="scope.row.img" style="width:100px;height:100px;" />
-          <div slot="reference" class="name-wrapper">
-            <el-tag size="medium" style="color:#3A96FF">查看图片</el-tag>
-          </div>
-        </el-popover>
-      </template>
-          </el-table-column> -->
           <el-table-column prop="username" label="姓名"> </el-table-column>
           <el-table-column prop="type" label="员工类型"> </el-table-column>
           <el-table-column prop="telephone" label="手机号码"> </el-table-column>
@@ -40,6 +54,37 @@
                 @click="handleEdit(scope.$index, scope.row)"
                 >修改</el-button
               >
+              <el-dialog
+                title="修改员工信息"
+                :visible.sync="dialogChangeVisible"
+              >
+                <el-form :model="formChange">
+                  <el-form-item label="员工姓名" :label-width="formLabelWidth">
+                    <el-input
+                      v-model="formChange.username"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item label="类型" :label-width="formLabelWidth">
+                    <el-radio v-model="radio2" label="1">服务员</el-radio>
+                    <el-radio v-model="radio2" label="2">厨师</el-radio>
+                  </el-form-item>
+                  <el-form-item label="手机号码" :label-width="formLabelWidth">
+                    <el-input
+                      v-model="formChange.telephone"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                  <el-button @click="dialogChangeVisible = false"
+                    >取 消</el-button
+                  >
+                  <el-button type="primary" @click="handleEditSure()"
+                    >确 定</el-button
+                  >
+                </div>
+              </el-dialog>
               <el-button
                 size="mini"
                 type="text"
@@ -55,6 +100,9 @@
 </template>
 <script>
 import { getUserlist } from "../../../api/data.js";
+import { chaAccount } from "../../../api/data.js";
+import { addAccount } from "../../../api/data.js";
+import { deAccount } from "../../../api/data.js";
 export default {
   name: "home",
   data() {
@@ -77,37 +125,137 @@ export default {
         //     phone:'1234567881'
         //   },
       ],
+      radio1: "1",
+      radio2: "",
+      dialogFormVisible: false,
+      dialogChangeVisible: false,
+      form: {
+        username: "",
+        password: "",
+        telephone: "",
+      },
+      formChange: {
+        id: "",
+        username: "",
+        telephone: "",
+      },
+      formLabelWidth: "120px",
     };
   },
+  created() {
+    //访问接口，加请求头
+    axios.defaults.headers.common["Authorization"] =
+      localStorage.getItem("token");
+  },
   mounted() {
-      console.log("???");
-      // axios.defaults.headers.common["Authorization"] =
-      //         localStorage.getItem("token");
+    console.log("???");
+    // axios.defaults.headers.common["Authorization"] =
+    //         localStorage.getItem("token");
+    this.getUserData();
+  },
+  methods: {
+    getUserData(){
+      this.tableData = undefined;
+      this.tableData = new Array();
       getUserlist()
-        .then((res) => {
-          console.log(res);
-           for(let i = 0;i<=res.data.data.length;i++){
-            var item = {
-              index : i+1,
-              id : res.data.data[i].id,
-              username : res.data.data[i].username,
-              position : res.data.data[i].position,
-              type : "",
-              telephone : res.data.data[i].telephone,
-            }
-            if(item.position ==1){
-              item.type = "服务员"
-            }
-            else {
-              item.type = "厨师"
-            }
-            this.tableData.push(item);
+      .then((res) => {
+        console.log(res);
+        for (let i = 0; i <= res.data.data.length; i++) {
+          var item = {
+            index: i + 1,
+            id: res.data.data[i].id,
+            username: res.data.data[i].username,
+            position: res.data.data[i].position,
+            type: "",
+            telephone: res.data.data[i].telephone,
+          };
+          if (item.position == 1) {
+            item.type = "服务员";
+          } else {
+            item.type = "厨师";
           }
-          console.log(this.tableData);
+          this.tableData.push(item);
+        }
+        console.log(this.tableData);
+      })
+      .catch((error) => {
+        console.log(error.response.data.reason);
+      });
+    },
+    handleEditSure() {
+      this.dialogChangeVisible = false;
+      var body = {
+        id: "",
+        username: "",
+        position: "",
+        avatarUrl: "",
+        telephone: "",
+      };
+      body.id = this.formChange.id;
+      body.username = this.formChange.username;
+      body.position = this.radio2;
+      body.telephone = this.formChange.telephone;
+      chaAccount(body).then((res) => {
+        console.log(res);
+      });
+      this.getUserData();
+    },
+    handleAdd() {
+      this.dialogFormVisible = false;
+      var body = {
+        username: "",
+        password: "",
+        position: "",
+        avatarUrl: "",
+        telephone: "",
+      };
+      body.username = this.form.username;
+      body.password = this.form.password;
+      body.position = this.radio1;
+      body.telephone = this.form.telephone;
+      addAccount(body).then((res) => {
+        console.log(res);
+      });
+      this.getUserData();
+    },
+    handleEdit(index, row) {
+      this.dialogChangeVisible = true;
+      this.radio2 = row.position;
+      this.formChange.username = row.username;
+      this.formChange.telephone = row.telephone;
+      this.formChange.id = row.id;
+    },
+    handleDelete(index, row) {
+      this.$confirm("此操作将删除该员工, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          var body = {
+            id: "",
+          };
+          body.id = row.id;
+          console.log(body.id);
+          deAccount(body)
+          .then((res) => {
+            console.log(res);
+            if (res.status == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+              this.getUserData();
+            }
+          });
         })
-        .catch((error) => {
-          console.log(error.response.data.reason);
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
         });
+    },
   },
 };
 </script>
