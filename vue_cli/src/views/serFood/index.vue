@@ -49,23 +49,27 @@
         <el-table :data="orderItems" border height="600">
           <el-table-column prop="name" label="菜名" width="150"></el-table-column>
           <el-table-column prop="amount" label="数量" width="200"></el-table-column>
+          <el-table-column prop="note" label="备注" width="100"></el-table-column>
           <el-table-column prop="price" label="金额"></el-table-column>
         </el-table>
       </template>
-      <el-descriptions >
+      <el-descriptions>
         <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>
-        <el-descriptions-item label="总金额">{{totalPrice}}</el-descriptions-item>
+        <el-descriptions-item label="总金额">{{ totalPrice }}</el-descriptions-item>
         <el-descriptions-item label="下单账号">01</el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
         <el-button @click="drawer = false">取 消</el-button>
-        <el-button type="primary" @click="drawer = false">确 定</el-button>
+        <el-button type="primary" @click="uploadOrder">确 定</el-button>
       </div>
     </el-drawer>
   </div>
 </template>
+
 <script>
-import { getAllFood } from "../../../api/data";
+import axios from "axios";
+import {getAllFood, addOrder} from "../../../api/data";
+
 export default {
   name: "perCen",
   data() {
@@ -82,14 +86,17 @@ export default {
       tableId: 5
     };
   },
+  created() {
+    //访问接口，加请求头
+    axios.defaults.headers.common["Authorization"] =
+      localStorage.getItem("token");
+  },
   mounted() {
+    this.dishList = []
     // get menu through API
-    getAllFood()
-    .then(res=>{
-      console.log(res)
-    })
 
-    this.dishList = [
+    this.refreshDishList()
+    /*this.dishList = [
       {
         dishId: "01",
         imageUrl: require("../../assets/images/restaurant.jpg"),
@@ -132,13 +139,8 @@ export default {
         price: 25,
         category: "饮品",
       }
-    ];
+    ];*/
 
-    // 给每个菜品加上amount属性
-    for (let i = 0; i < this.dishList.length; i++) {
-      this.dishList[i].amount = 0;
-      console.log(this.dishList[i])
-    }
 
     // 菜品分类
     // this.classifiedDishList.push(this.dishList)
@@ -158,6 +160,39 @@ export default {
         }
       }
 
+    },
+    uploadOrder() {
+      let newOrder = {
+        "tableId": this.tableId,
+        "orderItems": this.orderItems
+      }
+      addOrder(newOrder)
+        .then(res => {
+          this.$message({
+            message: '创建订单成功',
+            type: 'success'
+          });
+          this.refreshDishList()
+          this.drawer = false;
+        })
+        .catch(error => {
+          console.log(error);
+          this.$message.error('网络异常，生成订单失败');
+        })
+
+    },
+    refreshDishList() {
+      getAllFood()
+        .then(res => {
+          this.dishList = res.data.data
+          console.log(this.dishList)
+          // 给每个菜品加上amount属性
+          for (let i = 0; i < this.dishList.length; i++) {
+            this.dishList[i].amount = 0;
+            this.dishList[i].note = "";
+            this.dishList[i].dishId = this.dishList[i].id;
+          }
+        })
     },
     handleChange(dishIndex) {
       // this.dishList[dishIndex].amount += 1;

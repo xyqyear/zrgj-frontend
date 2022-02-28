@@ -136,10 +136,10 @@ Body:
 
 }
 */
-export const createOrders = (param) => {
+export const addOrder = (param) => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/order',
-    method:'post',
+    url: 'http://www.muzi.fun:5678/api/v1/order/add',
+    method:'POST',
     data:param
   })
 }
@@ -153,7 +153,7 @@ Body:
 export const payOrders = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/checkout',
-    method:'post',
+    method:'POST',
     data:param
   })
 }
@@ -164,7 +164,7 @@ export const payOrders = (param) => {
 export const getCurrOrders = () => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/ongoing',
-    method:'post',
+    method:'POST',
   })
 }
 //获取给定时间段内的订单
@@ -179,7 +179,7 @@ Body:
 export const getGivenTimeOrders = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order/range',
-    method:'post',
+    method:'POST',
     data:param
   })
 }
@@ -191,7 +191,7 @@ Body: None
 export const getNotFinishedOrders = () => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order_item/uncompleted',
-    method:'post',
+    method:'POST',
   })
 }
 //更新订单项
@@ -208,7 +208,7 @@ Body:
 export const updateOrders = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order_item',
-    method:'put',
+    method:'POST',
     data:param
   })
 }
@@ -286,7 +286,7 @@ Body:none
 */
 export const getAllFood = () => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/dish/all',
+    url: 'http://www.muzi.fun:5678/api/v1/dish/list',
     method: 'POST'
   })
 }
@@ -299,7 +299,7 @@ Body:见文档
 export const Upload = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/upload',
-    method:'post',
+    method:'POST',
     data:param
   })
 }
