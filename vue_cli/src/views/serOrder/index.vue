@@ -125,6 +125,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.tables{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .operation {
   display: flex;
   flex-direction: row;
