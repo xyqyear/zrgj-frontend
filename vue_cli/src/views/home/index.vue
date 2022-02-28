@@ -98,7 +98,7 @@
         <div class="numCount">
           <div class="item">
             <p style="font-size: 40px; font-weight: 400; margin-bottom: 20px">
-              {{ statistic.worker }}
+              {{ statistic.workers }}
             </p>
             <p>员工数量</p>
           </div>
@@ -229,7 +229,7 @@ export default {
       //商品数量，员工数量
       statistic:{
         goods:0,
-        worker:0
+        workers:0
       },
       //第三行
       //第四行
@@ -381,6 +381,8 @@ export default {
         new Date(
           new Date(new Date().toLocaleDateString()).getTime()
         ).getTime() / 1000;
+        console.log('toTime')
+        console.log(toTime)
       var body = {};
       body.from = '0';
       body.to = toTime;
@@ -397,6 +399,9 @@ export default {
           }
           this.todayAmount.Money = todayMoney
           this.todayAmount.Order = todayOrder
+          console.log('Money')
+          console.log(todayMoney)
+          console.log(todayOrder)
           // res.data.forEach(item => {
           //   console.log('item.totalPrice:'+item.totalPrice)
           // });
@@ -404,6 +409,9 @@ export default {
         .catch((error) => {
           console.log("getGivenTimeOrders error" + error.response);
         });
+        
+        console.log('哇哩哇老师扑街了')
+        console.log(this.todayAmount)
     },
     getStatistic(){
       var worker = 0;
@@ -412,7 +420,8 @@ export default {
       getUserlist()
         .then((res) => {
           worker = res.data.data.length
-          console.log('worker'+res.data.data.length);
+          this.statistic.workers = worker;
+        
         })
         .catch((error) => {
           console.log(error.response.data.reason);
@@ -421,17 +430,12 @@ export default {
      getAllFood()
         .then((res) => {
           good = res.data.data.length
-          console.log('getAllFood'+res.data.data.length);
+         
+          this.statistic.goods = good;
         })
         .catch((error) => {
           console.log(error.response.data.reason);
         });
-        this.statistic={
-          goods:good,
-          worker:worker
-        }
-        console.log('哇哩哇老师扑街了')
-        console.log(this.statistic)
     },
     testButton() {
       console.log("???");
