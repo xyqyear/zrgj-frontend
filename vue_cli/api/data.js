@@ -34,7 +34,7 @@ export const getData = () => {
 export const postLogin = (param) => {//这个接口名称需要改
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/account/login',
-    method: 'post',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -53,8 +53,8 @@ Body:
 */
 export const addAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'post',
+    url: 'http://www.muzi.fun:5678/api/v1/account/add',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -89,8 +89,27 @@ Body:
 */
 export const chaAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'PUT',
+    url: 'http://www.muzi.fun:5678/api/v1/account/update',
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+//更改用户信息
+/*
+Body:
+{
+    "username": "manager0",
+    "position": 0,
+    "avatarUrl": "http://1122334.com/hello.png"
+}
+*/
+export const changePassword = (param) => {//这个接口名称需要改
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/account/change_password',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -106,8 +125,8 @@ Body:
 */
 export const getAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'post',
+    url: 'http://www.muzi.fun:5678/api/v1/account/get',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -124,7 +143,7 @@ Body:
 export const getUserlist = (param) => {//这个接口名称需要改
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/account/list',
-    method: 'post',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -218,7 +237,7 @@ export const getGivenTimeOrders = (param) => {
 /*
 Body: None
 */
-export const getNotFinishedOrders = () => {
+export const getUncompletedOrderItems = () => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/order_item/uncompleted',
     method: 'POST',
@@ -238,11 +257,11 @@ Body:
     "note": ""
 }
 */
-export const updateOrders = (param) => {
+export const updateOrderItem = (param) => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/order_item',
-    method: 'POST',
-    data: param,
+    url: 'http://www.muzi.fun:5678/api/v1/order_item/update',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -255,11 +274,11 @@ Body:
     "id": 0
 }
 */
-export const cancleOrders = (param) => {
+export const deleteOrderItem = (param) => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/order_item',
-    method: 'DELETE',
-    data: param,
+    url: 'http://www.muzi.fun:5678/api/v1/order_item/delete',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -279,9 +298,9 @@ Body:
 */
 export const addFood = (param) => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/dish',
-    method: 'POST',
-    data: param,
+    url: 'http://www.muzi.fun:5678/api/v1/dish/add',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -297,9 +316,9 @@ Body:
 */
 export const deleteFood = (param) => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/dish',
-    method: 'DELETE',
-    data: param,
+    url: 'http://www.muzi.fun:5678/api/v1/dish/delete',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -319,9 +338,9 @@ Body:
 */
 export const updateFood = (param) => {
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/dish',
-    method: 'PUT',
-    data: param,
+    url: 'http://www.muzi.fun:5678/api/v1/dish/update',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -354,7 +373,7 @@ export const getObjectMap = (objList) => {
 /*
 Body:见文档
 */
-export const Upload = (param) => {
+export const upload = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/upload',
     method: 'POST',
@@ -365,11 +384,30 @@ export const Upload = (param) => {
   })
 }
 
-
-export const getRestaurantInfo = () => {
+//////////////////////餐厅///////////////////////////
+//获取餐厅信息
+/*
+Body:见文档
+*/
+export const getRestaurant = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/restaurant/get',
-    method: 'POST',
+    method:'POST',
+    data:param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+//修改餐厅信息
+/*
+Body:见文档
+*/
+export const updateRestaurant = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/restaurant/update',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }

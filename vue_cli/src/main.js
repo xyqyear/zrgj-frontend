@@ -14,8 +14,8 @@ import '../api/mock.js'
 //按需引入
 import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
-Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,Collapse,Form,
-FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer,Descriptions,DescriptionsItem, Message} from 'element-ui';
+Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,
+Collapse,Form,FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer,Descriptions,DescriptionsItem,DatePicker,Alert,MessageBox, Message } from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
@@ -52,10 +52,13 @@ Vue.use(FormItem);
 Vue.use(Tabs);
 Vue.use(TabPane);
 Vue.use(InputNumber);
-Vue.use(CollapseItem);
 Vue.use(Drawer);
+Vue.use(DatePicker);
+Vue.use(Alert);
+Vue.use(CollapseItem);
 
 Vue.prototype.$http = http
+Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$message = Message
 
 router.beforeEach((to,from,next)=>{
