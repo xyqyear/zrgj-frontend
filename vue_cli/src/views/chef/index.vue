@@ -94,13 +94,12 @@ export default {
   },
   methods: {
     populateData() {
-      getAllFood().then((res) => {
-        let dishMap = res.data.data.reduce((acc, curr) => {
-          acc[curr.id] = curr.name;
-          return acc;
-        }, {});
-        getCurrOrders().then((res) => {
-          let orders = res.data.data;
+      Promise.all([getAllFood(), getCurrOrders()]).then((res) => {
+        let dishMap = res[0].data.data.reduce((acc, curr) => {
+                  acc[curr.id] = curr.name;
+                  return acc;
+                }, {});
+        let orders = res[1].data.data;
           for (let order of orders) {
             // if all items are finished, skip
             if (order.orderItems.every((item) => item.state === 0)) {
@@ -132,8 +131,7 @@ export default {
             this.$set(this.orderData, order.id, displayOrder);
             this.$set(this.rawOrderData, order.id, order);
           }
-        });
-      });
+      })
     },
     handle(state, orderId, orderItemId) {
       switch (state) {
