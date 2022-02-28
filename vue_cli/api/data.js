@@ -54,11 +54,7 @@ Body:
 export const addAccount = (param) => {//这个接口名称需要改
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/account/add',
-<<<<<<< HEAD
-    method: 'post',
-=======
     method: 'POST',
->>>>>>> 19deac3c0a2d10423d9541c399579ac1f196f493
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -74,18 +70,8 @@ Body:
 */
 export const deAccount = (param) => {//这个接口名称需要改
   return axios.request({
-<<<<<<< HEAD
-<<<<<<< HEAD
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'DELETE',
-=======
-    url: 'http://www.muzi.fun:5678/api/v1/account/delete',
-    method: 'post',
->>>>>>> f4ab7c5f1881228b1976af9f9f4b49ecd17ee623
-=======
     url: 'http://www.muzi.fun:5678/api/v1/account/delete',
     method: 'POST',
->>>>>>> 19deac3c0a2d10423d9541c399579ac1f196f493
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -103,15 +89,6 @@ Body:
 */
 export const chaAccount = (param) => {//这个接口名称需要改
   return axios.request({
-<<<<<<< HEAD
-<<<<<<< HEAD
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'PUT',
-=======
-    url: 'http://www.muzi.fun:5678/api/v1/account/update',
-    method: 'post',
->>>>>>> f4ab7c5f1881228b1976af9f9f4b49ecd17ee623
-=======
     url: 'http://www.muzi.fun:5678/api/v1/account/update',
     method: 'POST',
     data: param,
@@ -133,7 +110,6 @@ export const changePassword = (param) => {//这个接口名称需要改
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/account/change_password',
     method: 'POST',
->>>>>>> 19deac3c0a2d10423d9541c399579ac1f196f493
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
