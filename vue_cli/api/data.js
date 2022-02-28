@@ -70,8 +70,8 @@ Body:
 */
 export const deAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'DELETE',
+    url: 'http://www.muzi.fun:5678/api/v1/account/delete',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -389,10 +389,41 @@ export const upload = (param) => {
 /*
 Body:见文档
 */
-export const getRestaurant = () => {
+export const getRestaurant = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/restaurant/get',
     method:'POST',
+    data:param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+//修改餐厅信息
+/*
+Body:见文档
+*/
+export const updateRestaurant = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/restaurant/update',
+    method:'POST',
+    data:param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+//////////////////////餐厅///////////////////////////
+//获取餐厅信息
+/*
+Body:见文档
+*/
+export const getRestaurant = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/restaurant/get',
+    method:'POST',
+    data:param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
