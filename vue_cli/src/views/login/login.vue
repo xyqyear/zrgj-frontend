@@ -69,15 +69,9 @@ export default {
         id:parseInt(this.form.username),
         password:this.form.password
       }
-<<<<<<< HEAD
-      //console.log('this.form'+this.form.username)
-      postLogin(account)
-        .then((res) => {
-=======
       postLogin(account)
         .then((res) => {
           console.log(res);
->>>>>>> f4ab7c5f1881228b1976af9f9f4b49ecd17ee623
           if (res.status === 200) {
             this.$store.commit("clearMenu");
             console.log(res.data.data.account.position);
@@ -136,8 +130,4 @@ export default {
 .login-submit {
   margin: 10px auto 0px auto;
 }
-<<<<<<< HEAD
 </style>
-=======
-</style>
->>>>>>> f4ab7c5f1881228b1976af9f9f4b49ecd17ee623
