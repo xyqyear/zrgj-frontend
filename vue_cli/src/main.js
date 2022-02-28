@@ -15,7 +15,7 @@ import '../api/mock.js'
 import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
 Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,
-Collapse,Form,FormItem,Tabs,TabPane,InputNumber,Drawer,Descriptions,DescriptionsItem,DatePicker,Alert,MessageBox, Message } from 'element-ui';
+Collapse,Form,FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer,Descriptions,DescriptionsItem,DatePicker,Alert,MessageBox, Message } from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
