@@ -2,7 +2,21 @@
   <div class="perInfo">
     <el-row class="home" :gutter="20">
       <el-col class="header" :span="10" style="display:flex;">
-        <div class="demo-input-suffix">
+        <div class="block" >
+      <el-date-picker
+        v-model="value1"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        :picker-options="pickerOptions"
+        style="width:90%"
+      >
+      </el-date-picker>
+    </div>
+        <!-- <div class="demo-input-suffix">
           起始时间：
           <el-input
             placeholder="请选择日期"
@@ -17,7 +31,7 @@
             v-model="input1"
           >
           </el-input>
-        </div>
+        </div> -->
       </el-col>
     </el-row>
     <el-card style="height: 450px">
@@ -31,7 +45,41 @@ import * as echarts from "echarts";
 export default {
   name: "perCen",
   data() {
-    return {};
+    return {
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            },
+          },
+        ],
+      },
+      value1: "",
+      value2: "",
+    };
   },
   mounted() {
     getData().then((res) => {

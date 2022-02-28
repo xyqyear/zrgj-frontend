@@ -11,21 +11,50 @@
     </div>
     <!-- 个人信息 -->
     <div class="r-content">
-      <el-dropdown trigger="click" szie="medium " style="font-size:24px">
+      <el-dropdown trigger="click" szie="medium " style="font-size:24px"  @command="handleCommand" >
         <span class="el-dropdown-link">
           <!-- <img class="user" :src="userImg" > -->
           <i class="el-icon-user-solid"></i>
           <!-- 这里也可以换成图片，我嫌麻烦就没搞了 -->
         </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>个人中心</el-dropdown-item>
-          <el-dropdown-item>退出</el-dropdown-item>
-          
+        <el-dropdown-menu slot="dropdown" >
+          <el-dropdown-item icon="el-icon-edit" command="perCen">个人中心</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-s-operation" command="quit">退出</el-dropdown-item>
+
         </el-dropdown-menu>
       </el-dropdown>
     </div>
   </header>
 </template>
+
+<script>
+export default {
+  name: "CommonHeader",
+  data(){
+    return{
+      userImg:require('../assets/images/logo.png')
+    }
+  },
+  methods:{
+    handleMenu(){
+      this.$store.commit('collapseMenu')
+    },
+    handleCommand(command) {
+      switch (command){
+        case 'perCen':
+
+          break;
+        case 'quit':
+          this.$router.push({name:'login'});
+          localStorage.removeItem('token');
+
+          break;
+      }
+    }
+  }
+};
+</script>
+
 <style lang="less" scoped>
 header {
   width: 100%;
@@ -55,19 +84,3 @@ header {
   }
 }
 </style>
-<script>
-export default {
-  name: "CommonHeader",
-  data(){
-      return{
-        userImg:require('../assets/images/logo.png')
-      }
-  },
-  methods:{
-      handleMenu(){
-          this.$store.commit('collapseMenu')
-      }
-  }
-};
-</script>
-
