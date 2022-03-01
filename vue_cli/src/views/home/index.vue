@@ -58,6 +58,7 @@
     </el-col>
     <!-- ------------表格哇------------------- -->
     <el-col :span="24" style="margin-top: 20px">
+<<<<<<< .mine
       <el-card shadow="hover" style="height: 350px">
         <div class="timebar">
           <el-radio-group v-model="radio1" @change="chooseDays(radio1)">
@@ -67,6 +68,17 @@
             <el-radio-button label="近半年"></el-radio-button>
           </el-radio-group>
         </div>
+=======
+      <el-card shadow="hover" style="height: 350px">
+        <div>
+          <el-radio-group v-model="radio1" @change="chooseDays(radio1)">
+            <el-radio-button label="近一周"></el-radio-button>
+            <el-radio-button label="近一月"></el-radio-button>
+            <el-radio-button label="近三月"></el-radio-button>
+            <el-radio-button label="近半年"></el-radio-button>
+          </el-radio-group>
+        </div>
+>>>>>>> .theirs
         <div style="height: 280px" ref="echarts">
           <!-- ------------------------------------------------ -->
         </div>
@@ -229,7 +241,11 @@ import { getAllFood } from "../../../api/data";
 import * as echarts from "echarts";
 export default {
   name: "home",
+<<<<<<< .mine
   toTime: "",
+=======
+  toTime:'',
+>>>>>>> .theirs
   data() {
     return {
       //第一行
@@ -237,6 +253,7 @@ export default {
       phone: "15608209829",
       location: "哇哩哇市哇哩哇区哇哩哇县",
       roomImage: require("../../assets/images/logo.png"),
+<<<<<<< .mine
       //第二行,今日营业额，今日有效订单数
       todayAmount: {
         Money: 0,
@@ -255,6 +272,26 @@ export default {
         from: 0,
         to: 0,
       },
+=======
+      //第二行,今日营业额，今日有效订单数
+      todayAmount: {
+        Money: 0,
+        Order: 0,
+      },
+      //商品数量，员工数量
+      statistic: {
+        goods: 0,
+        workers: 0,
+      },
+      //第三行——表格
+      radio1: "近一周",
+      xData: [],
+
+
+
+
+
+>>>>>>> .theirs
       //第四行
       sale_kinds: "46",
       sale_count: "147",
@@ -315,6 +352,7 @@ export default {
     this.getTodayAmount();
     this.getStatistic();
   },
+<<<<<<< .mine
   // mounted(){
 
   //   console.log(this.todayAmount)
@@ -331,31 +369,174 @@ export default {
     },
     //获取今日的数据
     getTodayAmount() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=======
+  // mounted(){
+
+  //   console.log(this.todayAmount)
+  // },
+  mounted() {
+    body:
+      getData().then((res) => {
+      // getGivenTimeOrders()也许把所有请求到的数据放到
+        localStorage.setItem('allOrders',JSON.stringify(res.data))
+        console.log()
+        this.chooseDays('近一周')
+        // console.log("表格");
+        // console.log(res);
+        const { code, data } = res.data;
+        if (code === 20000) {
+          // this.tableData = data.tableData; //
+          const order = data.orderData; //
+          const xData = order.date; //这个是横坐标，需要根据空间按钮控制时间
+          // const keyArray = Object.keys(order.data[0]);
+          const keyArray = ['营业额']
+          // console.log('keyArray')
+          // console.log(keyArray)
+          const series = [];
+          keyArray.forEach((key) => {
+            // console.log(key)就是那些字段的名称
+            series.push({
+              name: key,
+              data: order.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
+              type: "line",
+            });
+          });
+  
+          const option = {
+            xAxis: {
+              //横坐标？
+              data: this.xData,
+            },
+            yAxis: {}, //这些变量好像都要定义
+            legend: {
+              //这个不是图例吗，
+              data: keyArray,
+            },
+            series,
+          };
+  
+          const E = echarts.init(this.$refs.echarts);
+          E.setOption(option);
+        }
+      });
+    
+
+    
+  },
+  methods: {
+    //获取今日的数据
+    getTodayAmount() {
+>>>>>>> .theirs
       /////////////////////获取所有订单/////////////////////
+<<<<<<< .mine
       let fromTime = this.getTimeNum(1);
       this.toTime = this.getTimeNum(0);
+
+
+
+
+
+
+=======
+      let fromTime =
+        new Date(
+          new Date(new Date().toLocaleDateString()).getTime() - 24 * 3600 * 1000
+        ).getTime() / 1000;
+       this.toTime =
+        new Date(
+          new Date(new Date().toLocaleDateString()).getTime()
+        ).getTime() / 1000;
+>>>>>>> .theirs
       var body = {};
+<<<<<<< .mine
       body.from = fromTime;
       body.to = this.toTime;
       console.log(body);
       /////////////////返回值/////////////////////////
       var todayMoney = 0;
       var todayOrder = 0;
+=======
+      body.from = 0;
+      body.to = 1645977600;
+      // console.log(toTime)
+      /////////////////返回值/////////////////////////
+      var todayMoney = 0;
+      var todayOrder = 0;
+>>>>>>> .theirs
       //////////////////////////////////////////
       getGivenTimeOrders(body)
         .then((res) => {
+<<<<<<< .mine
           console.log(res);
           for (let i = 0; i < res.data.data.length; i++) {
             todayMoney += res.data.data[i].totalPrice; //今日营业额
             if (res.data.data[i].state == 0) todayOrder += 1; //今日有效订单
+=======
+          console.log(res)
+          for (let i = 0; i < res.data.data.length; i++) {
+            todayMoney += res.data.data[i].totalPrice; //今日营业额
+            if (res.data.data[i].state == 0) todayOrder += 1; //今日有效订单
+>>>>>>> .theirs
           }
+<<<<<<< .mine
           this.todayAmount.Money = todayMoney;
           this.todayAmount.Order = todayOrder;
+
+
+
+=======
+          this.todayAmount.Money = todayMoney;
+          this.todayAmount.Order = todayOrder;
+          // res.data.forEach(item => {
+          //   console.log('item.totalPrice:'+item.totalPrice)
+          // });
+>>>>>>> .theirs
         })
         .catch((error) => {
           console.log("getGivenTimeOrders error" + error.response);
         });
     },
+<<<<<<< .mine
     getStatistic() {
       var worker = 0;
       var good = 0;
@@ -474,6 +655,166 @@ export default {
 
   
     
+=======
+    getStatistic() {
+      var worker = 0;
+      var good = 0;
+      //////////////////////获取员工数量///////////////////////////////
+      getUserlist()
+        .then((res) => {
+          worker = res.data.data.length;
+          this.statistic.workers = worker;
+        })
+        .catch((error) => {
+          console.log(error.response.data.reason);
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> .theirs
+      //////////////////////获取商品数量///////////////////////////////
+      getAllFood()
+        .then((res) => {
+          good = res.data.data.length;
+
+          this.statistic.goods = good;
+        })
+        .catch((error) => {
+          console.log(error.response.data.reason);
+        });
+    },
+    chooseDays(value) {
+      var nowDate = new Date();
+      if (value == "近一周") {
+        this.xData.length = 0
+        for(let i = 0;i<7;i++){
+          var date = {
+            year: nowDate.getFullYear(),
+            month: nowDate.getMonth() + 1,
+            day: nowDate.getDate()-i,
+          };
+          var systemDate = date.year + '-' + (date.month >= 10 ? date.month : '0' + date.month) + '-' + (date.day >= 10 ? date.day : '0' + date.day)
+          //console.log(systemDate);
+          this.xData.push(systemDate)
+        }
+          this.xData.reverse()
+      } else if (value == "近一月") {
+      } else if (value == "近三月") {
+      } else if (value == "近半年") {
+      }
+
+      // axios.defaults.headers.common["Authorization"] =
+      //         localStorage.getItem("token");
+      // getUserlist()
+      //   .then((res) => {
+      //     console.log(res);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error.response.data.reason);
+      //   });
     },
   },
 };
