@@ -16,14 +16,18 @@
         >
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
           <el-form :model="form">
-            <el-form-item label="菜品名称" :label-width="formLabelWidth">
+            <el-form-item label="菜品名称">
               <el-input v-model="form.name" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="价格" :label-width="formLabelWidth">
+            <el-form-item label="价格">
               <el-input v-model="form.price" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="类别" :label-width="formLabelWidth">
-              <el-select @change='handleChange' v-model="selectVal" placeholder="请选择">
+            <el-form-item label="类别">
+              <el-select
+                @change="handleChange"
+                v-model="selectVal"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -33,19 +37,19 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <!-- <el-form-item label="图片" :label-width="formLabelWidth">
+            <el-form-item label="图片">
               <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
+                class="avatar-uploader"
+                action=" "
+                :show-file-list="false"
+                :auto-upload="false"
+                :on-change="uploadFiles"
+                :on-success="handle_success"
               >
-                <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">
-                  只能上传jpg/png文件
-                </div>
+                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
-            </el-form-item> -->
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -88,6 +92,58 @@
                 @click="handleEdit(scope.$index, scope.row)"
                 >修改</el-button
               >
+              <el-dialog title="更新菜品" :visible.sync="dialogChangeVisible">
+                <el-form :model="form">
+                  <el-form-item label="菜品名称">
+                    <el-input
+                      v-model="formChange.name"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item label="价格">
+                    <el-input
+                      v-model="formChange.price"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item label="类别">
+                    <el-select
+                      @change="handleChange"
+                      v-model="selectVal"
+                      placeholder="请选择"
+                    >
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item"
+                      >
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="图片">
+                    <el-upload
+                      class="avatar-uploader"
+                      action=" "
+                      :show-file-list="false"
+                      :auto-upload="false"
+                      :on-change="uploadFiles"
+                      :on-success="handle_success"
+                    >
+                      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                  </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                  <el-button @click="dialogChangeVisible = false"
+                    >取 消</el-button
+                  >
+                  <el-button type="primary" @click="handleEditSure()"
+                    >确 定</el-button
+                  >
+                </div>
+              </el-dialog>
               <el-button
                 size="mini"
                 type="text"
@@ -104,18 +160,30 @@
 <script>
 import { getAllFood } from "../../../api/data.js";
 import { addFood } from "../../../api/data.js";
+import { upload } from "../../../api/data.js";
+import { updateFood } from "../../../api/data.js";
+import { deleteFood } from "../../../api/data.js";
 export default {
   name: "home",
   data() {
     return {
-      selectVal: this.value || '',
+      selectVal: this.value || "",
       input: "",
       find: "",
       dialogFormVisible: false,
+      dialogChangeVisible: false,
       form: {
         name: "",
         price: "",
       },
+      formChange: {
+        name: "",
+        price: "",
+        imageUrl: "",
+        type: "",
+        id: "",
+      },
+      imageUrl: "",
       tableData: [
         // {
         //   index: "1",
@@ -159,21 +227,97 @@ export default {
         },
       ],
       value: "",
+      fileList: [],
     };
-  },
-  created() {
-    //访问接口，加请求头
-    axios.defaults.headers.common["Authorization"] =
-      localStorage.getItem("token");
   },
   mounted() {
     this.getFoodData();
   },
   methods: {
+    handleDelete(index,row){
+      this.$confirm("此操作将删除该菜品, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          var body = {
+            id: "",
+          };
+          body.id = row.id;
+          console.log(body.id);
+          deleteFood(body)
+          .then((res) => {
+            console.log(res);
+            if (res.status == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    handleEdit(index, row) {
+      this.dialogChangeVisible = true;
+      this.formChange.name = row.name;
+      this.formChange.price = row.price;
+      this.imageUrl = row.img;
+      this.formChange.id = row.id;
+      this.selectVal = row.type;
+    },
+    handleEditSure() {
+      this.dialogChangeVisible = false;
+      var body = {
+        id: this.formChange.id,
+        name: this.formChange.name,
+        price: this.formChange.price,
+        imageUrl: this.imageUrl,
+        category: this.selectVal,
+      };
+      console.log(body);
+      updateFood(body).then((res) => {
+        console.log(res);
+      })
+    },
+    uploadFiles(file, _) {
+      const fd = new FormData();
+      fd.append("file", file.raw);
+      upload(fd).then((res) => {
+        console.log(res);
+        this.imageUrl = res.data.data.fileUrl;
+      });
+    },
+    handle_success(res) {
+      console.log(res);
+      this.$message.success("图片上传成功");
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
     handleChange(data) {
-        //如果上面:value赋的是对象，则可以将返回的对象赋予其他变量，这里的data是选中的对象，那么data.label则是reasonTypes中的label值，如果下拉中选中美国，那么this.selectVal 值为“美国”
-          this.selectVal = data.label
-        },
+      //如果上面:value赋的是对象，则可以将返回的对象赋予其他变量，这里的data是选中的对象，那么data.label则是reasonTypes中的label值，如果下拉中选中美国，那么this.selectVal 值为“美国”
+      this.selectVal = data.label;
+    },
     handleAdd() {
       var body = {
         name: "",
@@ -183,10 +327,12 @@ export default {
       };
       body.name = this.form.name;
       body.price = this.form.price;
+      body.imageUrl = this.imageUrl;
       body.category = this.selectVal;
       addFood(body).then((res) => {
-        console.log(res);f
-      })
+        console.log(res);
+        this.dialogFormVisible = false;
+      });
     },
     getFoodData() {
       getAllFood()
@@ -194,7 +340,6 @@ export default {
           console.log(res);
           this.find = res.data.data.length;
           for (let i = 0; i <= res.data.data.length; i++) {
-            console.log(res.data.data[i].name);
             var item = {
               id: res.data.data[i].id,
               name: res.data.data[i].name,
@@ -204,7 +349,6 @@ export default {
             };
             this.tableData.push(item);
           }
-          console.log(this.tableData);
         })
         .catch((error) => {
           console.log(error.response.data.reason);
@@ -220,5 +364,28 @@ export default {
   justify-content: space-between;
   align-items: center;
   text-align: center;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
