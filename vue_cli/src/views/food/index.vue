@@ -254,6 +254,8 @@ export default {
                 type: "success",
                 message: "删除成功!",
               });
+              this.tableData.length = 0
+                this.getFoodData();
             }
           });
         })
@@ -284,6 +286,8 @@ export default {
       console.log(body);
       updateFood(body).then((res) => {
         console.log(res);
+        this.tableData.length = 0
+                this.getFoodData();
       })
     },
     uploadFiles(file, _) {
@@ -332,6 +336,8 @@ export default {
       addFood(body).then((res) => {
         console.log(res);
         this.dialogFormVisible = false;
+        this.tableData.length = 0
+                this.getFoodData();
       });
     },
     getFoodData() {
