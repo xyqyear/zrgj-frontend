@@ -98,7 +98,7 @@ const routes = [
         component:()=>import('../views/chef')
       }
     ],
-    
+
   },
   {
     path:'/login',
