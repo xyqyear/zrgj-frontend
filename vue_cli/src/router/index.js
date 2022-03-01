@@ -98,7 +98,7 @@ const routes = [
         component:()=>import('../views/chef')
       }
     ],
-    
+
   },
   {
     path:'/login',
@@ -113,5 +113,13 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, _, next) => {
+  if (to.name !== 'login' && !localStorage.getItem('token')) {
+    next({ name: 'login' });
+  } else {
+    next();
+  }
+});
 
 export default router
