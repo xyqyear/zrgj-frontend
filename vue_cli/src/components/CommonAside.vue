@@ -73,12 +73,14 @@ export default {
       console.log(item.name)
     },
     //应该就是通过这玩意，通过name推过去
-    clickMenu(item){
+     clickMenu(item) {
       console.log(item.name)
-      this.$router.push({
-        name: item.name
+      if (this.$route.path === '/' + item.name) {
+        console.log('invalid page change')
+      } else {
+        this.$router.push({name: item.name})
+      }
 
-      })
     }
     
   },
