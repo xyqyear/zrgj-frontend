@@ -25,12 +25,12 @@
           :key="table.tableName"
           class="tableInfo"
         >
-          <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}">
-            <p style="font-size: large; color: #371722; margin: 10px">{{ table.tableName }} 号桌</p>
-            <p style="font-size: small">{{ table.occupied ? "占用中" : "空闲" }}</p>
+          <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}" class="cardTop">
+            <div style="font-size: large; color: #371722; margin: 10px">{{ table.tableName }} 号桌</div>
+            <div style="font-size: small; color: #C0C2CE; margin-top: 20px">{{ table.occupied ? "占用中" : "空闲" }}</div>
           </div>
           <el-button @click="displayOderDetail(tableMap[table.tableName])"
-                     :disabled="! table.occupied">
+                     :disabled="! table.occupied" class="cardBottom">
             <p>{{ table.occupied ? "查看订单" : "" }}</p>
 
           </el-button>
@@ -157,7 +157,7 @@ export default {
       this.curOrder = order
       let sum = 0;
       for (let i = 0; i < this.curOrder.orderItems.length; i++) {
-        if (this.curOrder.orderItems[i].state === 0){
+        if (this.curOrder.orderItems[i].state === 0) {
           sum += this.curOrder.orderItems[i].amount * this.curOrder.orderItems[i].price;
         }
       }
@@ -193,19 +193,21 @@ export default {
 
 <style lang="less" scoped>
 .tableInfo {
-  height: 150px;
-  width: 200px;
+  height: 200px;
+  width: 250px;
   margin: 10px 5px;
+  border-radius: 10px;
+}
 
-  .div {
-    height: 40%;
-    width: 100%;
-  }
-
-  .el-button {
-    width: 100%;
-    height: 60%;
-  }
+.cardTop {
+  border-radius: 5px;
+  overflow: hidden;
+  height: 40%;
+  width: 100%;
+}
+.cardBottom {
+  width: 100%;
+  height: 60%;
 }
 
 .tables {

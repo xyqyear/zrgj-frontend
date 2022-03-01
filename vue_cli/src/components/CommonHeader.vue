@@ -38,6 +38,7 @@ export default {
   methods: {
     handleMenu() {
       this.$store.commit('collapseMenu')
+      this.tabPacked = !this.tabPacked
     },
     handleCommand(command) {
       switch (command) {

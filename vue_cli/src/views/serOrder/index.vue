@@ -9,13 +9,13 @@
             :key="table.tableName"
             class="tableInfo"
           >
-            <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}">
-              <p style="font-size: large; color: #371722; margin: 10px">{{ table.tableName }} 号桌</p>
-              <p style="font-size: small">{{ table.occupied ? "占用中" : "空闲" }}</p>
+            <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}" class="cardTop">
+              <div style="font-size: large; color: #371722; margin: 10px" >{{ table.tableName }} 号桌</div>
+              <div style="font-size: small">{{ table.occupied ? "占用中" : "空闲" }}</div>
             </div>
             <el-button @click="displayOderDetail(tableMap[table.tableName])"
-                       :disabled="! table.occupied">
-              <p>{{ table.occupied ? "查看订单" : "" }}</p>
+                       :disabled="! table.occupied" class="cardBottom">
+              {{ table.occupied ? "查看订单" : "" }}
 
             </el-button>
           </div>
@@ -124,18 +124,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.tableInfo{
-  height: 150px;
-  width: 200px;
+.tableInfo {
+  height: 200px;
+  width: 250px;
   margin: 10px 5px;
-  .div{
-    height: 40%;
-    width: 100%;
-  }
-  .el-button{
-    width: 100%;
-    height: 60%;
-  }
+  border-radius: 10px;
+}
+
+.cardTop {
+  border-radius: 5px;
+  overflow: hidden;
+  height: 40%;
+  width: 100%;
+}
+.cardBottom {
+  width: 100%;
+  height: 60%;
 }
 .tables {
   display: flex;
