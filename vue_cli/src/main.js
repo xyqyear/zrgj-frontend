@@ -13,53 +13,6 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
-//按需引入
-import { Button, Select,Radio,Container,Aside,Header,Main,
-Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
-Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,
-Collapse,Form,FormItem,Tabs,TabPane,InputNumber,Drawer,DatePicker,Alert,
-MessageBox, Message, Option } from 'element-ui';
-
-Vue.config.productionTip = false
-//全引入element的包
-//Vue.use(ElementUI);
-Vue.component(Button.name, Button);
-Vue.component(Select.name, Select);
-// Vue.component(Radio.name, Radio);
-Vue.use(Descriptions);
-Vue.use(DescriptionsItem);
-Vue.use(Radio);
-Vue.use(Container);
-Vue.use(Aside);
-Vue.use(Header);
-Vue.use(Main);
-Vue.use(Menu);
-Vue.use(MenuItem);
-Vue.use(MenuItemGroup);
-Vue.use(Submenu);
-Vue.use(Dropdown);
-Vue.use(DropdownMenu);
-Vue.use(DropdownItem);
-Vue.use(Row);
-Vue.use(Col);
-Vue.use(Card);
-Vue.use(Table);
-Vue.use(TableColumn);
-Vue.use(Input);
-Vue.use(Popover);
-Vue.use(Tag);
-Vue.use(Dialog);
-Vue.use(Collapse);
-Vue.use(Form);
-Vue.use(FormItem);
-Vue.use(Tabs);
-Vue.use(TabPane);
-Vue.use(InputNumber);
-Vue.use(Drawer);
-Vue.use(DatePicker);
-Vue.use(Alert);
-Vue.use(Option);
-Vue.use(CollapseItem);
 
 Vue.prototype.$http = http
 Vue.prototype.$confirm = ElementUI.MessageBox.confirm
