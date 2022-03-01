@@ -23,7 +23,7 @@
           <el-dialog title="订单详情" :visible.sync="orderDetailVisible" width="50%">
             <!-- ---------------------------------------------- -->
             <template>
-              <el-table :data="curOrder.orderItems" border height="500">
+              <el-table :data="curOrder.orderItems" height="500">
                 <el-table-column prop="name" label="菜名" width="150"></el-table-column>
                 <el-table-column prop="amount" label="数量" width="100"></el-table-column>
                 <el-table-column prop="price" label="金额" width="150"></el-table-column>
