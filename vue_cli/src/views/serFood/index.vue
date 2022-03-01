@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative">
     <el-tabs v-model="activeName">
-      <el-tab-pane v-for="(category, index) in dishCategories" :label="category" :name="category">
+      <el-tab-pane v-for="(category,index) in dishCategories" :label="category" :name="category">
         <div>
           <el-row :gutter="10">
             <el-col :span="4"
