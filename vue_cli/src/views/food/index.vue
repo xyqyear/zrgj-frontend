@@ -165,6 +165,7 @@ export default {
         },
       ],
       value: "",
+      fileList:[],
     };
   },
   created() {
