@@ -7,10 +7,12 @@ import router from './router'
 import store from './store'
 import http from 'axios'
 import '../api/mock.js'
- //全引入element的包
-// import ElementUI from 'element-ui'
-// import 'element-ui/lib/theme-chalk/index.css'
 
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
+
+Vue.config.productionTip = false
 //按需引入
 import { Button, Select,Radio,Container,Aside,Header,Main,Descriptions,DescriptionsItem,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
@@ -61,8 +63,8 @@ Vue.use(CollapseItem);
 Vue.use(Upload);
 
 Vue.prototype.$http = http
-Vue.prototype.$confirm = MessageBox.confirm
-Vue.prototype.$message = Message
+Vue.prototype.$confirm = ElementUI.MessageBox.confirm
+Vue.prototype.$message = ElementUI.Message
 
 router.beforeEach((to,from,next)=>{
   store.commit('getToken')
@@ -79,4 +81,3 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
-
