@@ -49,8 +49,8 @@
                       v-model="dishList[dishIndex].amount"
                       @change="handleChange($event, dishIndex)"
                       size="mini"
-                      min="0"
-                      max="20"
+                      :min="0"
+                      :max="20"
                       style="width: 100px"
                     ></el-input-number>
                   </el-col>
