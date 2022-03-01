@@ -7,18 +7,16 @@ import router from './router'
 import store from './store'
 import http from 'axios'
 import '../api/mock.js'
+ //全引入element的包
+// import ElementUI from 'element-ui'
+// import 'element-ui/lib/theme-chalk/index.css'
 
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-Vue.use(ElementUI)
-
-Vue.config.productionTip = false
 //按需引入
-import { Button, Select,Radio,Container,Aside,Header,Main,Descriptions,DescriptionsItem,
+import { Button, Select,Radio,Container,Aside,Header,Main,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
 Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,
-Collapse,Form,FormItem,Tabs,TabPane,InputNumber,Drawer,DatePicker,Alert,
-MessageBox, Message, Option,CollapseItem,Upload } from 'element-ui';
+Collapse,Form,FormItem,Tabs,TabPane,InputNumber,CollapseItem,Drawer,
+Descriptions,DescriptionsItem,DatePicker,Alert,MessageBox, Message,Upload,Option } from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
@@ -58,13 +56,13 @@ Vue.use(InputNumber);
 Vue.use(Drawer);
 Vue.use(DatePicker);
 Vue.use(Alert);
-Vue.use(Option);
 Vue.use(CollapseItem);
 Vue.use(Upload);
+Vue.use(Option);
 
 Vue.prototype.$http = http
-Vue.prototype.$confirm = ElementUI.MessageBox.confirm
-Vue.prototype.$message = ElementUI.Message
+Vue.prototype.$confirm = MessageBox.confirm
+Vue.prototype.$message = Message
 
 router.beforeEach((to,from,next)=>{
   store.commit('getToken')
@@ -81,3 +79,4 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
