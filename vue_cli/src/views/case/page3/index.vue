@@ -1,21 +1,21 @@
 <template>
   <div class="perInfo">
     <el-row class="home" :gutter="20">
-      <el-col class="header" :span="10" style="display:flex;">
-        <div class="block" >
-      <el-date-picker
-        v-model="value1"
-        type="daterange"
-        align="right"
-        unlink-panels
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="pickerOptions"
-        style="width:90%"
-      >
-      </el-date-picker>
-    </div>
+      <!-- <el-col class="header" :span="10" style="display: flex">
+        <div class="block">
+          <el-date-picker
+            v-model="value1"
+            type="daterange"
+            align="right"
+            unlink-panels
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :picker-options="pickerOptions"
+            style="width: 90%"
+          >
+          </el-date-picker>
+        </div>
         <!-- <div class="demo-input-suffix">
           起始时间：
           <el-input
@@ -32,8 +32,27 @@
           >
           </el-input>
         </div> -->
-      </el-col>
+      <!-- </el-col>  -->
     </el-row>
+    <el-col :span="24" style="margin-top: 20px">
+      <el-card shadow="hover" style="height: 350px">
+        <div class="timebar">
+          <el-radio-group v-model="radio1" @change="chooseDays(radio1)">
+            <el-radio-button label="近一周"></el-radio-button>
+            <el-radio-button label="近一月"></el-radio-button>
+            <el-radio-button label="近三月"></el-radio-button>
+            <el-radio-button label="近半年"></el-radio-button>
+          </el-radio-group>
+        </div>
+        <div style="height: 280px" ref="echarts">
+          <!-- ------------------------------------------------ -->
+        </div>
+        <!-- <div class="login-info">
+          <p>上次登录时间：<span>2022.02.06</span></p>
+          <p>上次登录地点：<span>四川广安</span></p>
+        </div> -->
+      </el-card>
+    </el-col>
     <el-card style="height: 450px">
       <div style="height: 400px" ref="moneyEcharts"></div>
     </el-card>
@@ -41,11 +60,31 @@
 </template>
 <script>
 import { getData } from "../../../../api/data.js";
+import { getGivenTimeOrders } from "../../../../api/data.js";
+import { getAllFood } from "../../../../api/data.js";
 import * as echarts from "echarts";
 export default {
   name: "perCen",
   data() {
     return {
+      radio1: "近一周",
+      interval: 1,
+      body: {
+        from: 0,
+        to: 0,
+      },
+      ///////////表格1/////////////
+      xData1: [],
+      ///////////表格2/////////////
+      allFoodData: [],
+      foodName: [
+        
+      ],
+      xData2: [
+       
+      ],
+      ///////////表格3/////////////
+
       pickerOptions: {
         shortcuts: [
           {
@@ -82,10 +121,165 @@ export default {
     };
   },
   mounted() {
-    getData().then((res) => {
-      const { code, data } = res.data;
-      if (code === 20000) {
-        const moneyNum = {
+    this.chooseDays(this.radio1); //首先setbody数据
+    this.setFoodData();
+  },
+  methods: {
+    getTimeNum(day) {
+      return Math.ceil(
+        new Date(Date.now() - day * 24 * 3600 * 1000).getTime() / 1000
+      );
+    },
+    ///表格1
+    chooseDays(value) {
+      console.log("value");
+      //设置间隔
+      this.interval = 0;
+      switch (value) {
+        case "近一周":
+          this.interval = 1;
+          break;
+        case "近一月":
+          this.interval = 4;
+          break;
+        case "近三月":
+          this.interval = 12;
+          break;
+        case "近半年":
+          this.interval = 24;
+          break;
+      }
+      //设置body
+      let fromTime = this.getTimeNum(7);
+      this.toTime = this.getTimeNum(0);
+      this.body.from = fromTime;
+      this.body.to = this.toTime;
+      console.log("this.body");
+      console.log(this.body);
+      //设置横坐标xData
+      this.xData1.length = 0;
+      console.log(this.interval);
+      for (let i = 0; i < 7; i++) {
+        var oldTime = new Date(
+          Date.now() - i * this.interval * 24 * 3600 * 1000
+        );
+        var newTime = new Date(oldTime);
+        var date = {
+          year: newTime.getFullYear(),
+          month: newTime.getMonth() + 1,
+          day: newTime.getDate(),
+        };
+        var systemDate =
+          date.year +
+          "-" +
+          (date.month >= 10 ? date.month : "0" + date.month) +
+          "-" +
+          (date.day >= 10 ? date.day : "0" + date.day);
+        //console.log(systemDate);
+        this.xData1.push(systemDate);
+      }
+      this.xData1.reverse();
+      //设置表格
+      const series = [];
+      getGivenTimeOrders(this.body).then((res) => {
+        var dataArray = res.data.data;
+        // series.push({
+        //   name: '营业额',
+        //   data: res.data.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
+        //   type: "line",
+        // });
+        //哇哩哇加油！
+
+        var totalPrice = 0;
+        var seriesArray = [];
+        var keyArray = [];
+        keyArray.push("营业额");
+        for (let i = 0; i < 7; i++) {
+          var fromTime = this.getTimeNum((i + 1) * this.interval + 1);
+          var toTime = this.getTimeNum(i * this.interval);
+          for (let j = 0; j < dataArray.length; j++) {
+            if (
+              dataArray[j].createTime >= fromTime &&
+              dataArray[j].createTime <= toTime
+            ) {
+              totalPrice += dataArray[j].totalPrice;
+            }
+          }
+          seriesArray.push(totalPrice);
+          totalPrice = 0;
+        }
+        seriesArray.reverse();
+        series.push({
+          name: "营业额",
+          data: seriesArray, //这就是一个7长度的数组，里面存数字
+          type: "line",
+        });
+        const option = {
+          xAxis: {
+            //横坐标？
+            data: this.xData1,
+          },
+          yAxis: {}, //这些变量好像都要定义
+          legend: {
+            //这个不是图例吗，
+            data: keyArray,
+          },
+          series,
+        };
+
+        const E = echarts.init(this.$refs.echarts);
+        E.setOption(option);
+      });
+    },
+    ///表格2
+    setFoodData() {
+      ///确定了横坐标！
+      var fakeNum = [];
+      getAllFood().then((res) => {
+        const foodData = res.data.data;
+        this.foodName.length = 0;
+        foodData.forEach((item) => {
+          this.foodName.push(item.name);
+          var element = {
+            id: item.id,
+            amount: 0,
+          };
+          this.allFoodData.push(element); //成功！
+        });
+        fakeNum.length = 0;
+        for (let i = 0; i < foodData.length; i++) {
+          fakeNum.push(200);
+        }
+        console.log(this.foodName);
+        ///确定纵坐标！！！
+        var fromTime = this.getTimeNum(this.interval * 7);
+        var toTime = this.getTimeNum(0);
+        this.body.from = fromTime;
+        this.body.to = toTime;
+        getGivenTimeOrders(this.body).then((res) => {
+          console.log(res.data.data);
+          //遍历
+
+          res.data.data.forEach((item) => {
+            item.orderItems.forEach((element) => {
+             // console.log(element.dishId);
+              this.allFoodData.forEach((i) => {
+                if (i.id === element.dishId) {
+                  i.amount++;
+                }
+              });
+              //if(element.dishId)
+            });
+          });
+          console.log('this.allFoodData')
+          console.log(this.allFoodData)
+
+          this.allFoodData.forEach((item) => {
+              this.xData2.push(item.amount)
+          })
+
+        ///创建柱状图！！！
+        const foodNum = {
           legend: {
             textStyle: {
               color: "#333",
@@ -98,15 +292,16 @@ export default {
             trigger: "axis",
           },
           xAxis: {
-            type: "category",
-            data: data.userData.map((item) => item.date),
+            // type: "category",
+            data: this.foodName, ///!!!
             axisLine: {
               lineStyle: {
                 color: "#17b3a3",
               },
             },
-            axisLable: {
+            axisLabel: {
               interval: 0,
+              rotate:-30,
               color: "#333",
             },
           },
@@ -123,35 +318,37 @@ export default {
           color: ["#2ec7c9", "b6a2de"],
           series: [
             {
-              name: "用户数量",
-              data: data.userData.map((item) => item.active),
+              name: "销售量",
+              data: this.xData2,
               type: "bar",
             },
           ],
         };
         const U = echarts.init(this.$refs.moneyEcharts);
-        U.setOption(moneyNum);
-      }
-    });
+        U.setOption(foodNum);
+
+        });
+      });
+    },
   },
 };
 </script>
 <style lang="scss" scopedSlots>
-.header{
-    width:100%;
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    line-height: 80px;
-    .demo-input-suffix{
-        width:100%;
-    }
-.el-input{
-    width:20%;
-    margin-right:10px;
-}
+.header {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 80px;
+  .demo-input-suffix {
+    width: 100%;
+  }
+  .el-input {
+    width: 20%;
+    margin-right: 10px;
+  }
 }
 .card-title {
   display: flex;
