@@ -23,7 +23,11 @@
               <el-input v-model="form.price" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="类别" :label-width="formLabelWidth">
-              <el-select @change='handleChange' v-model="selectVal" placeholder="请选择">
+              <el-select
+                @change="handleChange"
+                v-model="selectVal"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -33,19 +37,18 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <!-- <el-form-item label="图片" :label-width="formLabelWidth">
+            <el-form-item label="图片" :label-width="formLabelWidth">
               <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
+                action=" "
+                :http-request="uploadFiles" 
+                :auto-upload="false"
+                :on-success="handle_success"
+                :data="fileList"
               >
                 <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">
-                  只能上传jpg/png文件
-                </div>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
               </el-upload>
-            </el-form-item> -->
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -104,11 +107,12 @@
 <script>
 import { getAllFood } from "../../../api/data.js";
 import { addFood } from "../../../api/data.js";
+import { upload } from "../../../api/data.js";
 export default {
   name: "home",
   data() {
     return {
-      selectVal: this.value || '',
+      selectVal: this.value || "",
       input: "",
       find: "",
       dialogFormVisible: false,
@@ -159,6 +163,7 @@ export default {
         },
       ],
       value: "",
+      fileList:[],
     };
   },
   created() {
@@ -170,10 +175,42 @@ export default {
     this.getFoodData();
   },
   methods: {
+    uploadFiles() {
+      //Create new formData object
+      const fd = new FormData();
+
+      //append the file you want to upload
+      fd.append("file", this.file.raw);
+
+     //send call the api to upload files using axios or any other means
+      upload(fd).then((res) => {
+        console.log(res);
+      })
+   },
+    handle_success(res) {
+      console.log(res);
+      this.$message.success("图片上传成功");
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
     handleChange(data) {
-        //如果上面:value赋的是对象，则可以将返回的对象赋予其他变量，这里的data是选中的对象，那么data.label则是reasonTypes中的label值，如果下拉中选中美国，那么this.selectVal 值为“美国”
-          this.selectVal = data.label
-        },
+      //如果上面:value赋的是对象，则可以将返回的对象赋予其他变量，这里的data是选中的对象，那么data.label则是reasonTypes中的label值，如果下拉中选中美国，那么this.selectVal 值为“美国”
+      this.selectVal = data.label;
+    },
     handleAdd() {
       var body = {
         name: "",
@@ -185,8 +222,9 @@ export default {
       body.price = this.form.price;
       body.category = this.selectVal;
       addFood(body).then((res) => {
-        console.log(res);f
-      })
+        console.log(res);
+        f;
+      });
     },
     getFoodData() {
       getAllFood()
