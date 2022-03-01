@@ -333,11 +333,6 @@ export default {
     getTodayAmount() {
       /////////////////////获取所有订单/////////////////////
       let fromTime = this.getTimeNum(1);
-      // let fromTime=0
-      // let fromTime =
-      //   new Date(
-      //     new Date(new Date().toLocaleDateString()).getTime() - 24 * 3600 * 1000
-      //   ).getTime() / 1000;
       this.toTime = this.getTimeNum(0);
       var body = {};
       body.from = fromTime;
@@ -356,9 +351,6 @@ export default {
           }
           this.todayAmount.Money = todayMoney;
           this.todayAmount.Order = todayOrder;
-          // res.data.forEach(item => {
-          //   console.log('item.totalPrice:'+item.totalPrice)
-          // });
         })
         .catch((error) => {
           console.log("getGivenTimeOrders error" + error.response);
@@ -451,7 +443,7 @@ export default {
           if (dataArray[j].createTime >= fromTime && 
           dataArray[j].createTime <= toTime) {
             totalPrice += dataArray[j].totalPrice;
-            console.log(totalPrice)
+            
           }
         }
         seriesArray.push(totalPrice);
