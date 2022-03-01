@@ -5,15 +5,16 @@
       :default-active="activeIndex2"
       class="el-menu-demo"
       mode="horizontal"
+      router=true
       @select="handleSelect"
       background-color="#fff"
       text-color="#545C64"
       active-text-color="#3A96FF"
       style="display: flex; justify-content: space-between;margin-bottom:20px;"
     >
-      <el-menu-item @click="clickMenu('1')" index="1">今日订单</el-menu-item>
-      <el-menu-item @click="clickMenu('2')" index="2">订单列表</el-menu-item>
-      <el-menu-item @click="clickMenu('3')" index="3">销售统计</el-menu-item>
+      <el-menu-item @click="clickMenu('1')" index="/page1">今日订单</el-menu-item>
+      <el-menu-item @click="clickMenu('2')" index="/page2">订单列表</el-menu-item>
+      <el-menu-item @click="clickMenu('3')" index="/page3">销售统计</el-menu-item>
     </el-menu>
     <div class="content">
       <router-view></router-view>
@@ -29,7 +30,6 @@ el-header {
 export default {
   data() {
     return {
-      activeIndex: "1",
       activeIndex2: "1",
       menu: [
         {
@@ -38,6 +38,14 @@ export default {
         },
       ],
     };
+  },
+  mounted(){
+    console.log('刷新啦')
+
+  },
+  created(){
+    this.activeIndex2 = '1'
+
   },
   methods: {
     handleSelect(key, keyPath) {
@@ -56,9 +64,9 @@ export default {
           path='page3';
           break;
       }
-      this.$router.push({
-        name: path,
-      });
+      // this.$router.push({
+      //   name: path,
+      // });
     },
   },
 };

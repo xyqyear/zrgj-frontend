@@ -31,8 +31,8 @@ export default{
                 url:'table/index.vue'//?
               },
               {
-                path:'/case',
-                name:'case',
+                path:'/page1',
+                name:'page1',
                 label:'订单管理',
                 icon:'s-order',//自己记得改icon
                 url:'case/index.vue'
