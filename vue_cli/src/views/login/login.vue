@@ -89,7 +89,7 @@ export default {
             } else if (res.data.data.account.position == 2) {
               this.$router.push({ name: "chef" });
             } else if (res.data.data.account.position == 1) {
-              this.$router.push({ name: "serMain" });
+              this.$router.push({ name: "serFood" });
             }
           } else {
             console.log("错误啦");

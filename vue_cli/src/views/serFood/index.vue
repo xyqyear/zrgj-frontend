@@ -47,9 +47,10 @@
     <el-drawer title="订单总览" :visible.sync="drawer" :direction="direction" size="40%">
       <template>
         <el-table :data="orderItems" border height="600">
+          <el-table-column type="index" width="30"></el-table-column>
           <el-table-column prop="name" label="菜名" width="150"></el-table-column>
-          <el-table-column prop="amount" label="数量" width="200"></el-table-column>
-          <el-table-column prop="note" label="备注" width="100"></el-table-column>
+          <el-table-column prop="amount" label="数量" width="100"></el-table-column>
+          <el-table-column prop="note" label="备注" width="200"></el-table-column>
           <el-table-column prop="price" label="金额"></el-table-column>
         </el-table>
       </template>
