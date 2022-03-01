@@ -34,6 +34,25 @@
         </div> -->
       </el-col>
     </el-row>
+    <el-col :span="24" style="margin-top: 20px">
+      <el-card shadow="hover" style="height: 350px">
+        <div class="timebar">
+          <el-radio-group v-model="radio1" @change="chooseDays(radio1)">
+            <el-radio-button label="近一周"></el-radio-button>
+            <el-radio-button label="近一月"></el-radio-button>
+            <el-radio-button label="近三月"></el-radio-button>
+            <el-radio-button label="近半年"></el-radio-button>
+          </el-radio-group>
+        </div>
+        <div style="height: 280px" ref="echarts">
+          <!-- ------------------------------------------------ -->
+        </div>
+        <!-- <div class="login-info">
+          <p>上次登录时间：<span>2022.02.06</span></p>
+          <p>上次登录地点：<span>四川广安</span></p>
+        </div> -->
+      </el-card>
+    </el-col>
     <el-card style="height: 450px">
       <div style="height: 400px" ref="moneyEcharts"></div>
     </el-card>
@@ -41,11 +60,24 @@
 </template>
 <script>
 import { getData } from "../../../../api/data.js";
+import { getGivenTimeOrders } from "../../../../api/data.js";
 import * as echarts from "echarts";
 export default {
   name: "perCen",
   data() {
     return {
+      radio1: "近一周",
+      interval:1,
+      body: {
+        from: 0,
+        to: 0,
+      },
+      ///////////表格1/////////////
+      xData1: [],
+      ///////////表格2/////////////
+      xData2:[],
+      ///////////表格3/////////////
+      
       pickerOptions: {
         shortcuts: [
           {
@@ -81,7 +113,9 @@ export default {
       value2: "",
     };
   },
+
   mounted() {
+    this.chooseDays(this.radio1); //首先setbody数据
     getData().then((res) => {
       const { code, data } = res.data;
       if (code === 20000) {
@@ -134,6 +168,115 @@ export default {
       }
     });
   },
+  methods:{
+    getTimeNum(day) {
+      return Math.ceil(
+        new Date(Date.now() - day * 24 * 3600 * 1000).getTime() / 1000
+      );
+    },
+    ///
+    chooseDays(value) {
+      console.log('value')
+      //设置间隔
+      this.interval = 0;
+      switch (value) {
+        case "近一周":
+          this.interval = 1;
+          break;
+        case "近一月":
+          this.interval = 4;
+          break;
+        case "近三月":
+          this.interval = 12;
+          break;
+        case "近半年":
+          this.interval = 24;
+          break;
+      }
+      //设置body
+      let fromTime = this.getTimeNum(7);
+      this.toTime = this.getTimeNum(0);
+      this.body.from = fromTime;
+      this.body.to = this.toTime;
+      console.log('this.body')
+      console.log(this.body)
+      //设置横坐标xData
+        this.xData1.length = 0;
+        console.log(this.interval)
+        for (let i = 0; i < 7; i++) {
+          var oldTime  = new Date(Date.now() - i * this.interval * 24 * 3600 * 1000);
+          var newTime = new Date(oldTime); 
+          var date = {
+            year: newTime.getFullYear(),
+            month: newTime.getMonth()+1,
+            day: newTime.getDate(),
+          };
+          var systemDate =
+            date.year +
+            "-" +
+            (date.month >= 10 ? date.month : "0" + date.month) +
+            "-" +
+            (date.day >= 10 ? date.day : "0" + date.day);
+          //console.log(systemDate);
+          this.xData1.push(systemDate);
+        }
+        this.xData1.reverse();
+        //设置表格
+    const series = [];
+    getGivenTimeOrders(this.body).then((res) => {
+      var dataArray = res.data.data;
+      // series.push({
+      //   name: '营业额',
+      //   data: res.data.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
+      //   type: "line",
+      // });
+      //哇哩哇加油！
+      
+      var totalPrice = 0;
+      var seriesArray = [];
+      var keyArray=[];
+      keyArray.push('营业额')
+      for (let i = 0; i < 7; i++) {
+        var fromTime = this.getTimeNum(((i+1) * this.interval)+1);
+        var toTime = this.getTimeNum(i * this.interval);
+        for (let j = 0; j < dataArray.length; j++) {
+          if (dataArray[j].createTime >= fromTime && 
+          dataArray[j].createTime <= toTime) {
+            totalPrice += dataArray[j].totalPrice;
+            console.log('totalPrice')
+            console.log(totalPrice)
+          }
+        }
+        seriesArray.push(totalPrice);
+        totalPrice = 0;
+      }
+      seriesArray.reverse()
+      series.push({
+            name: '营业额',
+            data: seriesArray, //这就是一个7长度的数组，里面存数字
+            type: "line",
+          });
+    const option = {
+          xAxis: {
+            //横坐标？
+            data: this.xData1,
+          },
+          yAxis: {}, //这些变量好像都要定义
+          legend: {
+            //这个不是图例吗，
+            data: keyArray,
+          },
+          series,
+        };
+
+        const E = echarts.init(this.$refs.echarts);
+        E.setOption(option);
+    });
+
+  
+    
+    },
+  }
 };
 </script>
 <style lang="scss" scopedSlots>
