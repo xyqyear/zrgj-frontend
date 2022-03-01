@@ -9,7 +9,7 @@
   >
     <h3 class="login-title">系统登录</h3>
     <el-form-item
-      label="用户名"
+      label="员工号"
       label-width="80px"
       prop="username"
       class="username"
@@ -18,7 +18,7 @@
         type="input"
         v-model="form.username"
         autocomplete="off"
-        placeholder="请输入账号"
+        placeholder="请输入员工号"
       >
       </el-input>
     </el-form-item>
@@ -40,9 +40,7 @@
   </el-form>
 </template>
 <script>
-import Vue from "vue";
 import axios from "axios";
-import Mock from "mockjs";
 import { postLogin } from "../../../api/data";
 export default {
   name: "login",
@@ -52,7 +50,7 @@ export default {
       form: {},
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
+          { required: true, message: "请输入员工号", trigger: "blur" },
           // {
           //   min: 3,
           //   message: "用户名长度不能小于3位",
@@ -65,10 +63,10 @@ export default {
   },
   methods: {
     login() {
-      var account={
-        id:parseInt(this.form.username),
-        password:this.form.password
-      }
+      var account = {
+        id: parseInt(this.form.username),
+        password: this.form.password,
+      };
       postLogin(account)
         .then((res) => {
           console.log(res);
@@ -86,7 +84,7 @@ export default {
             //console.log(localStorage.getItem('token'))
             this.$store.commit("addMenu", this.$router);
             if (res.data.data.account.position == 0) {
-              console.log('position0')
+              console.log("position0");
               this.$router.push({ name: "home" });
             } else if (res.data.data.account.position == 2) {
               this.$router.push({ name: "chef" });
