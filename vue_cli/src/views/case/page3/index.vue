@@ -1,7 +1,7 @@
 <template>
   <div class="perInfo">
     <el-row class="home" :gutter="20">
-      <el-col class="header" :span="10" style="display: flex">
+      <!-- <el-col class="header" :span="10" style="display: flex">
         <div class="block">
           <el-date-picker
             v-model="value1"
@@ -32,7 +32,7 @@
           >
           </el-input>
         </div> -->
-      </el-col>
+      <!-- </el-col>  -->
     </el-row>
     <el-col :span="24" style="margin-top: 20px">
       <el-card shadow="hover" style="height: 350px">
