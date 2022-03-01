@@ -4,3 +4,4 @@ package.json
 vue_cli/package-lock.json
 vue_cli/package.json
 vue_cli/yarn.lock
+vue_cli/dist

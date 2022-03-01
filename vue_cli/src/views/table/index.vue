@@ -56,7 +56,7 @@
             <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
             <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
             <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
-            <el-descriptions-item label="下单账号"> 服务员账号</el-descriptions-item>
+            <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
           </el-descriptions>
           <!-- ------------------------------------------------ -->
           <span slot="footer" class="dialog-footer">
@@ -111,19 +111,6 @@ export default {
           this.orderList = res.data.data;
           this.generateTableList()
         });
-    },
-    stateToDescription(state) {
-      switch (state) {
-        case -1:
-          return '已取消';
-        case 0:
-          return '已完成';
-        case 1:
-          return '排队中';
-        case 2:
-          return '烹饪中';
-      }
-      return '未知状态';
     },
     generateTableList() {
       this.tableData = [];

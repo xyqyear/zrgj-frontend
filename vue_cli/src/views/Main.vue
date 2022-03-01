@@ -77,16 +77,12 @@ body {
 
 // <script>
 // import CommonAside from "../components/CommonAside.vue";
-// export default {
-//   components: {
-//     CommonAside,
-//   },
-//   data() {
-//     return {
-//       radio: "1",
-//     };
-//   },
-// };
+export default {
+  data() {
+    return {
+    };
+  },
+};
 // </script>
 <script>
 import CommonAside from "../components/CommonAside.vue";
