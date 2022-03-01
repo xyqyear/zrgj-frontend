@@ -3,22 +3,22 @@
     <el-row :gutter="30">
       <el-col :span="24">
         <div class="tables">
-          <el-card
+          <div
             @click="dialogVisible = true"
             v-for="table in tableData"
             :key="table.tableName"
-            :body-style="{ display: 'flex', padding: 15 }"
-            style="margin-bottom: 20px; margin-right: 40px; width: 150px;"
+            class="tableInfo"
           >
-
-            <el-button style="margin:0 auto" class="info" @click="displayOderDetail(tableMap[table.tableName])"
+            <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}">
+              <p style="font-size: large; color: #371722; margin: 10px">{{ table.tableName }} 号桌</p>
+              <p style="font-size: small">{{ table.occupied ? "占用中" : "空闲" }}</p>
+            </div>
+            <el-button @click="displayOderDetail(tableMap[table.tableName])"
                        :disabled="! table.occupied">
-              <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF' }">
-                <p class="tableNum">{{ table.tableName }}</p>
-                <p class="state">{{ table.occupied ? "占用中" : "空闲" }}</p>
-              </div>
+              <p>{{ table.occupied ? "查看订单" : "" }}</p>
+
             </el-button>
-          </el-card>
+          </div>
           <!-- ------------------------------------- -->
           <el-dialog title="订单详情" :visible.sync="orderDetailVisible" width="50%">
             <!-- ---------------------------------------------- -->
@@ -42,7 +42,6 @@
           </span>
           </el-dialog>
           <!-- ------------------------------------- -->
-
         </div>
       </el-col>
     </el-row>
@@ -98,7 +97,7 @@ export default {
       }
       // orderItems 添加上菜品信息
       for (let i = 0; i < this.orderList.length; i++) {
-        for (let j=0;j<this.orderList[i].orderItems.length;j++){
+        for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
           let dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
           this.orderList[i].orderItems[j].name = dish.name
           this.orderList[i].orderItems[j].price = dish.price
@@ -125,111 +124,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.tables{
+.tableInfo{
+  height: 150px;
+  width: 200px;
+  margin: 10px 5px;
+  .div{
+    height: 40%;
+    width: 100%;
+  }
+  .el-button{
+    width: 100%;
+    height: 60%;
+  }
+}
+.tables {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-.operation {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-.order-header {
-  width: 100%;
-  height: 60px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  border-bottom: 2px solid #C1C1C1;
-
-  .left {
-    width: 200px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-
-    .order-num {
-      margin-left: 20px;
-    }
-  }
-}
-
-.order-content {
-  width: 100%;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-
-  .order-item {
-    width: 100%;
-    border-bottom: 2px solid #EFEFEF;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .left {
-    margin-left: 30px;
-    width: 200px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-    line-height: 50px;
-
-    .order-num {
-      margin-left: 20px;
-    }
-  }
-
-  .right {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-  }
-
-}
-
-.order-bottom {
-  width: 100%;
-  height: 60px;
-  background: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  .up {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-
-
-  }
-
-  .down {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-
-  .downleft {
-    width: 100%;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-  }
 }
 </style>
