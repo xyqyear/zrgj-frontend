@@ -12,11 +12,11 @@ import '../api/mock.js'
 // import 'element-ui/lib/theme-chalk/index.css'
 
 //按需引入
-import { Button, Select,Radio,Container,Aside,Header,Main,
+import { Button, Select,Radio,Container,Aside,Header,Main,Descriptions,DescriptionsItem,
 Menu,Submenu,MenuItem,MenuItemGroup,Dropdown,DropdownMenu,DropdownItem,
 Row,Col,Card,Table,TableColumn,Input,Popover,Tag,Dialog,
 Collapse,Form,FormItem,Tabs,TabPane,InputNumber,Drawer,DatePicker,Alert,
-MessageBox, Message, Option } from 'element-ui';
+MessageBox, Message, Option,CollapseItem,Upload } from 'element-ui';
 
 Vue.config.productionTip = false
 //全引入element的包
@@ -58,6 +58,7 @@ Vue.use(DatePicker);
 Vue.use(Alert);
 Vue.use(Option);
 Vue.use(CollapseItem);
+Vue.use(Upload);
 
 Vue.prototype.$http = http
 Vue.prototype.$confirm = MessageBox.confirm
