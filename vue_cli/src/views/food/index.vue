@@ -39,14 +39,15 @@
             </el-form-item>
             <el-form-item label="图片" :label-width="formLabelWidth">
               <el-upload
+                class="avatar-uploader"
                 action=" "
-                :http-request="uploadFiles" 
+                :show-file-list="false"
                 :auto-upload="false"
+                :on-change="uploadFiles"
                 :on-success="handle_success"
-                :data="fileList"
               >
-                <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
           </el-form>
@@ -120,6 +121,7 @@ export default {
         name: "",
         price: "",
       },
+      imageUrl: "",
       tableData: [
         // {
         //   index: "1",
@@ -175,18 +177,13 @@ export default {
     this.getFoodData();
   },
   methods: {
-    uploadFiles() {
-      //Create new formData object
+    uploadFiles(file, _) {
       const fd = new FormData();
-
-      //append the file you want to upload
-      fd.append("file", this.file.raw);
-
-     //send call the api to upload files using axios or any other means
+      fd.append("file", file.raw);
       upload(fd).then((res) => {
-        console.log(res);
-      })
-   },
+        this.imageUrl = res.data.data.fileUrl;
+      });
+    },
     handle_success(res) {
       console.log(res);
       this.$message.success("图片上传成功");
@@ -258,5 +255,28 @@ export default {
   justify-content: space-between;
   align-items: center;
   text-align: center;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
