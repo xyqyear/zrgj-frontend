@@ -16,7 +16,7 @@
           >
           </el-date-picker>
         </div>
-        <!-- <div class="demo-input-suffix">
+        <div class="demo-input-suffix">
           起始时间：
           <el-input
             placeholder="请选择日期"
@@ -122,7 +122,7 @@ export default {
   },
   mounted() {
     this.chooseDays(this.radio1); //首先setbody数据
-    this.setFoodData();
+    //this.setFoodData();
   },
   methods: {
     getTimeNum(day) {
@@ -193,10 +193,15 @@ export default {
         var totalPrice = 0;
         var seriesArray = [];
         var keyArray = [];
+        //body的三个时间
+        var tempTime = 0
+        var fromTime = this.getTimeNum(0);
+        var toTime = 0
         keyArray.push("营业额");
         for (let i = 0; i < 7; i++) {
-          var fromTime = this.getTimeNum((i + 1) * this.interval + 1);
-          var toTime = this.getTimeNum(i * this.interval);
+          tempTime = fromTime;
+           toTime = tempTime
+           fromTime = this.getTimeNum((i + 1) * this.interval + 1);
           for (let j = 0; j < dataArray.length; j++) {
             if (
               dataArray[j].createTime >= fromTime &&
@@ -230,14 +235,15 @@ export default {
         const E = echarts.init(this.$refs.echarts);
         E.setOption(option);
       });
-    },
+      this.setFoodData();
+   },
     ///表格2
     setFoodData() {
       ///确定了横坐标！
-      var fakeNum = [];
       getAllFood().then((res) => {
         const foodData = res.data.data;
         this.foodName.length = 0;
+        this.allFoodData.length = 0
         foodData.forEach((item) => {
           this.foodName.push(item.name);
           var element = {
@@ -246,10 +252,6 @@ export default {
           };
           this.allFoodData.push(element); //成功！
         });
-        fakeNum.length = 0;
-        for (let i = 0; i < foodData.length; i++) {
-          fakeNum.push(200);
-        }
         console.log(this.foodName);
         ///确定纵坐标！！！
         var fromTime = this.getTimeNum(this.interval * 7);

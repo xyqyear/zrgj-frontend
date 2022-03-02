@@ -356,7 +356,7 @@ export default {
       //设置横坐标xData
         this.xData.length = 0;
         console.log(this.interval)
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 7; i++) {//啊啊啊想一想啊
           var oldTime  = new Date(Date.now() - i * this.interval * 24 * 3600 * 1000);
           var newTime = new Date(oldTime); 
           var date = {
@@ -388,15 +388,19 @@ export default {
       var totalPrice = 0;
       var seriesArray = [];
       var keyArray=[];
+      ///body的三个时间
+      var tempTime = 0
+      var fromTime = this.getTimeNum(0);
+      var toTime = 0
       keyArray.push('营业额')
       for (let i = 0; i < 7; i++) {
-        var fromTime = this.getTimeNum(((i+1) * this.interval)+1);
-        var toTime = this.getTimeNum(i * this.interval);
+        tempTime = fromTime;
+        toTime = tempTime;
+        fromTime = this.getTimeNum(((i+1) * this.interval)+1);
         for (let j = 0; j < dataArray.length; j++) {
           if (dataArray[j].createTime >= fromTime && 
           dataArray[j].createTime <= toTime) {
             totalPrice += dataArray[j].totalPrice;
-            
           }
         }
         seriesArray.push(totalPrice);
