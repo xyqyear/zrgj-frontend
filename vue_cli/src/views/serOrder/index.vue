@@ -129,7 +129,7 @@ export default {
         this.tableData[tableName - 1].occupied = true;
         this.tableMap[tableName] = this.orderList[i];
       }
-      console.log(this.tableData)
+      // console.log(this.tableData)
     },
     displayOderDetail(order) {
       this.curOrder = order

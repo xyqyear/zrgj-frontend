@@ -67,19 +67,19 @@ export default {
   },
   methods: {
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     },
     test(item) {
-      console.log(item.name)
+      // console.log(item.name)
     },
     //应该就是通过这玩意，通过name推过去
     clickMenu(item) {
-      console.log(item.name)
+      // console.log(item.name)
       if (this.$route.path === '/' + item.name) {
-        console.log('invalid page change')
+        // console.log('invalid page change')
       } else {
         this.$router.push({name: item.name})
       }

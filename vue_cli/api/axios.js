@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import config from '../config'
-// 设置配置 根据开发 和 生产环境不一样 
+// 设置配置 根据开发 和 生产环境不一样
 const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
 class HttpRequst {
   constructor(baseUrl) {
@@ -12,7 +12,7 @@ class HttpRequst {
     const config = {
       baseURL: this.baseUrl,
       header: {
-        
+
       }
     }
     return config
@@ -20,7 +20,7 @@ class HttpRequst {
   interceptors (instance) {
     instance.interceptors.request.use(function (config) {
       // 在发送请求之前做些什么
-      console.log('拦截处理请求');
+      // console.log('拦截处理请求');
       return config;
     }, function (error) {
       // 对请求错误做些什么
@@ -28,7 +28,7 @@ class HttpRequst {
     });
 
     instance.interceptors.response.use(function (response) {
-      console.log('处理相应');
+      // console.log('处理相应');
       // 对响应数据做点什么
       return response;
     }, function (error) {

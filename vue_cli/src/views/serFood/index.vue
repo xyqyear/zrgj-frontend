@@ -112,11 +112,11 @@
             totalPrice
           }}
         </el-descriptions-item>
-        <el-descriptions-item label="下单账号">01</el-descriptions-item>
+        <el-descriptions-item label="下单账号">{{accountId}}</el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
         <el-button @click="drawer = false">取 消</el-button>
-        <el-button type="primary" @click="uploadOrder" :disabled="unableToAddOrder">确 定</el-button>
+        <el-button type="primary" @click="uploadOrder">确 定</el-button>
       </div>
     </el-drawer>
 
@@ -141,6 +141,7 @@ export default {
   data() {
     return {
       activeName: "全部菜品",
+      accountId: localStorage.getItem('accountId'),
       num: 1,
       dishList: [],
       dishCategories: ["全部菜品", "荤菜", "素菜", "汤类", "小吃", "饮品"],
@@ -222,9 +223,7 @@ export default {
       });
     },
     handleChange(dishIndex) {
-      // this.dishList[dishIndex].amount += 1;
       this.$forceUpdate();
-      console.log(dishIndex);
     },
     refreshTableSituation() {
       for (let i = 0; i < this.tableNum; i++) {

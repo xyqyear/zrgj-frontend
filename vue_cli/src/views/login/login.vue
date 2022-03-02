@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     login() {
+      localStorage.setItem('accountId', this.form.username);
       var account = {
         id: parseInt(this.form.username),
         password: this.form.password,
