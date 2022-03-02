@@ -201,6 +201,7 @@ export default {
           });
           this.refreshDishList();
           this.refreshTableSituation();
+          this.occupied[this.tableId - 1] = true;
           this.tableId = 0;
           this.drawer = false;
         })
