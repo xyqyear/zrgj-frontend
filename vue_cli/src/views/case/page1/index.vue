@@ -27,7 +27,7 @@
           </div>
 
           <div class="right">
-            <div class="time">2小时前</div>
+            <div class="time">{{ getTimeDistance(curOrder.createTime) }}</div>
           </div>
           <div class="down">
             <el-tag :type="curOrder.state==='1'?'success':'info'">{{ curOrder.state === '1' ? '已支付' : '未支付' }}</el-tag>
@@ -63,7 +63,7 @@
   </el-row>
 </template>
 <script>
-import {getAllFood, getCurrOrders, getObjectMap} from "../../../../api/data";
+import {getAllFood, getCurrOrders, getObjectMap, getGivenTimeOrders} from "../../../../api/data";
 
 export default {
   name: "home",
@@ -71,6 +71,7 @@ export default {
     return {
       orderList: [],
       dishMap: {},
+      curTime: 0
     };
   },
   mounted() {
@@ -83,7 +84,13 @@ export default {
   },
   methods: {
     refreshOrderData() {
-      getCurrOrders()
+      this.curTime = Math.round(new Date().getTime() / 1000);
+      let fromTime = Math.round(new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000);
+
+      getGivenTimeOrders({
+        from: fromTime,
+        to: this.curTime
+      })
         .then(res => {
           this.orderList = res.data.data;
           // orderItems 添加上菜品信息
@@ -103,6 +110,17 @@ export default {
           }
         });
     },
+    getTimeDistance(createTime) {
+      console.log(this.curTime)
+      console.log(createTime)
+
+      let distance = this.curTime - createTime;
+      if (distance > 60 * 60) {
+        return Math.round(distance / 3600) + '小时前'
+      } else {
+        return Math.round(distance / 60) + '分钟前'
+      }
+    }
 
   },
 };
@@ -121,6 +139,7 @@ export default {
   height: 40%;
   width: 100%;
 }
+
 .cardBottom {
   width: 100%;
   height: 60%;
@@ -170,7 +189,6 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-
 
 
 }
