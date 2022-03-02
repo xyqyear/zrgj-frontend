@@ -33,16 +33,21 @@
                     height="190"
                     width="200"
                   />
-                  <div style="position: absolute; height: 2px; width: 100%; bottom: 3px; background-color: grey; opacity:0.3"></div>
-                  <div style="position: absolute; height: 32px; width: 100%; bottom: 5px; background-color: black; opacity:0.5;">
+                  <div
+                    style="position: absolute; height: 2px; width: 100%; bottom: 3px; background-color: grey; opacity:0.3"></div>
+                  <div
+                    style="position: absolute; height: 32px; width: 100%; bottom: 5px; background-color: black; opacity:0.5;">
                   </div>
-                  <div style="position: absolute; height: 2px; width: 100%; bottom: 37px; background-color: grey; opacity:0.3"></div>
-                  <div style="position: absolute; height: 2px; width: 100%; bottom: 26px; color: white">{{item.name}}</div>
+                  <div
+                    style="position: absolute; height: 2px; width: 100%; bottom: 37px; background-color: grey; opacity:0.3"></div>
+                  <div style="position: absolute; height: 2px; width: 100%; bottom: 26px; color: white">
+                    {{ item.name }}
+                  </div>
                 </div>
 
                 <el-row style="margin-top: 10px; margin-bottom: 10px; display: flex; align-items: center;">
                   <el-col :span="10" style="font-weight: bold; color: #f95a68; ">
-                    {{item.price}}元/份
+                    {{ item.price }}元/份
                   </el-col>
                   <el-col :span="14">
                     <el-input-number
@@ -62,12 +67,29 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+    <el-popover
+      placement="top"
+      v-model="selectingTableId"
+      width="290"
+      class="selectingTableBox"
+      trigger="click">
+      <div v-for="(table, index) in occupied" class="tableItem">
+        <el-button :type="table?'primary':''" :disabled="table" style="width: 60px;"
+                   @click="selectTable(index)">
+          {{ index + 1 }}
+        </el-button>
+      </div>
+      <el-button slot="reference" style="position: absolute; right: 100px; top: 5px;" size="mini">
+        {{ tableId === 0 ? '选择餐桌' : tableId + '号桌' }}
+      </el-button>
+    </el-popover>
+
     <el-button
       @click="createNewOrder"
       type="primary"
       size="mini"
       style="position: absolute; right: 10px; top: 5px"
-      >创建订单
+    >创建订单
     </el-button>
     <el-drawer
       title="订单总览"
@@ -76,8 +98,8 @@
       size="40%"
     >
       <template>
-        <el-table :data="orderItems" border height="600">
-          <el-table-column type="index" width="30"></el-table-column>
+        <el-table :data="orderItems" height="600">
+          <el-table-column type="index" width="50"></el-table-column>
           <el-table-column prop="name" label="菜名" width="150"></el-table-column>
           <el-table-column prop="amount" label="数量" width="100"></el-table-column>
           <el-table-column prop="note" label="备注" width="200"></el-table-column>
@@ -87,8 +109,9 @@
       <el-descriptions>
         <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>
         <el-descriptions-item label="总金额">{{
-          totalPrice
-        }}</el-descriptions-item>
+            totalPrice
+          }}
+        </el-descriptions-item>
         <el-descriptions-item label="下单账号">01</el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
@@ -100,7 +123,7 @@
 </template>
 
 <script>
-import { addOrder, getAllFood } from "../../../api/data";
+import {addOrder, getAllFood, getCurrOrders, getRestaurant} from "../../../api/data";
 
 export default {
   name: "perCen",
@@ -112,23 +135,32 @@ export default {
       dishCategories: ["全部菜品", "荤菜", "素菜", "汤类", "小吃", "饮品"],
       classifiedDishList: [],
       drawer: false,
+      selectingTableId: false,
       direction: "rtl",
       orderItems: [],
       totalPrice: 0,
-      tableId: 5,
+      tableId: 0,
+      tableNum: 10,
+      occupied: []
     };
   },
 
   mounted() {
     this.refreshDishList();
-
-    /*    菜品分类
-        this.classifiedDishList.push(this.dishList)
-        for (let i = 1; i < this.dishCategories.length; i++) {
-          this.classifiedDishList.push(this.getDishOfCategory(this.dishCategories[i]))
-        }*/
+    // 获取餐厅最大桌号
+    this.occupied = new Array(this.tableNum);
+    getRestaurant()
+      .then(res => {
+        localStorage.setItem('tableNum', res.data.data.tableNum);
+        this.tableNum = res.data.data.tableNum;
+        this.refreshTableSituation();
+      })
   },
   methods: {
+    selectTable(index) {
+      this.tableId = index + 1;
+      this.selectingTableId = false;
+    },
     createNewOrder() {
       this.drawer = true;
       this.orderItems = [];
@@ -152,6 +184,7 @@ export default {
             type: "success",
           });
           this.refreshDishList();
+          this.refreshTableSituation();
           this.drawer = false;
         })
         .catch((error) => {
@@ -175,26 +208,38 @@ export default {
       this.$forceUpdate();
       console.log(dishIndex);
     },
-    /*    getDishOfCategory(targetCategory) {
-      let targetDishList = [];
-      for (const dish of this.$data.dishList) {
-        if (dish.category === targetCategory) {
-          targetDishList.push(dish);
-        }
+    refreshTableSituation() {
+      for (let i = 0; i < this.tableNum; i++) {
+        this.occupied[i] = false;
       }
-      return targetDishList;
-    },*/
+      getCurrOrders()
+        .then(res => {
+          this.orderList = res.data.data;
+          for (let i = 0; i < this.orderList.length; i++) {
+            this.occupied[this.orderList[i].tableId - 1] = true;
+          }
+        });
+    },
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then((_) => {
           done();
         })
-        .catch((_) => {});
+        .catch((_) => {
+        });
     },
   },
 };
 </script>
 <style lang="scss" scopedSlots>
+.selectingTableBox{
+
+}
+.tableItem{
+  display: inline-block;
+  margin: 3px;
+  width: 60px;
+}
 .card-title {
   display: flex;
   align-items: center;
