@@ -30,7 +30,7 @@
             <div class="time">{{ getTimeDistance(curOrder.createTime) }}</div>
           </div>
           <div class="down">
-            <el-tag :type="curOrder.state==='1'?'success':'info'">{{ curOrder.state === '1' ? '已支付' : '未支付' }}</el-tag>
+            <el-tag :type="curOrder.state===0?'success':'info'">{{ curOrder.state === 0 ? '已支付' : '未支付' }}</el-tag>
             <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
           </div>
         </div>
@@ -51,7 +51,7 @@
           </el-table>
         </div>
         <div class="order-bottom">
-          <el-descriptions column="4">
+          <el-descriptions :column='4'>
             <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
             <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
             <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
@@ -63,7 +63,7 @@
   </el-row>
 </template>
 <script>
-import {getAllFood, getCurrOrders, getObjectMap, getGivenTimeOrders} from "../../../../api/data";
+import {getAllFood, getObjectMap, getGivenTimeOrders} from "../../../../api/data";
 
 export default {
   name: "home",
@@ -102,7 +102,7 @@ export default {
               this.orderList[i].orderItems[j].price = dish.price
               this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
               this.orderList[i].orderItems[j].category = dish.category
-              if (this.orderList[i].orderItems[i].state === 0) {
+              if (this.orderList[i].orderItems[j].state === 0) {
                 sum += this.orderList[i].orderItems[j].amount * this.orderList[i].orderItems[j].price;
               }
             }
@@ -111,9 +111,6 @@ export default {
         });
     },
     getTimeDistance(createTime) {
-      console.log(this.curTime)
-      console.log(createTime)
-
       let distance = this.curTime - createTime;
       if (distance > 60 * 60) {
         return Math.round(distance / 3600) + '小时前'
