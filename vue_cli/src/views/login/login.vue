@@ -1,43 +1,46 @@
 <template>
-  <el-form
-    :model="form"
-    status-icon
-    :rules="rules"
-    ref="form"
-    label-width="100px"
-    class="login-container"
-  >
-    <h3 class="login-title">系统登录</h3>
-    <el-form-item
-      label="员工号"
-      label-width="80px"
-      prop="username"
-      class="username"
+  <div>
+    <div style="height: 180px"></div>
+    <el-form
+      :model="form"
+      status-icon
+      :rules="rules"
+      ref="form"
+      label-width="100px"
+      class="login-container"
     >
-      <el-input
-        type="input"
-        v-model="form.username"
-        autocomplete="off"
-        placeholder="请输入员工号"
+      <h3 class="login-title">系统登录</h3>
+      <el-form-item
+        label="员工号"
+        label-width="80px"
+        prop="username"
+        class="username"
       >
-      </el-input>
-    </el-form-item>
-    <!-- -------------------------------------- -->
-    <el-form-item label="密码" label-width="80px" prop="password">
-      <el-input
-        type="password"
-        v-model="form.password"
-        autocomplete="off"
-        placeholder="请输入密码"
-      >
-      </el-input>
-    </el-form-item>
-    <el-form-item class="login-submit">
-      <el-button type="primary" @click="login" class="login_submit"
-        >登录</el-button
-      >
-    </el-form-item>
-  </el-form>
+        <el-input
+          type="input"
+          v-model="form.username"
+          autocomplete="off"
+          placeholder="请输入员工号"
+        >
+        </el-input>
+      </el-form-item>
+      <!-- -------------------------------------- -->
+      <el-form-item label="密码" label-width="80px" prop="password">
+        <el-input
+          type="password"
+          v-model="form.password"
+          autocomplete="off"
+          placeholder="请输入密码"
+        >
+        </el-input>
+      </el-form-item>
+      <el-form-item class="login-submit">
+        <el-button type="primary" @click="login" class="login_submit"
+          >登录</el-button
+        >
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
 <script>
 import axios from "axios";
@@ -113,7 +116,7 @@ export default {
 .login-container {
   border-radius: 15px;
   background-clip: padding-box;
-  margin: 180px auto;
+  margin: auto;
   width: 350px;
   padding: 35px 35px 15px 35px;
   background-color: #fff;
