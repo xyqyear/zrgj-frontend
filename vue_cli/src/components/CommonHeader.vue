@@ -17,7 +17,7 @@
           <!-- 这里也可以换成图片，我嫌麻烦就没搞了 -->
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-edit" command="perCen">个人中心</el-dropdown-item>
+<!--          <el-dropdown-item icon="el-icon-edit" command="perCen">个人中心</el-dropdown-item>-->
           <el-dropdown-item icon="el-icon-s-operation" command="quit">退出</el-dropdown-item>
 
         </el-dropdown-menu>

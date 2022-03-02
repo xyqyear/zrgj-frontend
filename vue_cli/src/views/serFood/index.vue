@@ -116,9 +116,20 @@
       </el-descriptions>
       <div class="demo-drawer__footer">
         <el-button @click="drawer = false">取 消</el-button>
-        <el-button type="primary" @click="uploadOrder">确 定</el-button>
+        <el-button type="primary" @click="uploadOrder" :disabled="unableToAddOrder">确 定</el-button>
       </div>
     </el-drawer>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center>
+      <span>当前订单为空或还未选择桌号</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -136,6 +147,7 @@ export default {
       classifiedDishList: [],
       drawer: false,
       selectingTableId: false,
+      centerDialogVisible: false,
       direction: "rtl",
       orderItems: [],
       totalPrice: 0,
@@ -162,7 +174,6 @@ export default {
       this.selectingTableId = false;
     },
     createNewOrder() {
-      this.drawer = true;
       this.orderItems = [];
       this.totalPrice = 0.0;
       for (const dish of this.$data.dishList) {
@@ -171,6 +182,11 @@ export default {
           this.totalPrice += dish.amount * dish.price;
         }
       }
+      if (this.orderItems.length === 0 || this.tableId === 0) {
+        this.centerDialogVisible = true
+        return;
+      }
+      this.drawer = true;
     },
     uploadOrder() {
       let newOrder = {
@@ -185,6 +201,7 @@ export default {
           });
           this.refreshDishList();
           this.refreshTableSituation();
+          this.tableId = 0;
           this.drawer = false;
         })
         .catch((error) => {

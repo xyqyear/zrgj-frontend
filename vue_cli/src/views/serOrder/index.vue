@@ -28,6 +28,13 @@
                 <el-table-column prop="amount" label="数量" width="100"></el-table-column>
                 <el-table-column prop="price" label="金额" width="150"></el-table-column>
                 <el-table-column prop="note" label="备注"></el-table-column>
+                <el-table-column prop="state" label="订单状态" width="150">
+                  <template slot-scope="scope">
+                    <el-tag :type="({'-1':'info','0':'success','1':'warning','2':'danger'})[scope.row.state]" effect="dark">
+                      {{ ({'-1': '已取消', '0': '已完成', '1': '排队中', '2': '烹饪中'})[scope.row.state] }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
               </el-table>
             </template>
             <el-descriptions>
@@ -36,10 +43,6 @@
               <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
             </el-descriptions>
             <!-- ------------------------------------------------ -->
-            <span slot="footer" class="dialog-footer">
-            <el-button @click="orderDetailVisible = false">取 消</el-button>
-            <el-button type="primary" @click="orderDetailVisible = false">结 算</el-button>
-          </span>
           </el-dialog>
           <!-- ------------------------------------- -->
         </div>
