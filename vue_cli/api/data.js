@@ -70,8 +70,8 @@ Body:
 */
 export const deAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: 'http://www.muzi.fun:5678/api/v1/account',
-    method: 'DELETE',
+    url: 'http://www.muzi.fun:5678/api/v1/account/delete',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
