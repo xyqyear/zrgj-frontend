@@ -61,7 +61,7 @@
     <el-col :span="24">
       <el-card style="margin-top: 20px">
         <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="id" label="序号" width="100" sortable="true">
+          <el-table-column prop="id" label="序号" width="100" >
           </el-table-column>
           <el-table-column prop="name" label="菜品名称" width="150">
           </el-table-column>
@@ -75,7 +75,7 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="菜品类别" width="150">
+          <el-table-column prop="type" label="菜品类别" width="150" sortable>
           </el-table-column>
           <el-table-column prop="price" label="菜品价格" width="150">
           </el-table-column>
@@ -350,14 +350,16 @@ export default {
           console.log(res);
           this.find = res.data.data.length;
           for (let i = 0; i <= res.data.data.length; i++) {
-            var item = {
-              id: res.data.data[i].id,
-              name: res.data.data[i].name,
-              type: res.data.data[i].category,
-              price: res.data.data[i].price,
-              img: res.data.data[i].imageUrl,
-            };
-            this.tableData.push(item);
+            if (res.data.data[i].deleted === false){
+              let item = {
+                id: res.data.data[i].id,
+                name: res.data.data[i].name,
+                type: res.data.data[i].category,
+                price: res.data.data[i].price,
+                img: res.data.data[i].imageUrl,
+              };
+              this.tableData.push(item);
+            }
           }
         })
         .catch((error) => {
