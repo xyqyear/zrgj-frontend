@@ -37,7 +37,7 @@
             <p style="font-size: 16px; font-weight: 800; margin-bottom: 20px">
               今日营业额（元）
             </p>
-            <p>哇哩哇</p>
+            <!-- <p>哇哩哇</p> -->
           </div>
           <div class="countNum">{{ todayAmount.Money }}</div>
         </div>
@@ -50,7 +50,7 @@
             <p style="font-size: 16px; font-weight: 800; margin-bottom: 20px">
               今日有效订单（个）
             </p>
-            <p>哇哩哇</p>
+            <!-- <p>哇哩哇</p> -->
           </div>
           <div class="countNum">{{ todayAmount.Order }}</div>
         </div>
@@ -235,7 +235,7 @@ export default {
       //第一行
       name: "餐饮管理有限公司XX分店",
       phone: "15608209829",
-      location: "哇哩哇市哇哩哇区哇哩哇县",
+      location: "重庆市渝北区华山南路16号",
       roomImage: require("../../assets/images/logo.png"),
       //第二行,今日营业额，今日有效订单数
       todayAmount: {
@@ -276,17 +276,26 @@ export default {
     this.chooseDays(this.radio1); //首先setbody数据
   },
   methods: {
-    //获取时间戳,前几天
-    getTimeNum(day) {
+    //获取时间戳,现在的时间
+    getNowTimeNum() {
       return Math.ceil(
-        new Date(Date.now() - day * 24 * 3600 * 1000).getTime() / 1000
+        new Date(Date.now()).getTime() / 1000
+      );
+    },
+    //获取某一天的开始时间
+    getTimeNum(day){
+      const todayStartTime = new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime()/1000
+      console.log(day+'天前')
+      console.log(todayStartTime)
+      return Math.ceil(
+        new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime()/1000
       );
     },
     //获取今日的数据
     getTodayAmount() {
       /////////////////////获取所有订单/////////////////////
-      let fromTime = this.getTimeNum(1);
-      this.toTime = this.getTimeNum(0);
+      let fromTime = this.getTimeNum(0);//修改成当天开始的时间戳
+      this.toTime = this.getNowTimeNum();
       var body = {};
       body.from = fromTime;
       body.to = this.toTime;
@@ -350,9 +359,9 @@ export default {
           break;
       }
       //设置body
-      let fromTime = this.getTimeNum(7);
+      let fromTime = this.getTimeNum(7*this.interval);
       this.body.from = fromTime;
-      this.body.to = this.toTime;
+      this.body.to = this.getNowTimeNum();
       //设置横坐标xData
         this.xData.length = 0;
         console.log(this.interval)
@@ -378,6 +387,8 @@ export default {
     const series = [];
     getGivenTimeOrders(this.body).then((res) => {
       var dataArray = res.data.data;
+      console.log('dataArray')
+      console.log(dataArray)
       // series.push({
       //   name: '营业额',
       //   data: res.data.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
@@ -390,17 +401,21 @@ export default {
       var keyArray=[];
       ///body的三个时间
       var tempTime = 0
-      var fromTime = this.getTimeNum(0);
+      var fromTime = this.getNowTimeNum();
       var toTime = 0
       keyArray.push('营业额')
       for (let i = 0; i < 7; i++) {
         tempTime = fromTime;
         toTime = tempTime;
-        fromTime = this.getTimeNum(((i+1) * this.interval)+1);
+        fromTime = this.getTimeNum(i * this.interval);
+        console.log('dataArray.length')
+        console.log(dataArray.length)
         for (let j = 0; j < dataArray.length; j++) {
           if (dataArray[j].createTime >= fromTime && 
           dataArray[j].createTime <= toTime) {
             totalPrice += dataArray[j].totalPrice;
+            console.log('dataArray[j].totalPrice')
+            console.log(dataArray[j].totalPrice)
           }
         }
         seriesArray.push(totalPrice);
