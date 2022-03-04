@@ -26,28 +26,28 @@ export default{
               {
                 path:'/table',
                 name:'table',
-                label:'桌台管理',
-                icon:'video-play',//自己记得改icon
+                label:'账单结账',
+                icon:'s-grid',//自己记得改icon
                 url:'table/index.vue'//?
               },
               {
-                path:'/case',
-                name:'case',
+                path:'/page1',
+                name:'page1',
                 label:'订单管理',
-                icon:'user',//自己记得改icon
+                icon:'s-order',//自己记得改icon
                 url:'case/index.vue'
               },
               {
                 path:'/food',
                 name:'food',
                 label:'菜品管理',
-                icon:'user',//自己记得改icon
+                icon:'fork-spoon',//自己记得改icon
                 url:'food/index.vue'
               },
-              
+
               {
                 label:'其他',
-                icon:'location',
+                icon:'setting',
                 children:[
                   {
                     path:'/worker',
@@ -59,7 +59,7 @@ export default{
                   {
                     path:'/perCen',
                     name:'perCen',
-                    label:'个人中心',
+                    label:'餐厅名片',
                     icon:'setting',//自己记得改icon
                     url:'perCen/index.vue'
                   }
@@ -67,32 +67,32 @@ export default{
               }
         ],
         position1Menu:[//服务员
-            {
+/*            {
                 path:'/serMain',
                 name:'serMain',
                 label:'首页',
                 icon:'setting',//自己记得改icon
                 url:'serMain/index.vue'
-            },
+            },*/
             {
                 path:'/serFood',
                 name:'serFood',
                 label:'全部菜品',
-                icon:'setting',//自己记得改icon
+                icon:'s-order',//自己记得改icon
                 url:'serFood/index.vue'
             },
-            {
+/*            {
                 path:'/serShopping',
                 name:'serShopping',
                 label:'购物车',
                 icon:'setting',//自己记得改icon
                 url:'serShopping/index.vue'
-            },
+            },*/
             {
                 path:'/serOrder',
                 name:'serOrder',
-                label:'订单查看',
-                icon:'setting',//自己记得改icon
+                label:'当前订单',
+                icon:'s-grid',//自己记得改icon
                 url:'serOrder/index.vue'
             }
         ],

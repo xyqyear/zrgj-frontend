@@ -1,152 +1,155 @@
 <template>
   <el-row class="home" :gutter="20">
-    <div class="operation">
-      <!-- <div>
-        <p style="margin-left:20px;color:#545C64">查找到{{find}}条</p>
-      </div> -->
-      <div style="margin-right: 20px; display: flex">
-        <el-input
-          placeholder="客户名、客户手机、订单号"
-          v-model="input"
-          clearable
-        >
-          <el-button slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </div>
-      <el-button plain style="margin-left: 20px">添加订单</el-button>
-    </div>
+    <!--    <div class="operation">
+          &lt;!&ndash; <div>
+            <p style="margin-left:20px;color:#545C64">查找到{{find}}条</p>
+          </div> &ndash;&gt;
+          <div style="margin-right: 20px; display: flex">
+            <el-input
+              placeholder="客户名、客户手机、订单号"
+              v-model="input"
+              clearable
+            >
+              <el-button slot="append" icon="el-icon-search"></el-button>
+            </el-input>
+          </div>
+          <el-button plain style="margin-left: 20px">添加订单</el-button>
+        </div>-->
     <el-col :span="24">
       <el-card
-        v-for="(item,index) in orderData"
+        v-for="(curOrder,index) in orderList"
         :key="index"
-        style="margin-top: 20px; height: 460px"
+        style="margin-top: 20px;"
       >
         <div class="order-header">
           <div class="left">
-            <div>{{ index }}</div>
-            <div class="order-num">订单号 {{ item.id }}</div>
+            <div class="order-num">订单号 {{ curOrder.id }}</div>
           </div>
+
           <div class="right">
-            <div class="time">2小时前</div>
+            <div class="time">{{ getTimeDistance(curOrder.createTime) }}</div>
+          </div>
+          <div class="down">
+            <el-tag :type="curOrder.state===0?'success':'info'">{{ curOrder.state === 0 ? '已支付' : '未支付' }}</el-tag>
+            <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
           </div>
         </div>
         <div class="order-content">
-            <div class="order-item"
-            v-for="subitem in item.orderItems" :index="subitem.id+''" :key="subitem.id"
-            >
-            <div class="left">
-                <img :src="img" style="width:30px;height:30px;"/>
-                <div class="orderItem-name" style="margin-left:20px">名字+（dishid:{{subitem.dishId}}）</div>
-                </div>
-                <div class="right">
-                    <div class="amount" style="margin-right:30px">X {{subitem.amount}}</div>
-                    <div class="count">￥23.0</div>
-                </div>
-            </div>
+          <el-table :data="curOrder.orderItems" height="150">
+            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column prop="name" label="菜名" width="200"></el-table-column>
+            <el-table-column prop="amount" label="数量" width="100"></el-table-column>
+            <el-table-column prop="price" label="金额" width="100"></el-table-column>
+            <el-table-column prop="note" label="备注"></el-table-column>
+            <el-table-column prop="state" label="订单状态" width="100">
+              <template slot-scope="scope">
+                <el-tag :type="({'-1':'info','0':'success','1':'warning','2':'danger'})[scope.row.state]" effect="dark">
+                  {{ ({'-1': '已取消', '0': '已完成', '1': '排队中', '2': '烹饪中'})[scope.row.state] }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
         <div class="order-bottom">
-            <div class="up">
-            <div class="total">共10种，共10个商品，总计：￥200</div>
-            </div>
-            <div class="down">
-            <el-tag :type="item.state=='1'?'success':'info'">{{item.state=='1'?'已支付':'未支付'}}</el-tag>
-            <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
-            </div>
+          <el-descriptions :column='4'>
+            <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
+            <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
+            <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
+            <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
+          </el-descriptions>
         </div>
       </el-card>
     </el-col>
   </el-row>
 </template>
 <script>
+import {getAllFood, getObjectMap, getGivenTimeOrders} from "../../../../api/data";
+
 export default {
   name: "home",
   data() {
     return {
-      input: "",
-      find: "22",
-      img:require('../../../assets/images/logo.png'),
-      tableData: [
-        {
-          index: "1",
-          id: "12313",
-          name: "哇哩哇",
-          type: "基层",
-          phone: "1234567881",
-        },
-        {
-          index: "2",
-          id: "12313",
-          name: "哇哩哇",
-          type: "基层",
-          phone: "1234567881",
-        },
-      ],
-      orderData: [
-        {
-          id: "01",
-          state:'1',
-          orderItems:[
-              {
-                  id:'1',
-                  dishId:'1',
-                  amount:1,
-              },
-              {
-                  id:'2',
-                  dishId:'2',
-                  amount:2,
-              },
-              {
-                  id:'1',
-                  dishId:'1',
-                  amount:1,
-              },
-              {
-                  id:'2',
-                  dishId:'2',
-                  amount:2,
-              },
-              {
-                  id:'1',
-                  dishId:'1',
-                  amount:1,
-              },
-              {
-                  id:'2',
-                  dishId:'2',
-                  amount:2,
-              },
-              {
-                  id:'1',
-                  dishId:'1',
-                  amount:1,
-              },
-              {
-                  id:'2',
-                  dishId:'2',
-                  amount:2,
-              }
-
-
-          ]
-        },
-         {
-          id: "02",
-          state:'0',
-        },
-      ],
+      orderList: [],
+      dishMap: {},
+      curTime: 0
     };
   },
+  mounted() {
+    getAllFood()
+      .then(res => {
+        let dishList = res.data.data;
+        this.dishMap = getObjectMap(dishList);
+        this.refreshOrderData()
+      })
+  },
   methods: {
-    //应该就是通过这玩意，通过name推过去
-    clickTest(subitem){
-      console.log(subitem.id)
+    refreshOrderData() {
+      this.curTime = Math.round(new Date().getTime() / 1000);
+      let fromTime = Math.round(new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000);
+
+      getGivenTimeOrders({
+        from: fromTime,
+        to: this.curTime
+      })
+        .then(res => {
+          this.orderList = res.data.data;
+          // orderItems 添加上菜品信息
+          for (let i = 0; i < this.orderList.length; i++) {
+            let sum = 0;
+            for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
+              let dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
+              this.orderList[i].orderItems[j].name = dish.name
+              this.orderList[i].orderItems[j].price = dish.price
+              this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
+              this.orderList[i].orderItems[j].category = dish.category
+              if (this.orderList[i].orderItems[j].state === 0) {
+                sum += this.orderList[i].orderItems[j].amount * this.orderList[i].orderItems[j].price;
+              }
+            }
+            this.orderList[i].actualSum = sum;
+          }
+        });
+    },
+    getTimeDistance(createTime) {
+      let distance = this.curTime - createTime;
+      if (distance > 60 * 60) {
+        return Math.round(distance / 3600) + '小时前'
+      } else {
+        return Math.round(distance / 60) + '分钟前'
+      }
     }
-    
+
   },
 };
 </script>
 <style lang="less" scoped>
+.tableInfo {
+  height: 200px;
+  width: 250px;
+  margin: 10px 5px;
+  border-radius: 10px;
+}
+
+.cardTop {
+  border-radius: 5px;
+  overflow: hidden;
+  height: 40%;
+  width: 100%;
+}
+
+.cardBottom {
+  width: 100%;
+  height: 60%;
+}
+
+.tables {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .operation {
   display: flex;
   flex-direction: row;
@@ -156,81 +159,64 @@ export default {
   margin-left: 20px;
   margin-right: 20px;
 }
+
 .order-header {
-    width:100%;
-    height: 60px;
+  width: 100%;
+  height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-align: center;
   border-bottom: 2px solid #C1C1C1;
-  .left{
-      width:200px;
-      display: flex;
-      justify-content: left;
-      align-items: center;
-      text-align: center;
-      .order-num{
-          margin-left: 20px;
-      }
-  }
-}
-.order-content {
-    width:100%;
-    height: 300px;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll; 
-  .order-item{
-      width:100%;
-      border-bottom: 2px solid #EFEFEF;
-      display: flex;
-      justify-content: space-between;
-  }
-  .left{
-      margin-left: 30px;
-      width:200px;
-      display: flex;
-      justify-content: left;
-      align-items: center;
-      text-align: center;
-      line-height: 50px;
-      .order-num{
-          margin-left: 20px;
-      }
-  }
-  .right{
-      display: flex;
-      justify-content: left;
-      align-items: center;
-      text-align: center;
-  }
 
-}
-.order-bottom{
-    width:100%;
-    height: 60px;
-    background: #FFFFFF;
+  .left {
+    width: 200px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     text-align: center;
-    .up{
-        width:100%;
-        display: flex;
-        justify-content: right;
-        align-items: center;
-        
 
+    .order-num {
+      margin-left: 20px;
     }
-    .down{
-        width:100%;
-        display: flex;
-        justify-content: right;
-        align-items: center;
+  }
+}
+
+.order-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 
 
-    }
+}
+
+.order-bottom {
+  margin-top: 10px;
+  width: 100%;
+  height: 60px;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  .up {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+
+
+  }
+
+  .down {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+
+
+  }
 }
 </style>

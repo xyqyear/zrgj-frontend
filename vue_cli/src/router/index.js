@@ -30,17 +30,17 @@ const routes = [
         component: () => import('../views/case'),
         children: [
           {
-            path: '/case/page1',
+            path: '/page1',
             name: 'page1',
             component: () => import('../views/case/page1')
           },
           {
-            path: '/case/page2',
+            path: '/page2',
             name: 'page2',
             component: () => import('../views/case/page2')
           },
           {
-            path: '/case/page3',
+            path: '/page3',
             name: 'page3',
             component: () => import('../views/case/page3')
           }
@@ -98,7 +98,7 @@ const routes = [
         component:()=>import('../views/chef')
       }
     ],
-    
+
   },
   {
     path:'/login',

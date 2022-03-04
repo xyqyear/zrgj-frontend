@@ -59,8 +59,8 @@
       </div>
     </div>
     <el-col :span="24">
-      <el-card style="margin-top: 20px; height: 460px">
-        <el-table :data="tableData" height="430" style="width: 100%">
+      <el-card style="margin-top: 20px">
+        <el-table :data="tableData" style="width: 100%">
           <el-table-column prop="id" label="序号" width="100" sortable="true">
           </el-table-column>
           <el-table-column prop="name" label="菜品名称" width="150">
@@ -254,6 +254,8 @@ export default {
                 type: "success",
                 message: "删除成功!",
               });
+              this.tableData.length = 0
+                this.getFoodData();
             }
           });
         })
@@ -284,6 +286,8 @@ export default {
       console.log(body);
       updateFood(body).then((res) => {
         console.log(res);
+        this.tableData.length = 0
+                this.getFoodData();
       })
     },
     uploadFiles(file, _) {
@@ -332,6 +336,8 @@ export default {
       addFood(body).then((res) => {
         console.log(res);
         this.dialogFormVisible = false;
+        this.tableData.length = 0
+                this.getFoodData();
       });
     },
     getFoodData() {

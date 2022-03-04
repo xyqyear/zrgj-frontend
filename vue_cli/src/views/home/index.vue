@@ -261,57 +261,10 @@ export default {
       worker_count: "28",
       provider_count: "3",
 
-      tableData: [],
-      tableLabel: {
-        name: "课程",
-        todayBuy: "今日购买",
-        monthBuy: "本月购买",
-        totalBuy: "总购买",
-      },
-      countData: [
-        {
-          name: "今日支付订单",
-          value: "1234",
-          icon: "success",
-          color: "#2ec7c9",
-        },
-        {
-          name: "今日收藏订单",
-          value: "210",
-          icon: "star-on",
-          color: "#ffb980",
-        },
-        {
-          name: "今日未支付订单",
-          value: "1234",
-          icon: "s-goods",
-          color: "#5ab1ef",
-        },
-        {
-          name: "本月支付订单",
-          value: "1234",
-          icon: "success",
-          color: "#2ec7c9",
-        },
-        {
-          name: "本月收藏订单",
-          value: "210",
-          icon: "star-on",
-          color: "#ffb980",
-        },
-        {
-          name: "本月未支付订单",
-          value: "1234",
-          icon: "s-goods",
-          color: "#5ab1ef",
-        },
-      ],
+
     };
   },
   created() {
-    //访问接口，加请求头
-    axios.defaults.headers.common["Authorization"] =
-      localStorage.getItem("token");
     this.getTodayAmount();
     this.getStatistic();
   },
@@ -333,11 +286,6 @@ export default {
     getTodayAmount() {
       /////////////////////获取所有订单/////////////////////
       let fromTime = this.getTimeNum(1);
-      // let fromTime=0
-      // let fromTime =
-      //   new Date(
-      //     new Date(new Date().toLocaleDateString()).getTime() - 24 * 3600 * 1000
-      //   ).getTime() / 1000;
       this.toTime = this.getTimeNum(0);
       var body = {};
       body.from = fromTime;
@@ -356,9 +304,6 @@ export default {
           }
           this.todayAmount.Money = todayMoney;
           this.todayAmount.Order = todayOrder;
-          // res.data.forEach(item => {
-          //   console.log('item.totalPrice:'+item.totalPrice)
-          // });
         })
         .catch((error) => {
           console.log("getGivenTimeOrders error" + error.response);
@@ -411,7 +356,7 @@ export default {
       //设置横坐标xData
         this.xData.length = 0;
         console.log(this.interval)
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 7; i++) {//啊啊啊想一想啊
           var oldTime  = new Date(Date.now() - i * this.interval * 24 * 3600 * 1000);
           var newTime = new Date(oldTime); 
           var date = {
@@ -443,15 +388,19 @@ export default {
       var totalPrice = 0;
       var seriesArray = [];
       var keyArray=[];
+      ///body的三个时间
+      var tempTime = 0
+      var fromTime = this.getTimeNum(0);
+      var toTime = 0
       keyArray.push('营业额')
       for (let i = 0; i < 7; i++) {
-        var fromTime = this.getTimeNum(((i+1) * this.interval)+1);
-        var toTime = this.getTimeNum(i * this.interval);
+        tempTime = fromTime;
+        toTime = tempTime;
+        fromTime = this.getTimeNum(((i+1) * this.interval)+1);
         for (let j = 0; j < dataArray.length; j++) {
           if (dataArray[j].createTime >= fromTime && 
           dataArray[j].createTime <= toTime) {
             totalPrice += dataArray[j].totalPrice;
-            console.log(totalPrice)
           }
         }
         seriesArray.push(totalPrice);

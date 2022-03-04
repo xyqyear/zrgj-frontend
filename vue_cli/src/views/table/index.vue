@@ -19,406 +19,182 @@
     </div> -->
     <el-col :span="24">
       <div class="tables">
-        <el-card
+        <div
           @click="dialogVisible = true"
-          v-for="item in spotData"
-          :key="item.name"
-          :body-style="{ display: 'flex', padding: 0 }"
-          style="margin-bottom: 20px; margin-right: 40px"
+          v-for="table in tableData"
+          :key="table.tableName"
+          class="tableInfo"
         >
-          <el-button
-            class="info"
-            @click="ClickCard(item)"
-            :disabled="item.state ? false : true"
-          >
-            <div :style="{ background: item.state ? '#82AAFF' : '#FFFFFF' }">
-              <p class="tableNum">{{ item.tableNum }}</p>
-            </div>
-            <div>
-              <p class="state">{{ item.state ? item.state : "空闲" }}</p>
-            </div>
+          <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}" class="cardTop">
+            <div style="font-size: large; color: #371722; margin: 10px">{{ table.tableName }} 号桌</div>
+            <div style="font-size: small; color: #C0C2CE; margin-top: 20px">{{ table.occupied ? "占用中" : "空闲" }}</div>
+          </div>
+          <el-button @click="displayOderDetail(tableMap[table.tableName])"
+                     :disabled="! table.occupied" class="cardBottom">
+            <p>{{ table.occupied ? "查看订单" : "" }}</p>
+
           </el-button>
-        </el-card>
+        </div>
         <!-- ------------------------------------- -->
-        <el-dialog
-          title="提示"
-          :visible.sync="dialogVisible"
-          width="50%"
-        >
+        <el-dialog title="订单详情" :visible.sync="orderDetailVisible" width="50%">
           <!-- ---------------------------------------------- -->
-          <el-card style="margin-top: 20px; height: 460px">
-            <div class="order-header">
-              <div class="left">
-                <div class="order-num">订单号 {{ currItem.name }}</div>
-              </div>
-              <div class="right">
-                <div class="time">2小时前</div>
-              </div>
-            </div>
-            <div class="order-content">
-              <div
-                class="order-item"
-                v-for="item in currItem.orders"
-                :index="item.id + ''"
-                :key="item.id"
-              >
-                <div class="left">
-                  <img :src="img" style="width: 30px; height: 30px" />
-                  <div class="orderItem-name" style="margin-left: 20px">
-                    名字+（dishid:{{ item.dishId }}）
-                  </div>
-                </div>
-                <div class="right">
-                  <div class="amount" style="margin-right: 30px">
-                    X {{ item.amount }}
-                  </div>
-                  <div class="count">￥23.0</div>
-                </div>
-              </div>
-            </div>
-            <div class="order-bottom">
-              <div class="up">
-                <div class="total">共10种，共10个商品，总计：￥200</div>
-              </div>
-              <div class="down">
-                <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
-              </div>
-            </div>
-          </el-card>
+          <el-table :data="curOrder.orderItems" height="500">
+            <el-table-column type="index" width="30"></el-table-column>
+            <el-table-column prop="name" label="菜名" width="150"></el-table-column>
+            <el-table-column prop="amount" label="数量" width="100"></el-table-column>
+            <el-table-column prop="price" label="金额" width="100"></el-table-column>
+            <el-table-column prop="note" label="备注"></el-table-column>
+            <el-table-column prop="state" label="订单状态" width="150">
+              <template slot-scope="scope">
+                <el-tag :type="({'-1':'info','0':'success','1':'warning','2':'danger'})[scope.row.state]" effect="dark">
+                  {{ ({'-1': '已取消', '0': '已完成', '1': '排队中', '2': '烹饪中'})[scope.row.state] }}
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-descriptions column=4>
+            <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
+            <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
+            <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
+            <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
+          </el-descriptions>
           <!-- ------------------------------------------------ -->
           <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false"
-            >结 算</el-button
-            >
+            <el-button @click="orderDetailVisible = false">取 消</el-button>
+            <el-button type="primary" @click="checkout">结 算</el-button>
           </span>
         </el-dialog>
         <!-- ------------------------------------- -->
       </div>
     </el-col>
-  </el-row>
-</template>  
-<style lang="less" scoped>
-.header {
-  font-weight: 400;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-}
-.el-button {
-  padding: 0;
-  border: 0;
-}
-.tables {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.info {
-  width: 200px;
-  height: 200px;
-  div {
-    width: 100%;
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    .floor {
-      font-weight: 800;
-      margin-bottom: 15px;
-    }
-  }
-}
 
-.order-header {
-  width: 100%;
-  height: 60px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  border-bottom: 2px solid #c1c1c1;
-  .left {
-    width: 200px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-    .order-num {
-      margin-left: 20px;
-    }
-  }
-}
-.order-content {
-  width: 100%;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-  .order-item {
-    width: 100%;
-    border-bottom: 2px solid #efefef;
-    display: flex;
-    justify-content: space-between;
-  }
-  .left {
-    margin-left: 30px;
-    width: 200px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-    line-height: 50px;
-    .order-num {
-      margin-left: 20px;
-    }
-  }
-  .right {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-  }
-}
-.order-bottom {
-  width: 100%;
-  height: 60px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  .up {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-  .down {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-}
-</style>
+
+  </el-row>
+</template>
+
 <script>
-import { getAllFood, getCurrOrders } from '../../../api/data';
+import {getRestaurant, getCurrOrders, getAllFood, getObjectMap, payOrders} from '../../../api/data';
+
 export default {
   name: "table",
   data() {
     return {
-      dialogVisible: false,
-      buttonVisible: true,
-      currItem: {},
-      orderData: {},
-      rawOrderData: {},
-      spotData: [
-        {
-          name: "11",
-          tableNum: "1号桌",
-          state: "540",
-          orders: [
-            {
-              id: "1",
-              dishId: "1",
-              amount: 1,
-            },
-            {
-              id: "2",
-              dishId: "2",
-              amount: 2,
-            },
-            {
-              id: "1",
-              dishId: "1",
-              amount: 1,
-            },
-            {
-              id: "2",
-              dishId: "2",
-              amount: 2,
-            },
-            {
-              id: "1",
-              dishId: "1",
-              amount: 1,
-            },
-            {
-              id: "2",
-              dishId: "2",
-              amount: 2,
-            },
-            {
-              id: "1",
-              dishId: "1",
-              amount: 1,
-            },
-            {
-              id: "2",
-              dishId: "2",
-              amount: 2,
-            },
-            {
-              id: "1",
-              dishId: "1",
-              amount: 1,
-            },
-          ],
-        },
-        {
-          name: "12",
-          tableNum: "2号桌",
-          state: "",
-        },
-        {
-          name: "13",
-          tableNum: "3号桌",
-          state: "",
-        },
-        {
-          name: "14",
-          tableNum: "4号桌",
-          state: "",
-        },
-        {
-          name: "15",
-          tableNum: "5号桌",
-          state: "",
-        },
-        {
-          name: "16",
-          tableNum: "6号桌",
-          state: "",
-        },
-        {
-          name: "21",
-          tableNum: "1号桌",
-          state: "566",
-        },
-        {
-          name: "22",
-          tableNum: "2号桌",
-          state: "1352",
-        },
-        {
-          name: "23",
-          tableNum: "3号桌",
-          state: "47",
-        },
-        {
-          name: "24",
-          tableNum: "4号桌",
-          state: "89",
-        },
-        {
-          name: "25",
-          tableNum: "5号桌",
-          state: "650",
-        },
-        {
-          name: "26",
-          tableNum: "6号桌",
-          state: "",
-        },
-        {
-          name: "27",
-          tableNum: "7号桌",
-          state: "",
-        },
-        {
-          name: "28",
-          tableNum: "8号桌",
-          state: "",
-        },
-        {
-          name: "29",
-          tableNum: "9号桌",
-          state: "",
-        },
-      ],
-      branchData: [],
+      tableData: [],
+      tableMap: {},
+      orderList: [],
+      curOrder: {},
+      totalTableNum: 10,
+      dishMap: {},
+      orderDetailVisible: false,
     };
   },
   mounted() {
-    this.populateData();
+    // 获取餐厅最大桌号
+    getRestaurant()
+      .then(res => {
+        this.totalTableNum = res.data.data.tableNum;
+        getAllFood()
+          .then(res => {
+            let dishList = res.data.data;
+            this.dishMap = getObjectMap(dishList);
+            this.refreshOrderData()
+          })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   },
   methods: {
-    populateData() {
-      Promise.all([getAllFood(), getCurrOrders()]).then((res) => {
-        let dishMap = res[0].data.data.reduce((acc, curr) => {
-                  acc[curr.id] = curr.name;
-                  return acc;
-                }, {});
-        let orders = res[1].data.data;
-          for (let order of orders) {
-            // if all items are finished, skip
-            if (order.orderItems.every((item) => item.state === 0)) {
-              continue;
-            }
-
-            let displayOrder = {
-              id: order.id,
-              time: new Date(order.createTime).toLocaleTimeString(),
-              tableId: order.tableId,
-              orderItems: {},
-            };
-
-            for (let orderItem of order.orderItems) {
-              displayOrder.orderItems[orderItem.id] = {
-                id: orderItem.id,
-                name: dishMap[orderItem.dishId],
-                amount: orderItem.amount,
-                note: orderItem.note,
-                state: orderItem.state,
-              };
-            }
-
-            order.orderItems = order.orderItems.reduce((acc, curr) => {
-              acc[curr.id] = curr;
-              return acc;
-            }, {});
-
-            this.$set(this.orderData, order.id, displayOrder);
-            this.$set(this.rawOrderData, order.id, order);
-          }
-      })
+    refreshOrderData() {
+      getCurrOrders()
+        .then(res => {
+          this.orderList = res.data.data;
+          this.generateTableList()
+        });
     },
-    ClickCard(item) {
-      console.log(item);
-      if (item.state) {
-        this.dialogVisible = true;
-        this.currItem = {
-          name: item.name,
-          floor: item.floor,
-          tableNum: item.tableNum,
-          state: item.state,
-          orders: item.orders,
-        };
+    generateTableList() {
+      this.tableData = [];
+      for (let i = 1; i <= this.totalTableNum; i++) {
+        this.tableData.push({
+          'occupied': false,
+          'tableName': i
+        })
       }
+      // orderItems 添加上菜品信息
+      for (let i = 0; i < this.orderList.length; i++) {
+        for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
+          let dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
+          this.orderList[i].orderItems[j].name = dish.name
+          this.orderList[i].orderItems[j].price = dish.price
+          this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
+          this.orderList[i].orderItems[j].category = dish.category
+          // this.orderList[i].orderItems[j].stateDescription = this.stateToDescription(this.orderList[i].orderItems[j].state)
+        }
+      }
+
+      // 桌号与订单对应
+      for (let i = 0; i < this.orderList.length; i++) {
+        let tableName = this.orderList[i].tableId;
+        this.tableData[tableName - 1].occupied = true;
+        this.tableMap[tableName] = this.orderList[i];
+      }
+      console.log(this.tableData)
     },
+    displayOderDetail(order) {
+      this.curOrder = order
+      let sum = 0;
+      for (let i = 0; i < this.curOrder.orderItems.length; i++) {
+        if (this.curOrder.orderItems[i].state === 0) {
+          sum += this.curOrder.orderItems[i].amount * this.curOrder.orderItems[i].price;
+        }
+      }
+      this.curOrder.actualSum = sum
+      this.orderDetailVisible = true
+    },
+    checkout() {
+      this.$confirm('已确认订单项状态并完成收款', '确认结账', {
+        confirmButtonText: '结束订单',
+        cancelButtonText: '取消',
+        type: 'info'
+      }).then(() => {
+        // 发送结束订单请求
+        payOrders({'orderId': this.curOrder.id})
+          .then(res => {
+            this.refreshOrderData()
+            this.$message({
+              type: 'success',
+              message: '已结束该订单'
+            });
+            this.orderDetailVisible = false
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消结账'
+        });
+      });
+    }
   },
 };
 </script>
 
 <style lang="less" scoped>
-.header {
-  font-weight: 400;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
+.tableInfo {
+  height: 200px;
+  width: 250px;
+  margin: 10px 5px;
+  border-radius: 10px;
 }
 
-.el-button {
-  padding: 0;
-  border: 0;
+.cardTop {
+  border-radius: 5px;
+  overflow: hidden;
+  height: 40%;
+  width: 100%;
+}
+.cardBottom {
+  width: 100%;
+  height: 60%;
 }
 
 .tables {
@@ -427,113 +203,5 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-}
-
-.info {
-  width: 200px;
-  height: 200px;
-
-  div {
-    width: 100%;
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-    .floor {
-      font-weight: 800;
-      margin-bottom: 15px;
-    }
-  }
-}
-
-.order-header {
-  width: 100%;
-  height: 60px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: center;
-  border-bottom: 2px solid #C1C1C1;
-
-  .left {
-    width: 200px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-
-    .order-num {
-      margin-left: 20px;
-    }
-  }
-}
-
-.order-content {
-  width: 100%;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-
-  .order-item {
-    width: 100%;
-    border-bottom: 2px solid #EFEFEF;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .left {
-    margin-left: 30px;
-    width: 200px;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-    line-height: 50px;
-
-    .order-num {
-      margin-left: 20px;
-    }
-  }
-
-  .right {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    text-align: center;
-  }
-
-}
-
-.order-bottom {
-  width: 100%;
-  height: 60px;
-  background: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  .up {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-
-
-  }
-
-  .down {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-
-
-  }
 }
 </style>

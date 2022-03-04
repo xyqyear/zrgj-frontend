@@ -38,7 +38,7 @@
       </el-dialog>
     </div>
     <el-col :span="24">
-      <el-card style="margin-top: 20px; height: 460px">
+      <el-card style="margin-top: 20px">
         <el-table :data="tableData" height:300 style="width: 100%">
           <el-table-column prop="index" label="序号" sortable="true">
           </el-table-column>
