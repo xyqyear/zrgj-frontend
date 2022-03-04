@@ -407,15 +407,9 @@ export default {
       for (let i = 0; i < 7; i++) {
         tempTime = fromTime;
         toTime = tempTime;
-<<<<<<< .mine
         fromTime = this.getTimeNum(i * this.interval);
         console.log('dataArray.length')
         console.log(dataArray.length)
-=======
-        fromTime = this.getTimeNum((i * this.interval)+1);
-
-
->>>>>>> .theirs
         for (let j = 0; j < dataArray.length; j++) {
           if (dataArray[j].createTime >= fromTime && 
           dataArray[j].createTime <= toTime) {
