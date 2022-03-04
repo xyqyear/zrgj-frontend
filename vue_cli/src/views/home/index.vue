@@ -37,7 +37,7 @@
             <p style="font-size: 16px; font-weight: 800; margin-bottom: 20px">
               今日营业额（元）
             </p>
-            <p>哇哩哇</p>
+            <!-- <p>哇哩哇</p> -->
           </div>
           <div class="countNum">{{ todayAmount.Money }}</div>
         </div>
@@ -50,7 +50,7 @@
             <p style="font-size: 16px; font-weight: 800; margin-bottom: 20px">
               今日有效订单（个）
             </p>
-            <p>哇哩哇</p>
+            <!-- <p>哇哩哇</p> -->
           </div>
           <div class="countNum">{{ todayAmount.Order }}</div>
         </div>
@@ -235,7 +235,7 @@ export default {
       //第一行
       name: "餐饮管理有限公司XX分店",
       phone: "15608209829",
-      location: "哇哩哇市哇哩哇区哇哩哇县",
+      location: "重庆市渝北区华山南路16号",
       roomImage: require("../../assets/images/logo.png"),
       //第二行,今日营业额，今日有效订单数
       todayAmount: {
@@ -396,7 +396,7 @@ export default {
       for (let i = 0; i < 7; i++) {
         tempTime = fromTime;
         toTime = tempTime;
-        fromTime = this.getTimeNum(((i+1) * this.interval)+1);
+        fromTime = this.getTimeNum((i * this.interval)+1);
         for (let j = 0; j < dataArray.length; j++) {
           if (dataArray[j].createTime >= fromTime && 
           dataArray[j].createTime <= toTime) {
