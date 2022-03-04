@@ -20,7 +20,7 @@
               "
             >
               <el-card
-                v-if="item.category === category || index === 0"
+                v-if="(item.category === category || index === 0) && item.deleted===false"
                 :body-style="{ padding: '0px' }"
                 style="width: 200px; padding: 0px; margin: 20px"
               >
@@ -144,8 +144,7 @@ export default {
       accountId: localStorage.getItem('accountId'),
       num: 1,
       dishList: [],
-      dishCategories: ["全部菜品", "荤菜", "素菜", "汤类", "小吃", "饮品"],
-      classifiedDishList: [],
+      dishCategories: ["全部菜品", "荤菜", "素菜", "汤类", "主食", "小吃", "饮品"],
       drawer: false,
       selectingTableId: false,
       centerDialogVisible: false,

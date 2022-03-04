@@ -225,6 +225,10 @@ export default {
           value: "选项5",
           label: "饮品",
         },
+        {
+          value: "选项6",
+          label: "主食",
+        },
       ],
       value: "",
       fileList: [],
