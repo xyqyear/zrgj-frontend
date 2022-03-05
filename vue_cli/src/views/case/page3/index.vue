@@ -80,6 +80,10 @@ export default {
       xData2: [],
       ///////////时间选择器/////////////
       pickerOptions: {
+        disabledDate (date) {
+          // disabledDate 文档上：设置禁用状态，参数为当前日期，要求返回 Boolean
+          return date.getTime() >= Date.now()
+        },
         shortcuts: [
           {
             text: "最近一周",
@@ -166,27 +170,49 @@ export default {
       }
       this.endTime = endTime/1000
     var days = Math.floor(date3 / (24 * 3600 * 1000));
+    days = days+1
     this.interval = days
-    this.chooseDays(days)
+    //分开！
+    if(days<=20&&days>=0){
+        this.xNum = days
+      }else if(days>20)
+        this.xNum = 20
+    //日期选择设置body
+        let fromTime = startTime/1000
+        let toTime = endTime/1000
+        this.body.from = fromTime
+        this.body.to = toTime
+      this.setLineChart();
+      this.setColumnChart();
     },
     //设置折线图(value有两个值，一个是字符串一个是数组)
     setLineChart() {
+      //现在和选择的最终时间之间相距几天
+      var days = 0
+      if(this.value1[1]!=0){
+        var timestamp = this.getNowTimeNum()*1000
+        var date3 = parseFloat(timestamp) - parseFloat(this.value1[1])
+        days = Math.floor(date3 / (24 * 3600 * 1000));
+      }
       //设置横坐标xData
       this.xData1.length = 0;
       //时间戳相减
+      console.log('this.value1[0]',this.value1[0])
+      console.log('this.value1[1]',this.value1[1])
       let subTimestemp = 0
       if(this.value1[1]===0){
         subTimestemp = 0
       }else{
         subTimestemp = parseFloat(this.getNowTimeNum())*1000-parseFloat(this.value1[1])
       }
-      console.log('xNum',this.xNum)
+      console.log('subTimestemp',subTimestemp)
       for (let i = 0; i < this.xNum; i++) {
         var oldTime = new Date(
           // Date.now() - i * this.interval * 24 * 3600 * 1000
           //无间隔，每一天
-          Date.now() - (i-1) * 24 * 3600 * 1000 * (this.interval / this.xNum)-subTimestemp
+          Date.now() - (i+days) * 24 * 3600 * 1000 * (this.interval / this.xNum)
         );
+
         var newTime = new Date(oldTime);
         var date = {
           year: newTime.getFullYear(),
@@ -199,6 +225,8 @@ export default {
           (date.month >= 10 ? date.month : "0" + date.month) +
           "-" +
           (date.day >= 10 ? date.day : "0" + date.day);
+        console.log('好奇怪')
+        console.log(systemDate)
         this.xData1.push(systemDate);
       }
       this.xData1.reverse();
@@ -370,17 +398,12 @@ export default {
           this.xNum = 20
           break;
       }
-      //如果是选择日期,设置横坐标的长度，最长20，过长需要改横坐标
-      if(value<=20&&value>=0){
-        this.xNum = value
-      }else if(value>20)
-        this.xNum = 20
-      //设置body
-      let fromTime = this.getTimeNum(this.interval)
-      let toTime = this.getNowTimeNum()
-      this.body.from = fromTime
-      this.body.to = toTime
-
+        //快捷选项，设置body
+        let fromTime = this.getTimeNum(this.interval)
+        let toTime = this.getNowTimeNum()
+        this.body.from = fromTime
+        this.body.to = toTime
+     
       this.setLineChart();
       this.setColumnChart();
     },
