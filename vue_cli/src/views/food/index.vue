@@ -8,10 +8,7 @@
         <el-input placeholder="请输入内容" v-model="input" clearable>
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
-        <el-button
-          plain
-          style="margin-left: 20px"
-          @click="dialogFormVisible = true"
+        <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
           >上架菜品</el-button
         >
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
@@ -50,6 +47,63 @@
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
+            <el-form-item>
+              <div style="justify-content: left">个性化设置</div>
+              <el-card v-for="item in perSet" :key="item.id">
+                <el-row justify="end">
+                  <el-col span="5">
+                    <el-input v-model="inputMemo" placeholder="请输入内容">
+                    </el-input>
+                  </el-col>
+                  <el-col span="19">
+                    <el-row>
+                      <el-input
+                        v-model="inputMemo"
+                        placeholder="请输入内容"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="inputMemo"
+                        placeholder="请输入内容"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="inputMemo"
+                        placeholder="请输入内容"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                    <el-row>
+                      <el-input
+                        v-model="inputMemo"
+                        placeholder="请输入内容"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="inputMemo"
+                        placeholder="请输入内容"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="inputMemo"
+                        placeholder="请输入内容"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                  </el-col>
+                  <el-col>
+                    <i class="el-icon-delete" @click="delSet()"></i>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-button type="primary" @click="addSet()">增加属性</el-button>
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -79,11 +133,8 @@
           </el-table-column>
           <el-table-column prop="price" label="菜品价格" width="150">
           </el-table-column>
-          <!-- <el-table-column
-      prop="describe"
-      label="菜品描述"
-      width="430">
-          </el-table-column> -->
+          <el-table-column prop="flavour" label="菜品描述" width="200">
+          </el-table-column>
           <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <el-button
@@ -134,6 +185,68 @@
                       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                   </el-form-item>
+                  <el-form-item>
+                    <div style="justify-content: left">个性化设置</div>
+                    <el-card v-for="item in perSet" :key="item.id">
+                      <el-row justify="end">
+                        <el-col span="5">
+                          <el-input
+                            v-model="inputMemo"
+                            placeholder="请输入内容"
+                          >
+                          </el-input>
+                        </el-col>
+                        <el-col span="19">
+                          <el-row>
+                            <el-input
+                              v-model="inputMemo"
+                              placeholder="请输入内容"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="inputMemo"
+                              placeholder="请输入内容"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="inputMemo"
+                              placeholder="请输入内容"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="inputMemo"
+                              placeholder="请输入内容"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="inputMemo"
+                              placeholder="请输入内容"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="inputMemo"
+                              placeholder="请输入内容"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                          </el-row>
+                        </el-col>
+                        <el-col>
+                          <i class="el-icon-delete" @click="delSet()"></i>
+                        </el-col>
+                      </el-row>
+                    </el-card>
+                    <el-button type="primary" @click="addSet()"
+                      >增加属性</el-button
+                    >
+                  </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                   <el-button @click="dialogChangeVisible = false"
@@ -167,6 +280,8 @@ export default {
   name: "home",
   data() {
     return {
+      perSet: [],
+      inputMemo: "",
       selectVal: this.value || "",
       input: "",
       find: "",
@@ -228,13 +343,31 @@ export default {
       ],
       value: "",
       fileList: [],
+      flavour: [],
     };
   },
   mounted() {
     this.getFoodData();
   },
   methods: {
-    handleDelete(index,row){
+    delSet() {
+      this.perSet.splice(this.perSet.length - 1, 1);
+    },
+    ///////////////////////上架菜品的dialog打开事件
+    activeAddFoodDialog() {
+      this.dialogFormVisible = true;
+      this.perSet.length = 0;
+    },
+    addSet() {
+      console.log(this.perSet);
+      var a = this.perSet.length;
+      var body = {
+        id: a + 1,
+      };
+      this.perSet.push(body);
+      console.log(this.perSet);
+    },
+    handleDelete(index, row) {
       this.$confirm("此操作将删除该菜品, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -246,16 +379,15 @@ export default {
           };
           body.id = row.id;
           console.log(body.id);
-          deleteFood(body)
-          .then((res) => {
+          deleteFood(body).then((res) => {
             console.log(res);
             if (res.status == 200) {
               this.$message({
                 type: "success",
                 message: "删除成功!",
               });
-              this.tableData.length = 0
-                this.getFoodData();
+              this.tableData.length = 0;
+              this.getFoodData();
             }
           });
         })
@@ -286,9 +418,9 @@ export default {
       console.log(body);
       updateFood(body).then((res) => {
         console.log(res);
-        this.tableData.length = 0
-                this.getFoodData();
-      })
+        this.tableData.length = 0;
+        this.getFoodData();
+      });
     },
     uploadFiles(file, _) {
       const fd = new FormData();
@@ -336,8 +468,8 @@ export default {
       addFood(body).then((res) => {
         console.log(res);
         this.dialogFormVisible = false;
-        this.tableData.length = 0
-                this.getFoodData();
+        this.tableData.length = 0;
+        this.getFoodData();
       });
     },
     getFoodData() {
@@ -345,14 +477,38 @@ export default {
         .then((res) => {
           console.log(res);
           this.find = res.data.data.length;
+
           for (let i = 0; i <= res.data.data.length; i++) {
+            var flavour = "";
+            for (let j = 0; j < res.data.data[i].flavour.length; j++) {
+              flavour =
+                flavour + (j == 0)
+                  ? res.data.data[i].flavour[j].key + ":"
+                  : ";" + res.data.data[i].flavour[j].key + ":";
+              for (
+                let k = 0;
+                k < res.data.data[i].flavour[j].value.length;
+                k++
+              ) {
+                if (k == res.data.data[i].flavour[j].value.length - 1) {
+                  flavour =
+                    flavour + res.data.data[i].flavour[j].value[k] + ";";
+                } else {
+                  flavour =
+                    flavour + res.data.data[i].flavour[j].value[k] + ",";
+                }
+              }
+            }
+            this.flavour.push(flavour);
             var item = {
               id: res.data.data[i].id,
               name: res.data.data[i].name,
               type: res.data.data[i].category,
               price: res.data.data[i].price,
               img: res.data.data[i].imageUrl,
+              flavour: this.flavour[i],
             };
+
             this.tableData.push(item);
           }
         })
@@ -364,6 +520,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.noteClass {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  justify-items: left;
+}
 .operation {
   display: flex;
   flex-direction: row;

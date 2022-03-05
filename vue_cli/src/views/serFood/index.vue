@@ -7,8 +7,8 @@
         :name="category"
         :key="index"
       >
-        <div>
-          <el-row :gutter="10">
+        <div style="flex-wrap:wrap; justify-content:flex-start;">
+          <el-row :gutter="10" >
             <el-col
               :span="4"
               v-for="(item, dishIndex) in dishList"
@@ -16,16 +16,17 @@
               style="
                  {
                   margin: 0;
+                  flex:auto;
                 }
               "
             >
               <el-card
                 v-if="item.category === category || index === 0"
                 :body-style="{ padding: '0px' }"
-                style="width: 200px; padding: 0px; margin: 20px"
+                style="width:100%; padding: 0px; margin: 20px; "
               >
                 <div
-                  style="position: relative; text-align: center;"
+                  style="position: relative; text-align: center; "
                 >
                   <img
                     :src="item.imageUrl"
@@ -49,7 +50,7 @@
                   <el-col :span="10" style="font-weight: bold; color: #f95a68; ">
                     {{ item.price }}元/份
                   </el-col>
-                  <el-col :span="14">
+                  <el-col :span="10">
                     <el-input-number
                       v-model="dishList[dishIndex].amount"
                       @change="handleChange($event, dishIndex)"
@@ -73,7 +74,7 @@
       width="290"
       class="selectingTableBox"
       trigger="click">
-      <div v-for="(table, index) in occupied" class="tableItem">
+      <div v-for="(table, index) in occupied" :key="index" class="tableItem">
         <el-button :type="table?'primary':''" :disabled="table" style="width: 60px;"
                    @click="selectTable(index)">
           {{ index + 1 }}
