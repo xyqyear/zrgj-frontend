@@ -5,14 +5,14 @@ export default{
     mutations:{
         setToken(state,val){
             state.token = val
-            localStorage.set('token',val)
+            localStorage.setItem('token',val)
         },
         clearToken(state){
             state.token = ''
-            localStorage.remove('token')
+            localStorage.removeItem('token')
         },
         getToken(state){
-            state.token = state.token || localStorage.get('token')
+            state.token = state.token || localStorage.getItem('token')
         }
     }
 }
