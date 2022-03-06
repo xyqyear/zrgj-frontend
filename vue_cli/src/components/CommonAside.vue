@@ -1,36 +1,48 @@
 <template>
   <!-- default-active="1-4-1"  -->
-  <el-menu
-    default-active="1-4-1"
-    class="el-menu-vertical-demo"
-    @open="handleOpen"
-    @close="handleClose"
-    background-color="#545c64"
-    active-text-color="#ffd04b"
-    text-color="#fff"
-    :collapse="isCollapse"
-  >
-    <h3>{{ isCollapse ? '点餐' : '点餐系统' }}</h3>
-    <el-menu-item @click="clickMenu(item)" v-for="item in noChildren" :index="item.path+''" :key="item.path">
+  <div>
+    <el-menu
+      default-active="1-4-1"
+      class="el-menu-vertical-demo"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="#545c64"
+      active-text-color="#ffd04b"
+      text-color="#fff"
+      :collapse="isCollapse"
+    >
+      <h3>{{ isCollapse ? '点餐' : '点餐系统' }}</h3>
+      <el-menu-item @click="clickMenu(item.name)" v-for="item in noChildren" :index="item.path+''" :key="item.path">
 
-      <i :class="'el-icon-'+item.icon"></i>
-      <span slot="title">{{ item.label }}</span>
-    </el-menu-item>
-    <el-submenu v-for="item in hasChildren" :index="item.path+''" :key="item.path">
-      <template slot="title">
         <i :class="'el-icon-'+item.icon"></i>
         <span slot="title">{{ item.label }}</span>
-      </template>
-      <el-menu-item-group v-for="(subItem,subIndex) in item.children " :key="subItem.path">
-        <el-menu-item @click="clickMenu(subItem)" :index="subIndex+''">{{ subItem.label }}</el-menu-item>
-      </el-menu-item-group>
-    </el-submenu>
-  </el-menu>
+      </el-menu-item>
+      <el-submenu v-for="item in hasChildren" :index="item.path+''" :key="item.path">
+        <template slot="title">
+          <i :class="'el-icon-'+item.icon"></i>
+          <span slot="title">{{ item.label }}</span>
+        </template>
+        <el-menu-item-group v-for="(subItem,subIndex) in item.children " :key="subItem.path">
+          <el-menu-item @click="clickMenu(subItem.name)" :index="subIndex+''">{{ subItem.label }}</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      <div v-if="!isCollapse" >
+        <el-button @click="clickMenu('notification')">
+          <el-image fit="fill" style="width: 100px; height: 100px" :src="notificationImg" />
+        </el-button>
+      </div>
+    </el-menu>
+  </div>
 </template>
 <style lang="less" scoped>
+.item {
+  margin-top: 0;
+  margin-right: 0;
+}
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
-  min-height: 400px;
+  min-height: 800px;
 }
 
 .el-menu {
@@ -59,13 +71,49 @@
 
 </style>
 <script>
+import SockJS from  'sockjs-client';
+import  Stomp from 'stompjs';
+import {getNotificationList} from '../../api/data'
 export default {
   data() {
     return {
-      menu: []
+      notificationImg: require("../assets/images/notification.png"),
+      menu: [],
+      notificationList:[]
     };
   },
+  mounted() {
+    // 获取推送信息
+    this.getNotificationListFromServer();
+    // 建立sockjs连接
+    this.initConnection();
+  },
   methods: {
+    getNotificationListFromServer(){
+      getNotificationList()
+        .then(res=>{
+          this.notificationList = res.data.data;
+        })
+        .catch(err=>{
+          console.log(err)
+        })
+    },
+    initConnection(){
+      let serverInterface = "http://localhost:5678/api/v1/chat?token="+localStorage.getItem("token").substring(7)
+      console.log(serverInterface);
+      let socket = new SockJS(serverInterface);
+      let stompClient = Stomp.over(socket);
+      stompClient.connect({}, function (frame) {
+        let subscribeChannel = "/notification/" + localStorage.getItem("restaurantId") + '/' + localStorage.getItem('position');
+        stompClient.subscribe(subscribeChannel, function (message) {
+          let notification = message.body;
+          this.handleNewNotification(notification)
+        });
+      });
+    },
+    handleNewNotification(notification){
+
+    },
     handleOpen(key, keyPath) {
       // console.log(key, keyPath);
     },
@@ -76,12 +124,12 @@ export default {
       // console.log(item.name)
     },
     //应该就是通过这玩意，通过name推过去
-    clickMenu(item) {
+    clickMenu(name) {
       // console.log(item.name)
-      if (this.$route.path === '/' + item.name) {
+      if (this.$route.path === '/' + name) {
         // console.log('invalid page change')
       } else {
-        this.$router.push({name: item.name})
+        this.$router.push({name: name})
       }
 
     }

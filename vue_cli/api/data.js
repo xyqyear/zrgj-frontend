@@ -412,3 +412,14 @@ export const updateRestaurant = (param) => {
     }
   })
 }
+
+// 获取推送列表
+export const getNotificationList = () => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/get',
+    method:'POST',
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
