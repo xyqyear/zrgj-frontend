@@ -7,8 +7,8 @@ import axios from './axios'
 //   })
 // }
 
-const apiPrefix = 'http://www.muzi.fun:5678';
-// const apiPrefix = 'http://localhost:5678';
+export const apiPrefix = 'http://www.muzi.fun:5678';
+// export const apiPrefix = 'http://localhost:5678';
 
 export const getHome = () => {
   return axios.request({
