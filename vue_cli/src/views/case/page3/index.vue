@@ -38,9 +38,7 @@
     </el-row>
     <el-col :span="24" style="margin-top: 20px">
       <el-card shadow="hover" style="height: 350px">
-        <div class="timebar">
-
-        </div>
+        <div class="timebar"></div>
         <div style="height: 280px" ref="echarts">
           <!-- ------------------------------------------------ -->
         </div>
@@ -56,7 +54,11 @@
   </div>
 </template>
 <script>
-import { getObjectMap, getAllFood, getGivenTimeOrders } from "../../../../api/data.js";
+import {
+  getObjectMap,
+  getAllFood,
+  getGivenTimeOrders,
+} from "../../../../api/data.js";
 import * as echarts from "echarts";
 export default {
   name: "perCen",
@@ -68,7 +70,7 @@ export default {
         from: 0,
         to: 0,
       },
-      endTime:0,
+      endTime: 0,
       dishMap: {},
       ///////////表格1/////////////
       xData1: [],
@@ -79,9 +81,9 @@ export default {
       xData2: [],
       ///////////时间选择器/////////////
       pickerOptions: {
-        disabledDate (date) {
+        disabledDate(date) {
           // disabledDate 文档上：设置禁用状态，参数为当前日期，要求返回 Boolean
-          return date.getTime() >= Date.now()
+          return date.getTime() >= Date.now();
         },
         shortcuts: [
           {
@@ -102,7 +104,7 @@ export default {
           },
         ],
       },
-      value1: [0,0],
+      value1: [0, 0],
       value2: "",
     };
   },
@@ -127,37 +129,37 @@ export default {
   },
   methods: {
     //根据日期选择确定时
-    onChange(){
-      if(this.value1[0]!=null && this.value1[1]!=null)
-      this.getxNum(this.value1[0],this.value1[1])
+    onChange() {
+      if (this.value1[0] != null && this.value1[1] != null)
+        this.getxNum(this.value1[0], this.value1[1]);
     },
     onClickImpl1(picker) {
       const end = new Date();
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
       picker.$emit("pick", [start, end]);
-      this.chooseDays('最近一周');
+      this.chooseDays("最近一周");
     },
     onClickImpl2(picker) {
       const end = new Date();
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
       picker.$emit("pick", [start, end]);
-      this.chooseDays('最近一个月');
+      this.chooseDays("最近一个月");
     },
     onClickImpl3(picker) {
       const end = new Date();
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
       picker.$emit("pick", [start, end]);
-      this.chooseDays('最近三个月');
+      this.chooseDays("最近三个月");
     },
     onClickImpl4(picker) {
       const end = new Date();
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
       picker.$emit("pick", [start, end]);
-      this.chooseDays('最近半年');
+      this.chooseDays("最近半年");
     },
     //获取时间戳,现在的时间
     getNowTimeNum() {
@@ -175,45 +177,46 @@ export default {
         ).getTime() / 1000
       );
     },
-    getxNum(startTime,endTime){
-      var timestamp = this.getNowTimeNum()*1000//计算当前时间戳 (毫秒级)
-      if(timestamp<endTime){
-        var date3 = parseFloat(timestamp) - parseFloat(startTime)
-      }else{
-        var date3 = parseFloat(endTime) - parseFloat(startTime)
+    getxNum(startTime, endTime) {
+      var timestamp = this.getNowTimeNum() * 1000; //计算当前时间戳 (毫秒级)
+      if (timestamp < endTime) {
+        var date3 = parseFloat(timestamp) - parseFloat(startTime);
+      } else {
+        var date3 = parseFloat(endTime) - parseFloat(startTime);
       }
-      this.endTime = endTime/1000
-    var days = Math.floor(date3 / (24 * 3600 * 1000));
-    days = days+1
-    this.interval = parseInt( days/20)
-    this.xNum = days
-    console.log('this.interval',this.interval)
-    // if(days>30&&days<=60){
-    //   this.interval = 2
-    // }else{
-    //   this.interval = 0
-    // }
-    // this.xNum = days
-    //分开！
-    // if(days<=20&&days>=0){
-    //     this.xNum = days
-    //   }else if(days>20)
-    //     this.xNum = 20
-    //日期选择设置body
-        let fromTime = this.getTimeNum(this.interval)
-        let toTime = endTime/1000
-        this.body.from = fromTime
-        this.body.to = toTime
+      this.endTime = endTime / 1000;
+      var days = Math.floor(date3 / (24 * 3600 * 1000));
+      days = days + 1;
+      this.interval = parseInt(days / 20);
+      this.xNum = days;
+      console.log("this.interval", this.interval);
+      // if(days>30&&days<=60){
+      //   this.interval = 2
+      // }else{
+      //   this.interval = 0
+      // }
+      // this.xNum = days
+      //分开！
+      // if(days<=20&&days>=0){
+      //     this.xNum = days
+      //   }else if(days>20)
+      //     this.xNum = 20
+      //日期选择设置body
+      let fromTime = this.getTimeNum(days);
+      let toTime = endTime / 1000;
+      this.body.from = fromTime;
+      this.body.to = toTime;
+      console.log("this.body", this.body);
       this.setLineChart();
       this.setColumnChart();
     },
     //设置折线图(value有两个值，一个是字符串一个是数组)
     setLineChart() {
       //现在和选择的最终时间之间相距几天
-      var days = 0
-      if(this.value1[1]!=0){
-        var timestamp = this.getNowTimeNum()*1000
-        var date3 = parseFloat(timestamp) - parseFloat(this.value1[1])
+      var days = 0;
+      if (this.value1[1] != 0) {
+        var timestamp = this.getNowTimeNum() * 1000;
+        var date3 = parseFloat(timestamp) - parseFloat(this.value1[1]);
         days = Math.floor(date3 / (24 * 3600 * 1000));
       }
       //设置横坐标xData
@@ -232,7 +235,7 @@ export default {
         var oldTime = new Date(
           // Date.now() - i * this.interval * 24 * 3600 * 1000
           //无间隔，每一天
-          Date.now() - (i+days) * 24 * 3600 * 1000
+          Date.now() - (i + days) * 24 * 3600 * 1000
         );
 
         var newTime = new Date(oldTime);
@@ -256,7 +259,7 @@ export default {
       const series = [];
       getGivenTimeOrders(this.body).then((res) => {
         var dataArray = res.data.data;
-
+        console.log("dataArray", dataArray);
         var totalPrice = 0;
         var seriesArray = [];
         var keyArray = [];
@@ -269,7 +272,7 @@ export default {
           tempTime = fromTime;
           toTime = tempTime;
           // fromTime = this.getTimeNum(i * this.interval);
-          fromTime = this.getTimeNum(i);//倘若没有时间间隔，就一天一天来
+          fromTime = this.getTimeNum(i); //倘若没有时间间隔，就一天一天来
           for (let j = 0; j < dataArray.length; j++) {
             if (
               dataArray[j].createTime >= fromTime &&
@@ -278,11 +281,16 @@ export default {
               totalPrice += dataArray[j].orderItems
                 .filter((orderItem) => orderItem.state !== -1)
                 .reduce(
-                  (acc, cur) => acc + this.dishMap[cur.dishId].price * cur.amount,
+                  (acc, cur) =>
+                    acc + this.dishMap[cur.dishId].price * cur.amount,
                   0
                 );
             }
           }
+          // console.log('waliwa')
+          // console.log('fromTime',fromTime)
+          // console.log('toTime',toTime)
+          // console.log('totalPrice',totalPrice)
           seriesArray.push(totalPrice);
           // console.log('seriesArray',seriesArray)
           totalPrice = 0;
@@ -299,10 +307,10 @@ export default {
             //横坐标？
             data: this.xData1,
             axisLabel: {
-                interval: this.interval,
-                rotate: -30,
-                color: "#333",
-              },
+              interval: this.interval,
+              rotate: -30,
+              color: "#333",
+            },
           },
           yAxis: {}, //这些变量好像都要定义
           legend: {
@@ -324,8 +332,19 @@ export default {
       // this.body.from = fromTime;
       // this.body.to = toTime;
       getGivenTimeOrders(this.body).then((res) => {
+        res.data.data.forEach((item) => {
+            item.orderItems.forEach((element) => {
+              this.allFoodData.forEach((i) => {
+                if (i.id === element.dishId) {
+                  i.amount=0;
+                }
+              });
+              //if(element.dishId)
+            });
+          });
         //遍历
-
+        console.log("res.data.data", res.data.data);
+        console.log("this.allFoodData", this.allFoodData);
         res.data.data.forEach((item) => {
           item.orderItems.forEach((element) => {
             this.allFoodData.forEach((i) => {
@@ -336,10 +355,12 @@ export default {
             //if(element.dishId)
           });
         });
-
+        console.log("this.allFoodData", this.allFoodData);
+        this.xData2.length = 0;
         this.allFoodData.forEach((item) => {
           this.xData2.push(item.amount);
         });
+        console.log("this.xData2", this.xData2);
 
         ///创建柱状图！！！
         const foodNum = {
@@ -397,28 +418,30 @@ export default {
       //如果是快捷选项
       switch (value) {
         case "最近一周":
-          this.interval = 0
-          this.xNum = 7
+          this.interval = 0;
+          this.xNum = 7;
           break;
         case "最近一个月":
-          this.interval = 1
-          this.xNum = 30
+          this.interval = 1;
+          this.xNum = 30;
           break;
         case "最近三个月":
-          this.interval = 3
-          this.xNum = 90
+          this.interval = 3;
+          this.xNum = 90;
           break;
         case "最近半年":
-          this.interval = 10
-          this.xNum = 180
+          this.interval = 10;
+          this.xNum = 180;
           break;
       }
-        //快捷选项，设置body
-        let fromTime = this.getTimeNum(this.interval)
-        let toTime = this.getNowTimeNum()
-        this.body.from = fromTime
-        this.body.to = toTime
-     
+      //快捷选项，设置body
+      let fromTime = this.getTimeNum(7);
+      let toTime = this.getNowTimeNum();
+      this.body.from = fromTime;
+      this.body.to = toTime;
+      console.log(this.value1);
+      console.log("this.body", this.body);
+
       this.setLineChart();
       this.setColumnChart();
     },
