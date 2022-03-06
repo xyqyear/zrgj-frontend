@@ -13,7 +13,17 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Main.vue'),
     redirect:'/home',
     children: [
+      {
+        path: '/notification',
+        name: 'notification',
+        component: () => import('../views/notification')
+      },
       ///////////////管理员端页面////////////////////////
+      {
+        path: '/manageNotification',
+        name: 'manageNotification',
+        component: () => import('../views/manageNotification')
+      },
       {
         path: '/home',
         name: 'home',
