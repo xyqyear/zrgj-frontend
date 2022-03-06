@@ -171,14 +171,22 @@ export default {
       this.endTime = endTime/1000
     var days = Math.floor(date3 / (24 * 3600 * 1000));
     days = days+1
-    this.interval = days
+    this.interval = parseInt( days/20)
+    this.xNum = days
+    console.log('this.interval',this.interval)
+    // if(days>30&&days<=60){
+    //   this.interval = 2
+    // }else{
+    //   this.interval = 0
+    // }
+    // this.xNum = days
     //分开！
-    if(days<=20&&days>=0){
-        this.xNum = days
-      }else if(days>20)
-        this.xNum = 20
+    // if(days<=20&&days>=0){
+    //     this.xNum = days
+    //   }else if(days>20)
+    //     this.xNum = 20
     //日期选择设置body
-        let fromTime = startTime/1000
+        let fromTime = this.getTimeNum(this.interval)
         let toTime = endTime/1000
         this.body.from = fromTime
         this.body.to = toTime
@@ -197,20 +205,20 @@ export default {
       //设置横坐标xData
       this.xData1.length = 0;
       //时间戳相减
-      console.log('this.value1[0]',this.value1[0])
-      console.log('this.value1[1]',this.value1[1])
-      let subTimestemp = 0
-      if(this.value1[1]===0){
-        subTimestemp = 0
-      }else{
-        subTimestemp = parseFloat(this.getNowTimeNum())*1000-parseFloat(this.value1[1])
-      }
-      console.log('subTimestemp',subTimestemp)
+      // console.log('this.value1[0]',this.value1[0])
+      // console.log('this.value1[1]',this.value1[1])
+      // let subTimestemp = 0
+      // if(this.value1[1]===0){
+      //   subTimestemp = 0
+      // }else{
+      //   subTimestemp = parseFloat(this.getNowTimeNum())*1000-parseFloat(this.value1[1])
+      // }
+      // console.log('subTimestemp',subTimestemp)
       for (let i = 0; i < this.xNum; i++) {
         var oldTime = new Date(
           // Date.now() - i * this.interval * 24 * 3600 * 1000
           //无间隔，每一天
-          Date.now() - (i+days) * 24 * 3600 * 1000 * (this.interval / this.xNum)
+          Date.now() - (i+days) * 24 * 3600 * 1000
         );
 
         var newTime = new Date(oldTime);
@@ -225,8 +233,8 @@ export default {
           (date.month >= 10 ? date.month : "0" + date.month) +
           "-" +
           (date.day >= 10 ? date.day : "0" + date.day);
-        console.log('好奇怪')
-        console.log(systemDate)
+        // console.log('好奇怪')
+        // console.log(systemDate)
         this.xData1.push(systemDate);
       }
       this.xData1.reverse();
@@ -257,6 +265,7 @@ export default {
             }
           }
           seriesArray.push(totalPrice);
+          // console.log('seriesArray',seriesArray)
           totalPrice = 0;
         }
         seriesArray.reverse();
@@ -265,12 +274,13 @@ export default {
           data: seriesArray, //这就是一个7长度的数组，里面存数字
           type: "line",
         });
+        // console.log('this.interval',this.interval)
         const option = {
           xAxis: {
             //横坐标？
             data: this.xData1,
             axisLabel: {
-                interval: 0,
+                interval: this.interval,
                 rotate: -30,
                 color: "#333",
               },
@@ -378,24 +388,24 @@ export default {
     },
     ///选项点击事件,调用设置表格方法
     chooseDays(value) {
-      console.log('value',value)
+      // console.log('value',value)
       //如果是快捷选项
       switch (value) {
         case "最近一周":
-          this.interval = 7
+          this.interval = 0
           this.xNum = 7
           break;
         case "最近一个月":
-          this.interval = 30
-          this.xNum = 15
+          this.interval = 1
+          this.xNum = 30
           break;
         case "最近三个月":
-          this.interval = 60
-          this.xNum = 20
+          this.interval = 3
+          this.xNum = 90
           break;
         case "最近半年":
-          this.interval = 180
-          this.xNum = 20
+          this.interval = 10
+          this.xNum = 180
           break;
       }
         //快捷选项，设置body
