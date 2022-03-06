@@ -1,5 +1,3 @@
-import Cookie from 'js-cookie'
-//import router from '../router'
 export default{
     state:{
         isCollapse:false,
@@ -116,15 +114,15 @@ export default{
             if(val==0){//如果是manager
                 state.menu = state.position0Menu
                 //localStorage.setItem('menu',state.menu)
-                Cookie.set('menu',JSON.stringify(state.position0Menu))
+                localStorage.set('menu',JSON.stringify(state.position0Menu))
             }else if(val==2){//厨师端
                 state.menu = state.position2Menu
                 //localStorage.setItem('menu',state.menu)
-                Cookie.set('menu',JSON.stringify(state.position2Menu))
+                localStorage.set('menu',JSON.stringify(state.position2Menu))
             }else if(val==1){//服务员端
                 state.menu = state.position1Menu
                 //localStorage.setItem('menu',state.menu)
-                Cookie.set('menu',JSON.stringify(state.position1Menu))
+                localStorage.set('menu',JSON.stringify(state.position1Menu))
             }else{
                 console.error('position='+val)
             }
@@ -133,15 +131,15 @@ export default{
         },
         clearMenu(state){
             state.menu =[]
-            Cookie.remove('menu')
+            localStorage.remove('menu')
 
         },
         //这个方法多此一举
         addMenu(state,router){
-            if(!Cookie.get('menu')){
+            if(!localStorage.get('menu')){
                 return
             }
-            const menu = JSON.parse(Cookie.get('menu'))
+            const menu = JSON.parse(localStorage.get('menu'))
             state.menu = menu
             const menuArray=[]
             menu.forEach(item=>{
