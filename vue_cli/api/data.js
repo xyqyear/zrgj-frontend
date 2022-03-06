@@ -92,7 +92,7 @@ Body:
 */
 export const chaAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: `${apiPrefix}/api/v1/account/update'`,
+    url: `${apiPrefix}/api/v1/account/update`,
     method: 'POST',
     data: param,
     headers: {
@@ -111,7 +111,7 @@ Body:
 */
 export const changePassword = (param) => {//这个接口名称需要改
   return axios.request({
-    url: `${apiPrefix}/api/v1/account/change_password'`,
+    url: `${apiPrefix}/api/v1/account/change_password`,
     method: 'POST',
     data: param,
     headers: {
@@ -128,7 +128,7 @@ Body:
 */
 export const getAccount = (param) => {//这个接口名称需要改
   return axios.request({
-    url: `${apiPrefix}/api/v1/account/get'`,
+    url: `${apiPrefix}/api/v1/account/get`,
     method: 'POST',
     data: param,
     headers: {
@@ -145,7 +145,7 @@ Body:
 */
 export const getUserlist = (param) => {//这个接口名称需要改
   return axios.request({
-    url: `${apiPrefix}/api/v1/account/list'`,
+    url: `${apiPrefix}/api/v1/account/list`,
     method: 'POST',
     data: param,
     headers: {
@@ -178,7 +178,7 @@ Body:
 */
 export const addOrder = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order/add'`,
+    url: `${apiPrefix}/api/v1/order/add`,
     method: 'POST',
     data: param,
     headers: {
@@ -195,7 +195,7 @@ Body:
 */
 export const payOrders = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order/checkout'`,
+    url: `${apiPrefix}/api/v1/order/checkout`,
     method: 'POST',
     data: param,
     headers: {
@@ -209,7 +209,7 @@ export const payOrders = (param) => {
 */
 export const getCurrOrders = () => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order/ongoing'`,
+    url: `${apiPrefix}/api/v1/order/ongoing`,
     method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
@@ -227,7 +227,7 @@ Body:
 
 export const getGivenTimeOrders = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order/range'`,
+    url: `${apiPrefix}/api/v1/order/range`,
     method: 'POST',
     data: param,
     headers: {
@@ -242,7 +242,7 @@ Body: None
 */
 export const getUncompletedOrderItems = () => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order_item/uncompleted'`,
+    url: `${apiPrefix}/api/v1/order_item/uncompleted`,
     method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
@@ -262,7 +262,7 @@ Body:
 */
 export const updateOrderItem = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order_item/update'`,
+    url: `${apiPrefix}/api/v1/order_item/update`,
     method:'POST',
     data:param,
     headers: {
@@ -279,7 +279,7 @@ Body:
 */
 export const deleteOrderItem = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/order_item/delete'`,
+    url: `${apiPrefix}/api/v1/order_item/delete`,
     method:'POST',
     data:param,
     headers: {
@@ -301,7 +301,7 @@ Body:
 */
 export const addFood = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/dish/add'`,
+    url: `${apiPrefix}/api/v1/dish/add`,
     method:'POST',
     data:param,
     headers: {
@@ -319,7 +319,7 @@ Body:
 */
 export const deleteFood = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/dish/delete'`,
+    url: `${apiPrefix}/api/v1/dish/delete`,
     method:'POST',
     data:param,
     headers: {
@@ -341,7 +341,7 @@ Body:
 */
 export const updateFood = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/dish/update'`,
+    url: `${apiPrefix}/api/v1/dish/update`,
     method:'POST',
     data:param,
     headers: {
@@ -356,7 +356,7 @@ Body:none
 */
 export const getAllFood = () => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/dish/list'`,
+    url: `${apiPrefix}/api/v1/dish/list`,
     method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
@@ -378,7 +378,7 @@ Body:见文档
 */
 export const upload = (param) => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/upload'`,
+    url: `${apiPrefix}/api/v1/upload`,
     method: 'POST',
     data: param,
     headers: {
@@ -394,7 +394,7 @@ Body:见文档
 */
 export const getRestaurant = () => {
   return axios.request({
-    url: `${apiPrefix}/api/v1/restaurant/get'`,
+    url: `${apiPrefix}/api/v1/restaurant/get`,
     method:'POST',
     headers: {
       Authorization: localStorage.getItem('token')
