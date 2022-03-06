@@ -56,9 +56,7 @@
   </div>
 </template>
 <script>
-import { getData } from "../../../../api/data.js";
-import { getGivenTimeOrders } from "../../../../api/data.js";
-import { getAllFood } from "../../../../api/data.js";
+import { getObjectMap, getAllFood, getGivenTimeOrders } from "../../../../api/data.js";
 import * as echarts from "echarts";
 export default {
   name: "perCen",
@@ -71,6 +69,7 @@ export default {
         to: 0,
       },
       endTime:0,
+      dishMap: {},
       ///////////表格1/////////////
       xData1: [],
       xNum: 7, //横坐标数量
@@ -108,7 +107,22 @@ export default {
     };
   },
   mounted() {
-    this.chooseDays(this.radio1); //首先setbody数据
+    getAllFood().then((res) => {
+      const foodData = res.data.data;
+      this.dishMap = getObjectMap(foodData);
+      this.foodName.length = 0;
+      this.allFoodData.length = 0;
+      foodData.forEach((item) => {
+        this.foodName.push(item.name);
+        var element = {
+          id: item.id,
+          amount: 0,
+        };
+        this.allFoodData.push(element); //成功！
+      });
+
+      this.chooseDays(this.radio1); //首先setbody数据
+    });
     //this.setFoodData();
   },
   methods: {
@@ -261,7 +275,12 @@ export default {
               dataArray[j].createTime >= fromTime &&
               dataArray[j].createTime <= toTime
             ) {
-              totalPrice += dataArray[j].totalPrice;
+              totalPrice += dataArray[j].orderItems
+                .filter((orderItem) => orderItem.state !== -1)
+                .reduce(
+                  (acc, cur) => acc + this.dishMap[cur.dishId].price * cur.amount,
+                  0
+                );
             }
           }
           seriesArray.push(totalPrice);
@@ -299,91 +318,77 @@ export default {
     },
     //设置直方图
     setColumnChart() {
-      ///确定了横坐标！
-      getAllFood().then((res) => {
-        const foodData = res.data.data;
-        this.foodName.length = 0;
-        this.allFoodData.length = 0;
-        foodData.forEach((item) => {
-          this.foodName.push(item.name);
-          var element = {
-            id: item.id,
-            amount: 0,
-          };
-          this.allFoodData.push(element); //成功！
-        });
-        ///确定纵坐标！！！
-        // var fromTime = this.getTimeNum(this.interval * 7);
-        // var toTime = this.getTimeNum(0);
-        // this.body.from = fromTime;
-        // this.body.to = toTime;
-        getGivenTimeOrders(this.body).then((res) => {
-          //遍历
+      ///确定纵坐标！！！
+      // var fromTime = this.getTimeNum(this.interval * 7);
+      // var toTime = this.getTimeNum(0);
+      // this.body.from = fromTime;
+      // this.body.to = toTime;
+      getGivenTimeOrders(this.body).then((res) => {
+        //遍历
 
-          res.data.data.forEach((item) => {
-            item.orderItems.forEach((element) => {
-              this.allFoodData.forEach((i) => {
-                if (i.id === element.dishId) {
-                  i.amount++;
-                }
-              });
-              //if(element.dishId)
+        res.data.data.forEach((item) => {
+          item.orderItems.forEach((element) => {
+            this.allFoodData.forEach((i) => {
+              if (i.id === element.dishId) {
+                i.amount++;
+              }
             });
+            //if(element.dishId)
           });
+        });
 
-          this.allFoodData.forEach((item) => {
-            this.xData2.push(item.amount);
-          });
+        this.allFoodData.forEach((item) => {
+          this.xData2.push(item.amount);
+        });
 
-          ///创建柱状图！！！
-          const foodNum = {
-            legend: {
-              textStyle: {
-                color: "#333",
+        ///创建柱状图！！！
+        const foodNum = {
+          legend: {
+            textStyle: {
+              color: "#333",
+            },
+          },
+          grid: {
+            left: "20%",
+          },
+          tootip: {
+            trigger: "axis",
+          },
+          xAxis: {
+            // type: "category",
+            data: this.foodName, ///!!!
+            axisLine: {
+              lineStyle: {
+                color: "#17b3a3",
               },
             },
-            grid: {
-              left: "20%",
+            axisLabel: {
+              interval: 0,
+              rotate: -30,
+              color: "#333",
             },
-            tootip: {
-              trigger: "axis",
-            },
-            xAxis: {
-              // type: "category",
-              data: this.foodName, ///!!!
+          },
+          yAxis: [
+            {
+              type: "value",
               axisLine: {
                 lineStyle: {
                   color: "#17b3a3",
                 },
               },
-              axisLabel: {
-                interval: 0,
-                rotate: -30,
-                color: "#333",
-              },
             },
-            yAxis: [
-              {
-                type: "value",
-                axisLine: {
-                  lineStyle: {
-                    color: "#17b3a3",
-                  },
-                },
-              },
-            ],
-            color: ["#2ec7c9", "b6a2de"],
-            series: [
-              {
-                name: "销售量",
-                data: this.xData2,
-                type: "bar",
-              },
-            ],
-          };
-          const U = echarts.init(this.$refs.moneyEcharts);
-          U.setOption(foodNum);
-        });
+          ],
+          color: ["#2ec7c9", "b6a2de"],
+          series: [
+            {
+              name: "销售量",
+              data: this.xData2,
+              type: "bar",
+            },
+          ],
+        };
+        const U = echarts.init(this.$refs.moneyEcharts);
+        U.setOption(foodNum);
       });
     },
     ///选项点击事件,调用设置表格方法

@@ -1,7 +1,7 @@
 <template>
   <el-row class="home" :gutter="20">
     <div class="operation">
-      <div style="margin-right: 20px; display: flex; visibility: hidden;">
+      <div style="margin-right: 20px; display: flex; visibility: hidden">
         <el-input
           placeholder="客户名、客户手机、订单号"
           v-model="input"
@@ -25,7 +25,9 @@
         >
         </el-date-picker>
       </div>
-      <el-button plain style="margin-left: 20px; visibility: hidden;">添加订单</el-button>
+      <el-button plain style="margin-left: 20px; visibility: hidden"
+        >添加订单</el-button
+      >
     </div>
 
     <el-col :span="24">
@@ -46,7 +48,12 @@
   </el-row>
 </template>
 <script>
-import { getGivenTimeOrders, getUserlist } from "../../../../api/data";
+import {
+  getGivenTimeOrders,
+  getUserlist,
+  getObjectMap,
+  getAllFood,
+} from "../../../../api/data";
 export default {
   name: "home",
   data() {
@@ -56,6 +63,7 @@ export default {
       date: {},
       usernameMap: {},
       tableData: [],
+      dishMap: {},
       pickerOptions: {
         shortcuts: [
           {
@@ -90,6 +98,7 @@ export default {
     };
   },
   async mounted() {
+    this.dishMap = getObjectMap((await getAllFood()).data.data);
     await this.populateUserMap();
     await this.populateData(0, Math.round(new Date().getTime() / 1000));
   },
@@ -104,7 +113,12 @@ export default {
         return {
           id: order.id,
           date: new Date(order.createTime * 1000).toLocaleDateString(),
-          money: order.totalPrice,
+          money: order.orderItems
+            .filter((orderItem) => orderItem.state !== -1)
+            .reduce(
+              (acc, cur) => acc + this.dishMap[cur.dishId].price * cur.amount,
+              0
+            ),
           name: this.usernameMap[order.waiterId],
           state: order.state,
         };
@@ -122,7 +136,7 @@ export default {
       this.populateData(
         Math.round(this.date[0].getTime() / 1000),
         // because the date picker gets the start of a day
-        Math.round(this.date[1].getTime() / 1000 + 60*60*24)
+        Math.round(this.date[1].getTime() / 1000 + 60 * 60 * 24)
       );
     },
   },
