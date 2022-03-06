@@ -14,7 +14,18 @@
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
           <el-form :model="form">
             <el-form-item label="菜品名称">
-              <el-input v-model="form.name" autocomplete="off"></el-input>
+              <el-input
+                v-model="form.name"
+                autocomplete="off"
+                @blur="blur"
+              ></el-input>
+              <el-alert
+                v-show="alertVisible"
+                title="菜名不能为空！"
+                type="error"
+                show-icon
+                :closable="false"
+              ></el-alert>
             </el-form-item>
             <el-form-item label="价格">
               <el-input v-model="form.price" autocomplete="off"></el-input>
@@ -115,7 +126,7 @@
     <el-col :span="24">
       <el-card style="margin-top: 20px">
         <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="id" label="序号" width="100" >
+          <el-table-column prop="id" label="序号" width="100">
           </el-table-column>
           <el-table-column prop="name" label="菜品名称" width="150">
           </el-table-column>
@@ -284,6 +295,7 @@ export default {
       find: "",
       dialogFormVisible: false,
       dialogChangeVisible: false,
+      alertVisible: false,
       form: {
         name: "",
         price: "",
@@ -346,13 +358,21 @@ export default {
       fileList: [],
       flavour: [],
       /////////////////////////allfood///////////
-      allFood:[],
+      allFood: [],
     };
   },
   mounted() {
     this.getFoodData();
   },
   methods: {
+    blur() {
+      if (this.form.name === "") {
+        this.alertVisible = true;
+        console.log("触发了");
+      } else {
+        this.alertVisible = false;
+      }
+    },
     delChange() {
       this.perChange.splice(this.perChange.length - 1, 1);
     },
@@ -419,39 +439,38 @@ export default {
       let id = row.id;
       console.log(id);
       this.perChange.length = 0;
-      if (this.allFood[id-1].flavour != null) {
-        for (let i = 0; i < this.allFood[id-1].flavour.length; i++) {
+      if (this.allFood[id - 1].flavour != null) {
+        for (let i = 0; i < this.allFood[id - 1].flavour.length; i++) {
           let body = {
-            id:i,
-            key:this.allFood[id-1].flavour[i].key,
-            value1:null,
-            value2:null,
-            value3:null,
-            value4:null,
-            value5:null,
-            value6:null,
+            id: i,
+            key: this.allFood[id - 1].flavour[i].key,
+            value1: null,
+            value2: null,
+            value3: null,
+            value4: null,
+            value5: null,
+            value6: null,
           };
-          if(this.allFood[id-1].flavour[i].value[0]!=null){
-            body.value1 = this.allFood[id-1].flavour[i].value[0]
-          };
-          if(this.allFood[id-1].flavour[i].value[1]!=null){
-            body.value2 = this.allFood[id-1].flavour[i].value[1]
-          };
-          if(this.allFood[id-1].flavour[i].value[2]!=null){
-            body.value3 = this.allFood[id-1].flavour[i].value[2]
-          };
-          if(this.allFood[id-1].flavour[i].value[3]!=null){
-            body.value4 = this.allFood[id-1].flavour[i].value[3]
-          };
-          if(this.allFood[id-1].flavour[i].value[4]!=null){
-            body.value5 = this.allFood[id-1].flavour[i].value[4]
-          };
-          if(this.allFood[id-1].flavour[i].value[5]!=null){
-            body.value6 = this.allFood[id-1].flavour[i].value[5]
-          };
+          if (this.allFood[id - 1].flavour[i].value[0] != null) {
+            body.value1 = this.allFood[id - 1].flavour[i].value[0];
+          }
+          if (this.allFood[id - 1].flavour[i].value[1] != null) {
+            body.value2 = this.allFood[id - 1].flavour[i].value[1];
+          }
+          if (this.allFood[id - 1].flavour[i].value[2] != null) {
+            body.value3 = this.allFood[id - 1].flavour[i].value[2];
+          }
+          if (this.allFood[id - 1].flavour[i].value[3] != null) {
+            body.value4 = this.allFood[id - 1].flavour[i].value[3];
+          }
+          if (this.allFood[id - 1].flavour[i].value[4] != null) {
+            body.value5 = this.allFood[id - 1].flavour[i].value[4];
+          }
+          if (this.allFood[id - 1].flavour[i].value[5] != null) {
+            body.value6 = this.allFood[id - 1].flavour[i].value[5];
+          }
           console.log(body);
           this.perChange.push(body);
-
         }
         console.log(this.perChange);
       }
@@ -583,7 +602,7 @@ export default {
           res.data.data = res.data.data.filter((i) => {
             return !i.deleted;
           });
-          
+
           console.log(this.allFood);
 
           this.find = res.data.data.length;
@@ -608,13 +627,14 @@ export default {
                 }
               }
             }
-            if (res.data.data[i].deleted === false){
+            if (res.data.data[i].deleted === false) {
               let item = {
                 id: res.data.data[i].id,
                 name: res.data.data[i].name,
                 type: res.data.data[i].category,
                 price: res.data.data[i].price,
                 img: res.data.data[i].imageUrl,
+                flavour: flavour,
               };
               this.tableData.push(item);
             }
