@@ -53,7 +53,7 @@
         <div class="order-bottom">
           <el-descriptions :column='4'>
             <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
-            <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
+            <el-descriptions-item label="订单总金额">{{ curOrder.sum }}</el-descriptions-item>
             <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
             <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
           </el-descriptions>
@@ -96,17 +96,23 @@ export default {
           // orderItems 添加上菜品信息
           for (let i = 0; i < this.orderList.length; i++) {
             let sum = 0;
+            let actualSum = 0;
             for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
               let dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
               this.orderList[i].orderItems[j].name = dish.name
               this.orderList[i].orderItems[j].price = dish.price
               this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
               this.orderList[i].orderItems[j].category = dish.category
+              const price = this.orderList[i].orderItems[j].amount * this.orderList[i].orderItems[j].price
               if (this.orderList[i].orderItems[j].state === 0) {
-                sum += this.orderList[i].orderItems[j].amount * this.orderList[i].orderItems[j].price;
+                actualSum += price;
+              }
+              if (this.orderList[i].orderItems[j].state !== -1) {
+                sum += price;
               }
             }
-            this.orderList[i].actualSum = sum;
+            this.orderList[i].actualSum = actualSum;
+            this.orderList[i].sum = sum;
           }
         });
     },

@@ -11,7 +11,7 @@
           <el-row :gutter="10" >
             <el-col
               :span="4"
-              v-for="(item, dishIndex) in dishList"
+              v-for="item in dishList"
               :key="item.id"
               style="
                  {
@@ -141,7 +141,6 @@
           v-model="textarea"
           style="margin-top:10px"
           fill="#FD3E3E"
-          @change="textFinish"
         >
         </el-input>
         <div class="alreadyChoose">已选规格：{{note}} {{textarea}}</div>
@@ -238,7 +237,7 @@
             label="备注"
             width="200"
           ></el-table-column>
-          <el-table-column prop="price" label="金额"></el-table-column>
+          <el-table-column prop="price" label="单价"></el-table-column>
         </el-table>
       </template>
       <el-descriptions>
@@ -337,9 +336,16 @@ export default {
     commitOrderItem(){
       var flag = false
       if(this.currItem!=null && this.amount!=0){
+
         this.orderItems.forEach(element => {
-          if(this.currItem===element && this.currItem.note===(this.note+';'+this.textarea)){
-            console.log('>>>'+this.currItem.note+' '+this.textarea+'>>>>'+(this.note+';'+this.textarea))
+          // console.log('哇哩哇')
+          // console.log(this.currItem.dishId == element.dishId)
+          // console.log(this.currItem)
+          // console.log(this.currItem.note)
+          // console.log((this.note+';'+this.textarea))
+          // console.log(this.currItem.note===(this.note+';'+this.textarea))
+          if(this.currItem.dishId == element.dishId && this.currItem.note===(this.note+';'+this.textarea)){
+            //console.log('>>>'+this.currItem.note+' '+this.textarea+'>>>>'+(this.note+';'+this.textarea))
             flag = true
             element.amount += this.amount//合并为一个item
           }
@@ -347,14 +353,20 @@ export default {
         });
         //如果没有相同的项就，覆盖amount,这咋全覆盖了啊
         if(!flag){
+          //console.log('????')
+          //因为这里是引用而非值拷贝
+          // tempItem.amount = this.amount
+          // tempItem.note = this.note+';'+this.textarea
+          // console.log('tempItem',tempItem)
+          // console.log('this.currItem',this.currItem)
           this.currItem.amount = this.amount
           //存放note
           this.currItem.note = this.note+';'+this.textarea
-          this.orderItems.push(this.currItem)
-
+          let tempItem = JSON.parse(JSON.stringify(this.currItem) )
+          this.orderItems.push(tempItem)
         }
       }
-      console.log('this.orderItems',this.orderItems)
+      //console.log('this.orderItems',this.orderItems)
       this.dialogFormVisible = false;
     },
     confirmMenu(){
@@ -363,8 +375,6 @@ export default {
     //点开dialog的函数
     chooseMenu(item) {
       this.currItem = item
-      console.log('aaaaa')
-      console.log(this.currItem)
       //如果名字一样，就不用改那些样式
       if(this.foodName!=item.name){
         this.radio1 = ''
@@ -386,9 +396,9 @@ export default {
         this.note += this.choiceClass[key]
       }
     },
-    textFinish(){
-      console.log(this.note)
-    },
+    // textFinish(){
+    //   console.log(this.note)
+    // },
     //////////////////////////选规格////////////////////////////
     selectTable(index) {
       this.tableId = index + 1;
@@ -396,13 +406,13 @@ export default {
     },
     createNewOrder() {
       this.totalPrice = 0.0;
-      for (const dish of this.$data.dishList) {
+      for (const dish of this.$data.orderItems) {
         if (dish.amount != 0) {
           // this.orderItems.push(dish);
           this.totalPrice += dish.amount * dish.price;
         }
       }
-      console.log('this.orderItems',this.orderItems)
+      console.log('this.totalPrice',this.totalPrice)
       if (this.orderItems.length === 0 || this.tableId === 0) {
         this.centerDialogVisible = true;
         return;
@@ -447,7 +457,6 @@ export default {
     },
     handleChange(dishIndex) {
       this.$forceUpdate();
-      console.log("orderItems", this.orderItems);
       this.dialogFormVisible = true;
     },
     refreshTableSituation() {
