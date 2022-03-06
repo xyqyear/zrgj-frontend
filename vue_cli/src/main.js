@@ -21,8 +21,7 @@ Vue.prototype.$confirm = ElementUI.MessageBox.confirm
 Vue.prototype.$message = ElementUI.Message
 
 router.beforeEach((to,from,next)=>{
-  store.commit('getToken')
-  const token = store.state.user.token
+  const token = localStorage.getItem("token")
   if(!token && to.name !== 'login'){
     next({name:'login'})
   }else{

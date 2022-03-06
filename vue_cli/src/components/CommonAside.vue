@@ -27,7 +27,7 @@
         </el-menu-item-group>
       </el-submenu>
       <div v-if="!isCollapse" >
-        <el-button @click="clickMenu('notification')">
+        <el-button @click="showNotificationPage">
           <el-image fit="fill" style="width: 100px; height: 100px" :src="notificationImg" />
         </el-button>
       </div>
@@ -71,48 +71,22 @@
 
 </style>
 <script>
-import SockJS from  'sockjs-client';
-import  Stomp from 'stompjs';
-import {getNotificationList} from '../../api/data'
 export default {
   data() {
     return {
       notificationImg: require("../assets/images/notification.png"),
       menu: [],
-      notificationList:[]
     };
   },
   mounted() {
     // 获取推送信息
-    this.getNotificationListFromServer();
+    // this.getNotificationListFromServer();
     // 建立sockjs连接
-    this.initConnection();
+    // this.initConnection();
   },
   methods: {
-    getNotificationListFromServer(){
-      getNotificationList()
-        .then(res=>{
-          this.notificationList = res.data.data;
-        })
-        .catch(err=>{
-          console.log(err)
-        })
-    },
-    initConnection(){
-      let serverInterface = "http://localhost:5678/api/v1/chat?token="+localStorage.getItem("token").substring(7)
-      console.log(serverInterface);
-      let socket = new SockJS(serverInterface);
-      let stompClient = Stomp.over(socket);
-      stompClient.connect({}, function (frame) {
-        let subscribeChannel = "/notification/" + localStorage.getItem("restaurantId") + '/' + localStorage.getItem('position');
-        stompClient.subscribe(subscribeChannel, function (message) {
-          let notification = message.body;
-          this.handleNewNotification(notification)
-        });
-      });
-    },
-    handleNewNotification(notification){
-
+    showNotificationPage(){
+      this.clickMenu('notification');
     },
     handleOpen(key, keyPath) {
       // console.log(key, keyPath);
@@ -123,22 +97,17 @@ export default {
     test(item) {
       // console.log(item.name)
     },
-    //应该就是通过这玩意，通过name推过去
     clickMenu(name) {
-      // console.log(item.name)
       if (this.$route.path === '/' + name) {
-        // console.log('invalid page change')
       } else {
         this.$router.push({name: name})
       }
-
     }
 
   },
   computed: {
     noChildren() {
       return this.asyncMenu.filter(item => !item.children)//如果当前item没有子项目就直接return
-
     },
     hasChildren() {
       return this.asyncMenu.filter(item => item.children)//如果当前item没有子项目就直接return
@@ -148,9 +117,10 @@ export default {
     },
     asyncMenu() {
       this.$store.commit('setMenu', localStorage.getItem('position'))
-      //console(this.$store.state.tab.menu)
       return this.$store.state.tab.menu
-      // return localStorage.getItem('menu')
+    },
+    notificationList(){
+      return this.$store.state.notificationList
     }
   }
 };

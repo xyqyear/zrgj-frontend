@@ -8,7 +8,7 @@
           <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
         </div>
         <div v-for="o in 4" :key="o" class="text item">
-          {{'列表内容 ' + o }}
+          {{ '列表内容 ' + o }}
         </div>
       </el-card>
     </div>
@@ -22,14 +22,14 @@ import {getNotificationList} from '../../../api/data'
 export default {
   name: "notification",
   data() {
-    return{
-      notificationList: [{
-        'a':1,
-        'b':2
-      },{
-        'a':1,
-        'b':2
-      }]
+    return {
+    }
+  },
+  mounted() {
+  },
+  computed: {
+    notificationList(){
+      return this.$store.state.notificationList
     }
   },
   methods: {}
@@ -50,6 +50,7 @@ export default {
   display: table;
   content: "";
 }
+
 .clearfix:after {
   clear: both
 }
