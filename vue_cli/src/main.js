@@ -6,7 +6,6 @@ import './assets/less/index.less'
 import router from './router'
 import store from './store'
 import http from 'axios'
-import '../api/mock.js'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'

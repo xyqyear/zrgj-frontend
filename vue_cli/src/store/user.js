@@ -1,4 +1,3 @@
-import Cookie from 'js-cookie'
 export default{
     state:{
         token:''
@@ -6,14 +5,14 @@ export default{
     mutations:{
         setToken(state,val){
             state.token = val
-            Cookie.set('token',val)
+            localStorage.setItem('token',val)
         },
         clearToken(state){
             state.token = ''
-            Cookie.remove('token')
+            localStorage.removeItem('token')
         },
         getToken(state){
-            state.token = state.token || Cookie.get('token')
+            state.token = state.token || localStorage.getItem('token')
         }
     }
 }
