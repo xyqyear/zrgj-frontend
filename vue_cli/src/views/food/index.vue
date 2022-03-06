@@ -8,10 +8,7 @@
         <el-input placeholder="请输入内容" v-model="input" clearable>
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
-        <el-button
-          plain
-          style="margin-left: 20px"
-          @click="dialogFormVisible = true"
+        <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
           >上架菜品</el-button
         >
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
@@ -50,6 +47,63 @@
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
+            <el-form-item>
+              <div style="justify-content: left">个性化设置</div>
+              <el-card v-for="item in perSet" :key="item.id">
+                <el-row justify="end">
+                  <el-col :span="5">
+                    <el-input v-model="item.key" placeholder="属性名">
+                    </el-input>
+                  </el-col>
+                  <el-col :span="19">
+                    <el-row>
+                      <el-input
+                        v-model="item.value1"
+                        placeholder="属性值1"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value2"
+                        placeholder="属性值2"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value3"
+                        placeholder="属性值3"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                    <el-row>
+                      <el-input
+                        v-model="item.value4"
+                        placeholder="属性值4"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value5"
+                        placeholder="属性值5"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value6"
+                        placeholder="属性值6"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                  </el-col>
+                  <el-col>
+                    <i class="el-icon-delete" @click="delSet()"></i>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-button type="primary" @click="addSet()">增加属性</el-button>
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -65,7 +119,7 @@
           </el-table-column>
           <el-table-column prop="name" label="菜品名称" width="150">
           </el-table-column>
-          <el-table-column label="菜品图片" width="200">
+          <el-table-column label="菜品图片" width="150">
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
                 <img :src="scope.row.img" style="width: 150px; height: 150px" />
@@ -79,11 +133,8 @@
           </el-table-column>
           <el-table-column prop="price" label="菜品价格" width="150">
           </el-table-column>
-          <!-- <el-table-column
-      prop="describe"
-      label="菜品描述"
-      width="430">
-          </el-table-column> -->
+          <el-table-column prop="flavour" label="菜品描述" width="200">
+          </el-table-column>
           <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <el-button
@@ -134,6 +185,65 @@
                       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                   </el-form-item>
+                  <el-form-item>
+                    <div style="justify-content: left">个性化设置</div>
+                    <el-card v-for="item in perChange" :key="item.id">
+                      <el-row justify="end">
+                        <el-col :span="5">
+                          <el-input v-model="item.key" placeholder="属性名">
+                          </el-input>
+                        </el-col>
+                        <el-col :span="19">
+                          <el-row>
+                            <el-input
+                              v-model="item.value1"
+                              placeholder="属性值1"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="item.value2"
+                              placeholder="属性值2"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="item.value3"
+                              placeholder="属性值3"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.value4"
+                              placeholder="属性值4"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="item.value5"
+                              placeholder="属性值5"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                            <el-input
+                              v-model="item.value6"
+                              placeholder="属性值6"
+                              style="width: 30%"
+                            >
+                            </el-input>
+                          </el-row>
+                        </el-col>
+                        <el-col>
+                          <i class="el-icon-delete" @click="delChange()"></i>
+                        </el-col>
+                      </el-row>
+                    </el-card>
+                    <el-button type="primary" @click="addChange()"
+                      >增加属性</el-button
+                    >
+                  </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                   <el-button @click="dialogChangeVisible = false"
@@ -167,6 +277,8 @@ export default {
   name: "home",
   data() {
     return {
+      perChange: [],
+      perSet: [],
       selectVal: this.value || "",
       input: "",
       find: "",
@@ -232,13 +344,41 @@ export default {
       ],
       value: "",
       fileList: [],
+      flavour: [],
+      /////////////////////////allfood///////////
+      allFood:[],
     };
   },
   mounted() {
     this.getFoodData();
   },
   methods: {
-    handleDelete(index,row){
+    delChange() {
+      this.perChange.splice(this.perChange.length - 1, 1);
+    },
+    addChange() {
+      var a = this.perChange.length;
+      var body = {
+        id: a,
+      };
+      this.perChange.push(body);
+    },
+    delSet() {
+      this.perSet.splice(this.perSet.length - 1, 1);
+    },
+    ///////////////////////上架菜品的dialog打开事件
+    activeAddFoodDialog() {
+      this.dialogFormVisible = true;
+      this.perSet.length = 0;
+    },
+    addSet() {
+      var a = this.perSet.length;
+      var body = {
+        id: a + 1,
+      };
+      this.perSet.push(body);
+    },
+    handleDelete(index, row) {
       this.$confirm("此操作将删除该菜品, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -250,16 +390,15 @@ export default {
           };
           body.id = row.id;
           console.log(body.id);
-          deleteFood(body)
-          .then((res) => {
+          deleteFood(body).then((res) => {
             console.log(res);
             if (res.status == 200) {
               this.$message({
                 type: "success",
                 message: "删除成功!",
               });
-              this.tableData.length = 0
-                this.getFoodData();
+              this.tableData.length = 0;
+              this.getFoodData();
             }
           });
         })
@@ -277,6 +416,45 @@ export default {
       this.imageUrl = row.img;
       this.formChange.id = row.id;
       this.selectVal = row.type;
+      let id = row.id;
+      console.log(id);
+      this.perChange.length = 0;
+      if (this.allFood[id-1].flavour != null) {
+        for (let i = 0; i < this.allFood[id-1].flavour.length; i++) {
+          let body = {
+            id:i,
+            key:this.allFood[id-1].flavour[i].key,
+            value1:null,
+            value2:null,
+            value3:null,
+            value4:null,
+            value5:null,
+            value6:null,
+          };
+          if(this.allFood[id-1].flavour[i].value[0]!=null){
+            body.value1 = this.allFood[id-1].flavour[i].value[0]
+          };
+          if(this.allFood[id-1].flavour[i].value[1]!=null){
+            body.value2 = this.allFood[id-1].flavour[i].value[1]
+          };
+          if(this.allFood[id-1].flavour[i].value[2]!=null){
+            body.value3 = this.allFood[id-1].flavour[i].value[2]
+          };
+          if(this.allFood[id-1].flavour[i].value[3]!=null){
+            body.value4 = this.allFood[id-1].flavour[i].value[3]
+          };
+          if(this.allFood[id-1].flavour[i].value[4]!=null){
+            body.value5 = this.allFood[id-1].flavour[i].value[4]
+          };
+          if(this.allFood[id-1].flavour[i].value[5]!=null){
+            body.value6 = this.allFood[id-1].flavour[i].value[5]
+          };
+          console.log(body);
+          this.perChange.push(body);
+
+        }
+        console.log(this.perChange);
+      }
     },
     handleEditSure() {
       this.dialogChangeVisible = false;
@@ -286,13 +464,39 @@ export default {
         price: this.formChange.price,
         imageUrl: this.imageUrl,
         category: this.selectVal,
+        flavour: [],
       };
+      for (let i = 0; i < this.perChange.length; i++) {
+        var body1 = {
+          key: this.perChange[i].key,
+          value: [],
+        };
+        if (this.perChange[i].value1 != null) {
+          body1.value.push(this.perChange[i].value1);
+        }
+        if (this.perChange[i].value2 != null) {
+          body1.value.push(this.perChange[i].value2);
+        }
+        if (this.perChange[i].value3 != null) {
+          body1.value.push(this.perChange[i].value3);
+        }
+        if (this.perChange[i].value4 != null) {
+          body1.value.push(this.perChange[i].value4);
+        }
+        if (this.perChange[i].value5 != null) {
+          body1.value.push(this.perChange[i].value5);
+        }
+        if (this.perChange[i].value6 != null) {
+          body1.value.push(this.perChange[i].value6);
+        }
+        body.flavour.push(body1);
+      }
       console.log(body);
       updateFood(body).then((res) => {
         console.log(res);
-        this.tableData.length = 0
-                this.getFoodData();
-      })
+        this.tableData.length = 0;
+        this.getFoodData();
+      });
     },
     uploadFiles(file, _) {
       const fd = new FormData();
@@ -327,29 +531,83 @@ export default {
       this.selectVal = data.label;
     },
     handleAdd() {
+      console.log(this.perSet);
       var body = {
         name: "",
         price: "",
         imageUrl: "",
         category: "",
+        flavour: [],
       };
       body.name = this.form.name;
       body.price = this.form.price;
       body.imageUrl = this.imageUrl;
       body.category = this.selectVal;
+      for (let i = 0; i < this.perSet.length; i++) {
+        var body1 = {
+          key: this.perSet[i].key,
+          value: [],
+        };
+        if (this.perSet[i].value1 != null) {
+          body1.value.push(this.perSet[i].value1);
+        }
+        if (this.perSet[i].value2 != null) {
+          body1.value.push(this.perSet[i].value2);
+        }
+        if (this.perSet[i].value3 != null) {
+          body1.value.push(this.perSet[i].value3);
+        }
+        if (this.perSet[i].value4 != null) {
+          body1.value.push(this.perSet[i].value4);
+        }
+        if (this.perSet[i].value5 != null) {
+          body1.value.push(this.perSet[i].value5);
+        }
+        if (this.perSet[i].value6 != null) {
+          body1.value.push(this.perSet[i].value6);
+        }
+        body.flavour.push(body1);
+      }
       addFood(body).then((res) => {
         console.log(res);
         this.dialogFormVisible = false;
-        this.tableData.length = 0
-                this.getFoodData();
+        this.tableData.length = 0;
+        this.getFoodData();
       });
     },
     getFoodData() {
       getAllFood()
         .then((res) => {
           console.log(res);
+          this.allFood = res.data.data;
+          res.data.data = res.data.data.filter((i) => {
+            return !i.deleted;
+          });
+          
+          console.log(this.allFood);
+
           this.find = res.data.data.length;
-          for (let i = 0; i <= res.data.data.length; i++) {
+
+          for (let i = 0; i < res.data.data.length; i++) {
+            let flavour = "";
+            if (res.data.data[i].flavour !== null) {
+              for (let j = 0; j < res.data.data[i].flavour.length; j++) {
+                flavour = flavour + res.data.data[i].flavour[j].key + "：";
+                for (
+                  let k = 0;
+                  k < res.data.data[i].flavour[j].value.length;
+                  k++
+                ) {
+                  if (k == res.data.data[i].flavour[j].value.length - 1) {
+                    flavour =
+                      flavour + res.data.data[i].flavour[j].value[k] + "；";
+                  } else {
+                    flavour =
+                      flavour + res.data.data[i].flavour[j].value[k] + "，";
+                  }
+                }
+              }
+            }
             if (res.data.data[i].deleted === false){
               let item = {
                 id: res.data.data[i].id,
@@ -357,6 +615,7 @@ export default {
                 type: res.data.data[i].category,
                 price: res.data.data[i].price,
                 img: res.data.data[i].imageUrl,
+                flavour:flavour
               };
               this.tableData.push(item);
             }
@@ -370,6 +629,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.noteClass {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  justify-items: left;
+}
 .operation {
   display: flex;
   flex-direction: row;
