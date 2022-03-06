@@ -1,5 +1,6 @@
 <template>
   <div style="position: relative">
+                  
     <el-tabs v-model="activeName">
       <el-tab-pane
         v-for="(category, index) in dishCategories"
@@ -108,6 +109,13 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+    <!-- --------------------------查询------------------------------ -->
+    <el-col :span="10" style="position:absolute;top:0px;bottom:2px;left:45%">
+            <el-input placeholder="请输入内容" v-model="input" clearable>
+          <el-button slot="append" icon="el-icon-search" @click="searchFood"></el-button>
+        </el-input>
+        </el-col>
+    <!-- --------------------------查询------------------------------ -->
     <!-- ----------------------------Dialog表单--------------------------------------- -->
     <el-dialog
       :title="foodName"
@@ -343,6 +351,8 @@ export default {
       tableId: 0,
       tableNum: 10,
       occupied: [],
+      ////////////////////////////查询//////////////////////////
+      input:'',
     };
   },
 
@@ -357,6 +367,10 @@ export default {
     });
   },
   methods: {
+    ////////////////////////////查询/////////////////////////////
+    searchFood(){
+     // input
+    },
     //////////////////////////选规格////////////////////////////
     commitOrderItem() {
       //计算所有菜数量
@@ -506,6 +520,7 @@ export default {
         }
       });
       console.log('orderItems',this.orderItems)
+      this.createNewOrder()
     },
     refreshTableSituation() {
       for (let i = 0; i < this.tableNum; i++) {
