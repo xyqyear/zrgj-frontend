@@ -73,7 +73,7 @@
 <script>
 import SockJS from  'sockjs-client';
 import  Stomp from 'stompjs';
-import {getNotificationList} from '../../api/data'
+import {apiPrefix, getNotificationList} from '../../api/data'
 export default {
   data() {
     return {
@@ -99,7 +99,7 @@ export default {
         })
     },
     initConnection(){
-      let serverInterface = "http://localhost:5678/api/v1/chat?token="+localStorage.getItem("token").substring(7)
+      let serverInterface = `${apiPrefix}/api/v1/ws?token=${localStorage.getItem("token").substring(7)}`
       console.log(serverInterface);
       let socket = new SockJS(serverInterface);
       let stompClient = Stomp.over(socket);
