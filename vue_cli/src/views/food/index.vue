@@ -467,6 +467,8 @@ export default {
     clearForm() {
       this.form.name = "";
       this.form.price = "";
+      this.fileList.length = 0
+      this.selectVal = ''
       this.dialogFormVisible = false;
     },
     // blur() {
