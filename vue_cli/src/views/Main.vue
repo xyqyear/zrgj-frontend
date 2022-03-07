@@ -89,6 +89,9 @@ import CommonAside from "../components/CommonAside.vue";
 import CommonHeader from "../components/CommonHeader.vue";
 export default {
   name: "Main",
+  created() {
+    this.$store.dispatch("getNecessaryDataAfterLogin")
+  },
   components: { CommonAside,CommonHeader },
 };
 </script>

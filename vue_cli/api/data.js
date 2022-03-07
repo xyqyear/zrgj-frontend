@@ -462,3 +462,15 @@ export const updateNotification = (param) => {
     }
   })
 }
+
+// 确认推送
+export const confirmNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/confirm',
+    method:'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}

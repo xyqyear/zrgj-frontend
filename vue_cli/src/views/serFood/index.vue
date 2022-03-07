@@ -90,7 +90,8 @@
                   </el-col>
                   <el-col :span="14">
                     <el-button type="warning" plain @click="chooseMenu(item)"
-                      >选规格</el-button
+                    >选规格
+                    </el-button
                     >
                     <!-- <el-input-number
                       v-model="dishList[dishIndex].amount"
@@ -140,35 +141,35 @@
           fill="#FD3E3E"
         >
         </el-input>
-        <div class="alreadyChoose">已选规格：{{note}} {{textarea}}</div>
-        
+        <div class="alreadyChoose">已选规格：{{ note }} {{ textarea }}</div>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <div class="foodMoney">{{foodMoney}}元/份</div>
+        <div class="foodMoney">{{ foodMoney }}元/份</div>
         <div class="right">
           <!-- 这里的条件有所改变 -->
-        <div v-if="!addable">
-        <el-button type="primary" @click="confirmMenu" >加入购物车</el-button>
-        </div>
+          <div v-if="!addable">
+            <el-button type="primary" @click="confirmMenu">加入购物车</el-button>
+          </div>
 
-        <div v-else>
-          <el-input-number
-                      v-model="amount"
-                      @change="handleChange($event, 0)"
-                      size="mini"
-                      :min="1"
-                      :max="20"
-                      style="width: 100px"
-                    ></el-input-number>
-        <el-button type="primary" @click="commitOrderItem" style="margin-left:10px">确认</el-button>
-        </div>
+          <div v-else>
+            <el-input-number
+              v-model="amount"
+              @change="handleChange($event, 0)"
+              size="mini"
+              :min="1"
+              :max="20"
+              style="width: 100px"
+            ></el-input-number>
+            <el-button type="primary" @click="commitOrderItem" style="margin-left:10px">确认</el-button>
+          </div>
 
-        <el-button @click="dialogFormVisible = false" style="margin-left:10px">取 消</el-button>
+          <el-button @click="dialogFormVisible = false" style="margin-left:10px">取 消</el-button>
         </div>
         <!-- <el-button type="primary" @click="dialogFormVisible = false"
           >确 定</el-button
         > -->
-        
+
       </div>
     </el-dialog>
 
@@ -204,7 +205,7 @@
       type="primary"
       size="mini"
       style="position: absolute; right: 10px; top: 5px"
-      >创建订单
+    >创建订单
     </el-button>
     <el-drawer
       title="订单总览"
@@ -236,11 +237,12 @@
       <el-descriptions>
         <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>
         <el-descriptions-item label="总金额"
-          >{{ totalPrice }}
+        >{{ totalPrice }}
         </el-descriptions-item>
         <el-descriptions-item label="下单账号">{{
-          accountId
-        }}</el-descriptions-item>
+            accountId
+          }}
+        </el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
         <el-button @click="drawer = false">取 消</el-button>
@@ -257,7 +259,7 @@
       <span>当前订单为空或还未选择桌号</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="centerDialogVisible = false"
-          >确 定</el-button
+        >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -292,18 +294,18 @@ export default {
       drawer: false,
       selectingTableId: false,
       centerDialogVisible: false,
-      note:'',
+      note: '',
       /////////////////////////点餐dialog/////////////////////
       foodName: "",
-      foodMoney:'',
+      foodMoney: '',
       dishFlavour: [],
       radio1: "",
       formLabelWidth: "120px",
       dialogFormVisible: false,
       textarea: "",
-      choiceClass:[],
-      addable:false,
-      amount:0,
+      choiceClass: [],
+      addable: false,
+      amount: 0,
       /////////////////////////点餐dialog/////////////////////
       direction: "rtl",
       totalPrice: 0,
@@ -326,9 +328,9 @@ export default {
   },
   methods: {
     //////////////////////////选规格////////////////////////////
-    commitOrderItem(){
+    commitOrderItem() {
       var flag = false
-      if(this.currItem!=null && this.amount!=0){
+      if (this.currItem != null && this.amount != 0) {
 
         this.orderItems.forEach(element => {
           // console.log('哇哩哇')
@@ -337,7 +339,7 @@ export default {
           // console.log(this.currItem.note)
           // console.log((this.note+';'+this.textarea))
           // console.log(this.currItem.note===(this.note+';'+this.textarea))
-          if(this.currItem.dishId == element.dishId && this.currItem.note===(this.note+';'+this.textarea)){
+          if (this.currItem.dishId == element.dishId && this.currItem.note === (this.note + ';' + this.textarea)) {
             //console.log('>>>'+this.currItem.note+' '+this.textarea+'>>>>'+(this.note+';'+this.textarea))
             flag = true
             element.amount += this.amount//合并为一个item
@@ -345,7 +347,7 @@ export default {
 
         });
         //如果没有相同的项就，覆盖amount,这咋全覆盖了啊
-        if(!flag){
+        if (!flag) {
           //console.log('????')
           //因为这里是引用而非值拷贝
           // tempItem.amount = this.amount
@@ -354,38 +356,38 @@ export default {
           // console.log('this.currItem',this.currItem)
           this.currItem.amount = this.amount
           //存放note
-          this.currItem.note = this.note+';'+this.textarea
-          let tempItem = JSON.parse(JSON.stringify(this.currItem) )
+          this.currItem.note = this.note + ';' + this.textarea
+          let tempItem = JSON.parse(JSON.stringify(this.currItem))
           this.orderItems.push(tempItem)
         }
       }
       //console.log('this.orderItems',this.orderItems)
       this.dialogFormVisible = false;
     },
-    confirmMenu(){
+    confirmMenu() {
       this.addable = true
     },
     //点开dialog的函数
     chooseMenu(item) {
       this.currItem = item
       //如果名字一样，就不用改那些样式
-      if(this.foodName!=item.name){
+      if (this.foodName != item.name) {
         this.radio1 = ''
-        this.note=''
+        this.note = ''
         this.textarea = ''
         this.addable = false
       }
-        this.foodName = item.name;
-          this.foodMoney = item.price;
-          this.dishFlavour = item.flavour;
+      this.foodName = item.name;
+      this.foodMoney = item.price;
+      this.dishFlavour = item.flavour;
       this.dialogFormVisible = true;
     },
     //这里的note有问题嗷
-    addNote(keyname,value){
+    addNote(keyname, value) {
       this.addable = false
-        this.choiceClass[keyname] = value
-        this.note=''
-      for(var key in this.choiceClass){ // 输出字典元素，如果字典的key是数字，输出时会自动按序输出
+      this.choiceClass[keyname] = value
+      this.note = ''
+      for (var key in this.choiceClass) { // 输出字典元素，如果字典的key是数字，输出时会自动按序输出
         this.note += this.choiceClass[key]
       }
     },
@@ -405,7 +407,7 @@ export default {
           this.totalPrice += dish.amount * dish.price;
         }
       }
-      console.log('this.totalPrice',this.totalPrice)
+      console.log('this.totalPrice', this.totalPrice)
       if (this.orderItems.length === 0 || this.tableId === 0) {
         this.centerDialogVisible = true;
         return;
@@ -433,9 +435,9 @@ export default {
           console.log(error);
           this.$message.error("网络异常，生成订单失败");
         });
-        //对当前订单清空
-        this.orderItems = []
-        this.totalPrice = 0
+      //对当前订单清空
+      this.orderItems = []
+      this.totalPrice = 0
     },
     refreshDishList() {
       getAllFood().then((res) => {
@@ -468,7 +470,8 @@ export default {
         .then((_) => {
           done();
         })
-        .catch((_) => {});
+        .catch((_) => {
+        });
     },
   },
 };
@@ -483,41 +486,48 @@ export default {
     line-height: 100%;
     margin-bottom: 10px;
   }
+
   .radioGroup {
     margin-left: 30px;
   }
-  .alreadyChoose{
-    margin-top:10px;
-    font-size:14px;
-    color:#8CA2AA;
+
+  .alreadyChoose {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #8CA2AA;
   }
 }
-.dialog-footer{
+
+.dialog-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-align: center;
   line-height: 100%;
-  .right{
+
+  .right {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
-  .foodMoney{
-    display: inline-block;
-    line-height: 1;
-    text-align: center;
-    margin-right: 10px;
-    font-size: 24px;
-    font-weight: 400;
-    color:#FF2525;
-  }
+
+.foodMoney {
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  margin-right: 10px;
+  font-size: 24px;
+  font-weight: 400;
+  color: #FF2525;
+}
+
 .tableItem {
   display: inline-block;
   margin: 3px;
   width: 60px;
 }
+
 .card-title {
   display: flex;
   align-items: center;

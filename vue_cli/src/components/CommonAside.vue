@@ -26,18 +26,20 @@
           <el-menu-item @click="clickMenu(subItem.name)" :index="subIndex+''">{{ subItem.label }}</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <div v-if="!isCollapse" >
-        <el-button @click="showNotificationPage">
-          <el-image fit="fill" style="width: 100px; height: 100px" :src="notificationImg" />
-        </el-button>
+      <div v-if="!isCollapse">
+        <el-badge :value="notificationNum" class="item">
+          <el-button @click="showNotificationPage">
+            <el-image fit="fill" style="width: 100px; height: 100px" :src="notificationImg"/>
+          </el-button>
+        </el-badge>
       </div>
     </el-menu>
   </div>
 </template>
 <style lang="less" scoped>
 .item {
-  margin-top: 0;
-  margin-right: 0;
+  margin-top: 10px;
+  margin-right: 20px;
 }
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
@@ -78,14 +80,12 @@ export default {
       menu: [],
     };
   },
+  created() {
+  },
   mounted() {
-    // 获取推送信息
-    // this.getNotificationListFromServer();
-    // 建立sockjs连接
-    // this.initConnection();
   },
   methods: {
-    showNotificationPage(){
+    showNotificationPage() {
       this.clickMenu('notification');
     },
     handleOpen(key, keyPath) {
@@ -119,8 +119,11 @@ export default {
       this.$store.commit('setMenu', localStorage.getItem('position'))
       return this.$store.state.tab.menu
     },
-    notificationList(){
+    notificationList() {
       return this.$store.state.notificationList
+    },
+    notificationNum() {
+      return this.$store.state.notificationNum
     }
   }
 };

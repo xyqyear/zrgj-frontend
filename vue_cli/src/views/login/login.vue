@@ -70,9 +70,10 @@ export default {
       postLogin(account)
         .then((res) => {
           localStorage.setItem("position", res.data.data.account.position);
+          localStorage.setItem("accountId", res.data.data.account.id);
           localStorage.setItem("token", "Bearer " + res.data.data.token);
+          localStorage.setItem("restaurantId", res.data.data.account.restaurantId);
           this.$store.commit("setMenu", res.data.data.account.position);
-          this.$store.dispatch("getNecessaryDataAfterLogin")
           this.$router.push({name: {0: "home", 1: "serFood", 2: "chef"}[res.data.data.account.position]})
         })
         .catch((error) => {
