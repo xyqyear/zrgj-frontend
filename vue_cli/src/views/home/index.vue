@@ -224,6 +224,7 @@ import axios from "axios";
 import { getMenu } from "../../../api/data.js";
 import { getData } from "../../../api/data.js";
 import { getGivenTimeOrders } from "../../../api/data.js";
+import { getObjectMap } from "../../../api/data.js";
 import { getUserlist } from "../../../api/data";
 import { getAllFood } from "../../../api/data";
 import * as echarts from "echarts";
@@ -255,6 +256,7 @@ export default {
         from: 0,
         to: 0,
       },
+      dishMap: {},
       //第四行
       sale_kinds: "46",
       sale_count: "147",
@@ -285,8 +287,8 @@ export default {
     //获取某一天的开始时间
     getTimeNum(day){
       const todayStartTime = new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime()/1000
-      console.log(day+'天前')
-      console.log(todayStartTime)
+      // console.log(day+'天前')
+      // console.log(todayStartTime)
       return Math.ceil(
         new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime()/1000
       );
@@ -299,14 +301,14 @@ export default {
       var body = {};
       body.from = fromTime;
       body.to = this.toTime;
-      console.log(body);
+      // console.log(body);
       /////////////////返回值/////////////////////////
       var todayMoney = 0;
       var todayOrder = 0;
       //////////////////////////////////////////
       getGivenTimeOrders(body)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           for (let i = 0; i < res.data.data.length; i++) {
             todayMoney += res.data.data[i].totalPrice; //今日营业额
             if (res.data.data[i].state == 0) todayOrder += 1; //今日有效订单
@@ -321,6 +323,7 @@ export default {
     getStatistic() {
       var worker = 0;
       var good = 0;
+      
       //////////////////////获取员工数量///////////////////////////////
       getUserlist()
         .then((res) => {
@@ -334,7 +337,9 @@ export default {
       getAllFood()
         .then((res) => {
           good = res.data.data.length;
-
+          const foodData = res.data.data
+                //获取dishMap
+      this.dishMap = getObjectMap(foodData);
           this.statistic.goods = good;
         })
         .catch((error) => {
@@ -343,30 +348,35 @@ export default {
     },
     chooseDays(value) {
       //设置间隔
+      var days = 0
       this.interval = 0;
       switch (this.radio1) {
         case "近一周":
-          this.interval = 1;
+          days = 7
+          this.interval = 0;
           break;
         case "近一月":
-          this.interval = 4;
+          days = 30
+          this.interval = 1;
           break;
         case "近三月":
-          this.interval = 12;
+          days = 90
+          this.interval = 4;
           break;
         case "近半年":
-          this.interval = 24;
+          days = 180
+          this.interval = 12;
           break;
       }
       //设置body
-      let fromTime = this.getTimeNum(7*this.interval);
+      let fromTime = this.getTimeNum(days);
       this.body.from = fromTime;
       this.body.to = this.getNowTimeNum();
       //设置横坐标xData
         this.xData.length = 0;
-        console.log(this.interval)
-        for (let i = 0; i < 7; i++) {//啊啊啊想一想啊
-          var oldTime  = new Date(Date.now() - i * this.interval * 24 * 3600 * 1000);
+        // console.log(this.interval)
+        for (let i = 0; i < days; i++) {//啊啊啊想一想啊
+          var oldTime  = new Date(Date.now() - i  * 24 * 3600 * 1000);
           var newTime = new Date(oldTime); 
           var date = {
             year: newTime.getFullYear(),
@@ -404,20 +414,37 @@ export default {
       var fromTime = this.getNowTimeNum();
       var toTime = 0
       keyArray.push('营业额')
-      for (let i = 0; i < 7; i++) {
+      console.log('days',days)
+      for (let i = 0; i < days; i++) {
         tempTime = fromTime;
         toTime = tempTime;
-        fromTime = this.getTimeNum(i * this.interval);
-        console.log('dataArray.length')
-        console.log(dataArray.length)
+        fromTime = this.getTimeNum(i);
+        console.log('dataArray')
+        console.log(dataArray)
         for (let j = 0; j < dataArray.length; j++) {
-          if (dataArray[j].createTime >= fromTime && 
-          dataArray[j].createTime <= toTime) {
-            totalPrice += dataArray[j].totalPrice;
-            console.log('dataArray[j].totalPrice')
-            console.log(dataArray[j].totalPrice)
+            if (
+              dataArray[j].createTime >= fromTime &&
+              dataArray[j].createTime <= toTime
+            ) {
+              totalPrice += dataArray[j].orderItems
+                .filter((orderItem) => orderItem.state !== -1)
+                .reduce(
+                  (acc, cur) =>
+                    acc + this.dishMap[cur.dishId].price * cur.amount,
+                  0
+                );
+            }
           }
-        }
+
+        // for (let j = 0; j < dataArray.length; j++) {
+        //   if (dataArray[j].createTime >= fromTime && 
+        //   dataArray[j].createTime <= toTime) {
+        //     totalPrice += dataArray[j].totalPrice;
+        //     // console.log('dataArray[j].totalPrice')
+        //     // console.log(dataArray[j].totalPrice)
+        //   }
+        // }
+        // console.log('totalPrice',totalPrice)
         seriesArray.push(totalPrice);
         totalPrice = 0;
       }
@@ -431,6 +458,11 @@ export default {
           xAxis: {
             //横坐标？
             data: this.xData,
+            axisLabel: {
+              interval: this.interval,
+              rotate: -30,
+              color: "#333",
+            },
           },
           yAxis: {}, //这些变量好像都要定义
           legend: {
