@@ -99,11 +99,7 @@
   </el-row>
 </template>
 <script>
-import { getUserlist } from "../../../api/data.js";
-import { chaAccount } from "../../../api/data.js";
-import { addAccount } from "../../../api/data.js";
-import { deAccount } from "../../../api/data.js";
-
+import { getUserlist, chaAccount, addAccount, deAccount } from "../../../api/data.js";
 import pinyin from "pinyin";
 
 export default {
@@ -168,7 +164,7 @@ export default {
             type: "",
             telephone: res.data.data[i].telephone,
           };
-          if (item.position == 1) {
+          if (item.position === 1) {
             item.type = "服务员";
           } else {
             item.type = "厨师";
@@ -240,7 +236,7 @@ export default {
           deAccount(body)
           .then((res) => {
             console.log(res);
-            if (res.status == 200) {
+            if (res.status === 200) {
               this.$message({
                 type: "success",
                 message: "删除成功!",
@@ -264,7 +260,7 @@ export default {
           return item.username.includes(value);
         });
       } else if (/^[a-zA-Z]+$/.test(value)) {
-        this.tableData = 
+        this.tableData =
           this.fullTableData.filter((item) => {
             return pinyin(item.username, {
               style: pinyin.STYLE_FIRST_LETTER,
