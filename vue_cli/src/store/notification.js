@@ -3,6 +3,16 @@ import {Notification} from 'element-ui';
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
+export const getReadableTime = (ts) => {
+  let date = new Date(ts * 1000);
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+  return `${year}/${month}/${day}  ${hour}:${minute}`;
+}
+
 const state = sessionStorage.getItem('state') ? JSON.parse(sessionStorage.getItem('state')) : {
   // 公共数据模块
   notificationNum: 0,
@@ -19,7 +29,13 @@ export default {
       this.state.notificationNum = this.state.notificationList.length;
     },
     refreshNotificationList(state, notificationList) {
-      this.state.notificationList = notificationList;
+      this.state.notificationList = notificationList.sort((a, b) => {
+        if ((a.sticked && b.sticked) || (!a.sticked && !b.sticked)) {
+          return b.createTime - a.createTime;
+        } else {
+          return a.sticked ? -1 : 1;
+        }
+      });
       this.state.notificationNum = this.state.notificationList.length;
     },
   },
@@ -40,12 +56,10 @@ export default {
         .then(res => {
           let notificationList = res.data.data;
           let accountId = localStorage.getItem("accountId");
-          console.log('NotificationList', notificationList)
-
-          for (let i=0;i<notificationList.length;i++) {
+          for (let i = 0; i < notificationList.length; i++) {
             notificationList[i].confirmed = notificationList[i]["confirmation"][accountId];
           }
-          commit("refreshNotificationList", res.data.data)
+          commit("refreshNotificationList", notificationList)
           // this.refreshNotificationList(res.data.data);
         })
         .catch(err => {
@@ -77,5 +91,5 @@ export default {
         message: notification.content
       });
     },
-  }
+  },
 }
