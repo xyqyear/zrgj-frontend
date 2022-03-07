@@ -111,7 +111,7 @@
     </el-tabs>
     <!-- --------------------------查询------------------------------ -->
     <el-col :span="10" style="position:absolute;top:0px;bottom:2px;left:45%;height:40px;">
-            <el-input placeholder="请输入内容" v-model="input" clearable>
+            <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
           <el-button slot="append" icon="el-icon-search" @click="searchFood"></el-button>
         </el-input>
         </el-col>
@@ -311,6 +311,8 @@ import {
   getRestaurant,
 } from "../../../api/data";
 
+import pinyin from "pinyin";
+
 export default {
   name: "perCen",
   data() {
@@ -320,6 +322,7 @@ export default {
       accountId: localStorage.getItem("accountId"),
       num: 1,
       dishList: [],
+      fullDishList: [],
       dishCategories: [
         "全部菜品",
         "荤菜",
@@ -352,7 +355,7 @@ export default {
       tableNum: 10,
       occupied: [],
       ////////////////////////////查询//////////////////////////
-      input:'',
+      searchInput:'',
     };
   },
 
@@ -496,12 +499,7 @@ export default {
     refreshDishList() {
       getAllFood().then((res) => {
         this.dishList = res.data.data;
-        // 给每个菜品加上orderItem所需属性
-        for (let i = 0; i < this.dishList.length; i++) {
-          this.dishList[i].amount = 0;
-          this.dishList[i].note = "";
-          this.dishList[i].dishId = this.dishList[i].id;
-        }
+        this.fullDishList = this.dishList;
       });
     },
     handleChange(dishIndex) {
@@ -545,6 +543,30 @@ export default {
           done();
         })
         .catch((_) => {});
+    },
+    onSearchInput(value) {
+      if (value === "") {
+        this.dishList = this.fullDishList;
+      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
+        this.dishList = this.fullDishList.filter((item) => {
+          return item.name.includes(value);
+        });
+      } else if (/^[a-zA-Z]+$/.test(value)) {
+        this.dishList = 
+          this.fullDishList.filter((item) => {
+            return pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
+          }).concat(
+          this.fullDishList.filter((item) => {
+            const py = pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '');
+            return !py.startsWith(value) && py.includes(value);
+          }));
+      } else {
+        this.dishList = [];
+      }
     },
   },
 };
