@@ -426,3 +426,51 @@ export const getNotificationList = () => {
     }
   })
 }
+
+// 新建推送列表
+export const addNotification = (notification) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/add',
+    method:'POST',
+    data: notification,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 删除推送列表
+export const deleteNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/delete',
+    method:'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 修改推送列表
+export const updateNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/update',
+    method:'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 确认推送
+export const confirmNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/confirm',
+    method:'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}

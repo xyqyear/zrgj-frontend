@@ -5,7 +5,7 @@
         <p style="margin-left:20px;color:#545C64">查找到{{find}}条</p>
       </div> -->
       <div style="margin-right: 20px; display: flex">
-        <el-input placeholder="请输入内容" v-model="input" clearable>
+        <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
@@ -99,15 +99,14 @@
   </el-row>
 </template>
 <script>
-import { getUserlist } from "../../../api/data.js";
-import { chaAccount } from "../../../api/data.js";
-import { addAccount } from "../../../api/data.js";
-import { deAccount } from "../../../api/data.js";
+import { getUserlist, chaAccount, addAccount, deAccount } from "../../../api/data.js";
+import pinyin from "pinyin";
+
 export default {
   name: "home",
   data() {
     return {
-      input: "",
+      searchInput: "",
       find: "22",
       tableData: [
         //   {
@@ -125,6 +124,7 @@ export default {
         //     phone:'1234567881'
         //   },
       ],
+      fullTableData: [],
       radio1: "1",
       radio2: "",
       dialogFormVisible: false,
@@ -143,9 +143,6 @@ export default {
     };
   },
   created() {
-    //访问接口，加请求头
-    axios.defaults.headers.common["Authorization"] =
-      localStorage.getItem("token");
   },
   mounted() {
     console.log("???");
@@ -155,12 +152,10 @@ export default {
   },
   methods: {
     getUserData(){
-      this.tableData = undefined;
-      this.tableData = new Array();
       getUserlist()
       .then((res) => {
         console.log(res);
-        for (let i = 0; i <= res.data.data.length; i++) {
+        for (let i = 0; i < res.data.data.length; i++) {
           var item = {
             index: i + 1,
             id: res.data.data[i].id,
@@ -169,7 +164,7 @@ export default {
             type: "",
             telephone: res.data.data[i].telephone,
           };
-          if (item.position == 1) {
+          if (item.position === 1) {
             item.type = "服务员";
           } else {
             item.type = "厨师";
@@ -177,6 +172,7 @@ export default {
           this.tableData.push(item);
         }
         console.log(this.tableData);
+        this.fullTableData = this.tableData;
       })
       .catch((error) => {
         console.log(error.response.data.reason);
@@ -240,7 +236,7 @@ export default {
           deAccount(body)
           .then((res) => {
             console.log(res);
-            if (res.status == 200) {
+            if (res.status === 200) {
               this.$message({
                 type: "success",
                 message: "删除成功!",
@@ -255,6 +251,34 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    onSearchInput(value) {
+      if (value === "") {
+        this.tableData = this.fullTableData;
+      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.username.includes(value);
+        });
+      } else if (/^[a-zA-Z]+$/.test(value)) {
+        this.tableData =
+          this.fullTableData.filter((item) => {
+            return pinyin(item.username, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
+          }).concat(
+          this.fullTableData.filter((item) => {
+            const py = pinyin(item.username, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '');
+            return !py.startsWith(value) && py.includes(value);
+          }));
+      } else if (/^\d+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.id === Number(value);
+        });
+      } else {
+        this.tableData = [];
+      }
     },
   },
 };

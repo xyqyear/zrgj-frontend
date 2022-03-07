@@ -1,42 +1,71 @@
 <template>
   <div>
-    <p>this is notification page</p>
-    <div v-for="notification of notificationList">
-      <el-card class="box-card">
-        <div slot="header" class="clearfix">
-          <span>卡片名称</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-        </div>
-        <div v-for="o in 4" :key="o" class="text item">
-          {{'列表内容 ' + o }}
-        </div>
-      </el-card>
-    </div>
+
+    <el-card class="box-card" v-for="(notification, index) in notificationList"
+             :label="index"
+             :name="index"
+             :key="index">
+      <div slot="header" class="clearfix">
+        <div>{{ notification.title }}</div>
+      </div>
+      <div class="text item">
+        {{ notification.content }}
+      </div>
+      <div>
+        <el-container>
+          <el-main>
+            <el-row v-if="!notification.confirmed">
+              <el-button @click="handleConfirm(notification, index)">确认</el-button>
+            </el-row>
+          </el-main>
+        </el-container>
+      </div>
+    </el-card>
   </div>
 
 </template>
 
 <script>
-import {getNotificationList} from '../../../api/data'
+import {confirmNotification} from '../../../api/data'
 
 export default {
   name: "notification",
   data() {
-    return{
-      notificationList: [{
-        'a':1,
-        'b':2
-      },{
-        'a':1,
-        'b':2
-      }]
+    return {
+      value: true,
+      text: "",
+      textarea: "",
+      dialogVisible: false,
     }
   },
-  methods: {}
+  mounted() {
+  },
+  computed: {
+    notificationList() {
+      return this.$store.state.notificationList
+    }
+  },
+  methods: {
+    handleConfirm(notification, index){
+      confirmNotification({"id": notification.id})
+      .then(res=>{
+        this.$set(this.$store.state.notificationList[index], "confirmed", true);
+      })
+      .catch(err =>{
+      })
+    }
+  }
 }
 </script>
 
 <style scoped>
+.el-main {
+  background-color: #e9eef3;
+  color: #333;
+  text-align: center;
+  line-height: 20px;
+}
+
 .text {
   font-size: 14px;
 }
@@ -50,11 +79,12 @@ export default {
   display: table;
   content: "";
 }
+
 .clearfix:after {
-  clear: both
+  clear: both;
 }
 
 .box-card {
-  width: 480px;
+  width: 100%;
 }
 </style>

@@ -43,8 +43,8 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import { postLogin } from "../../../api/data";
+import {postLogin} from "../../../api/data";
+
 export default {
   name: "login",
   token: "",
@@ -98,43 +98,16 @@ export default {
       };
       postLogin(account)
         .then((res) => {
-          console.log(res);
-          if (res.status === 200) {
-            this.$store.commit("clearMenu");
-            console.log(res.data.data.account.position);
-            this.$store.commit("setMenu", res.data.data.account.position);
-            this.$store.commit("setToken", res.data.data.token);
-            //console.log(res.data.data.token)
-            localStorage.setItem("position", res.data.data.account.position);
-            localStorage.setItem("token", "Bearer " + res.data.data.token);
-            //访问接口，加请求头
-            axios.defaults.headers.common["Authorization"] =
-              localStorage.getItem("token");
-            //console.log(localStorage.getItem('token'))
-            this.$store.commit("addMenu", this.$router);
-            if (res.data.data.account.position == 0) {
-              console.log("position0");
-              this.$router.push({ name: "home" });
-            } else if (res.data.data.account.position == 2) {
-              this.$router.push({ name: "chef" });
-            } else if (res.data.data.account.position == 1) {
-              this.$router.push({ name: "serFood" });
-            }
-          } else {
-            console.log("错误啦");
-            //this.$message.warning(res.reason);
-          }
-          this.token = res.data.data.token;
+          localStorage.setItem("position", res.data.data.account.position);
+          localStorage.setItem("accountId", res.data.data.account.id);
+          localStorage.setItem("token", "Bearer " + res.data.data.token);
+          localStorage.setItem("restaurantId", res.data.data.account.restaurantId);
+          this.$store.commit("setMenu", res.data.data.account.position);
+          this.$router.push({name: {0: "home", 1: "serFood", 2: "chef"}[res.data.data.account.position]})
         })
         .catch((error) => {
-          console.log("status" + error.response.status);
-          if (error.response.status === 400) {
-            console.log("???" + error.response.data.reason);
-            this.$store.commit("setToken", this.token);
-            this.$message.error(error.response.data.reason);
-          }
+          this.$message.error(error.response.data.reason);
         });
-
        }
    },
   

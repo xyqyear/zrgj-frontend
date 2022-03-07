@@ -1,29 +1,6 @@
 <template>
   <div id="app">
-    <!-- <router-link to="/main">Main</router-link>
-    <router-link to="/about">About</router-link> -->
-   <!-- <div>This is App.vue</div> -->
-   <!-- 路由出口,为什么是默认Main.vue呢 -->
-   <!-- 路由匹配到的组件将渲染在这里 -->
     <router-view></router-view>
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/> -->
-    <!-- <el-row>
-  <el-button>默认按钮</el-button>
-  <el-button type="primary">主要按钮</el-button>
-  <el-button type="success">成功按钮</el-button>
-  <el-button type="info">信息按钮</el-button>
-  <el-button type="warning">警告按钮</el-button>
-  <el-button type="danger">危险按钮</el-button>
-</el-row> -->
-
-<!-- <template>
-  <el-radio v-model="radio" label="1">备选项</el-radio>
-  <el-radio v-model="radio" label="2">备选项</el-radio>
-</template> -->
   </div>
 </template>
 
@@ -50,13 +27,13 @@
 }
 </style>
 <script>
-  export default {
-    name:'App'
-  }
-  //   data () {
-  //     return {
-  //       radio: '1'
-  //     };
-  //   }
-  // }
+export default {
+  name: 'App',
+}
+//   data () {
+//     return {
+//       radio: '1'
+//     };
+//   }
+// }
 </script>
