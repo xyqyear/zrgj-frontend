@@ -110,7 +110,7 @@
       </el-tab-pane>
     </el-tabs>
     <!-- --------------------------查询------------------------------ -->
-    <el-col :span="10" style="position:absolute;top:0px;bottom:2px;left:45%">
+    <el-col :span="10" style="position:absolute;top:0px;bottom:2px;left:45%;height:40px;">
             <el-input placeholder="请输入内容" v-model="input" clearable>
           <el-button slot="append" icon="el-icon-search" @click="searchFood"></el-button>
         </el-input>
@@ -519,6 +519,12 @@ export default {
           }
         }
       });
+      //设置购物车上的数字
+      this.foodNum = 0
+      this.orderItems.forEach((element) => {
+        this.foodNum += element.amount
+        console.log('element.amount',element.amount)
+      })
       console.log('orderItems',this.orderItems)
       this.createNewOrder()
     },
