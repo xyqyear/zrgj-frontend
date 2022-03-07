@@ -2,7 +2,7 @@
 <template>
   <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
   <el-container style="height: 100%">
-    <el-aside width="auto">
+    <el-aside width="auto" style="display: flex; flex-direction: column;">
       <common-aside></common-aside>
       <!-- 驼峰命名，注意这里，不过可能也用不到了 -->
     </el-aside>
