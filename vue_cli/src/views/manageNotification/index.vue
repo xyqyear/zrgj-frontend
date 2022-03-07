@@ -1,27 +1,253 @@
 <template>
-<div>
-  <p> this is sendNotification page</p>
-</div>
+  <div>
+    <div class="right">
+      <el-button type="text" @click="dialogVisible1 = true">
+        <el-row>
+          <el-button type="primary" class="head">发布公告</el-button>
+        </el-row>
+      </el-button>
+    </div>
+
+    <el-dialog
+      :visible.sync="dialogVisible1"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form>
+        <el-form-item label="公告标题">
+          <el-input
+            type="text"
+            placeholder="请输入内容"
+            v-model="text"
+            maxlength="20"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+        <div style="margin: 20px 0"></div>
+        <el-form-item label="公告内容">
+          <el-input
+            type="textarea"
+            placeholder="请输入内容"
+            v-model="textarea"
+            maxlength="60"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="设为顶置">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible1 = false">退 出</el-button>
+        <!-- <el-button @click="dialogVisible1 = false">保存并退出</el-button> -->
+        <el-button type="primary" @click="handleAdd()">发 布</el-button>
+      </span>
+    </el-dialog>
+
+    <el-card
+      class="box-card"
+      v-for="(item, index) in notificationList"
+      :key="index"
+    >
+      <div slot="header" class="clearfix">
+        <div v-if="item.sticked" class="left">
+          <el-button type="primary" @click="stickNotification">置顶</el-button>
+        </div>
+
+        <div class="head">{{ item.title }}</div>
+      </div>
+      <div class="text item">
+        {{ item.content }}
+      </div>
+      <div class="right">
+        <el-row>
+          <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
+
+          <span style="float: left; margin-top: 17px">
+          {{ getCreatedTime(item.createTime) }}
+        </span>
+          <el-button @click="dialogVisible2 = true" class="mybt"
+          >编辑
+          </el-button
+          >
+
+          <el-button class="mybt" @click="changeStickSituation(item, index)">{{ item.sticked ? "取消置顶" : "置顶" }}</el-button>
+          <el-button class="mybt">撤 销</el-button>
+          <!-- @click="handleDelete(item.id)" -->
+        </el-row>
+      </div>
+    </el-card>
+    <el-dialog
+      :visible.sync="dialogVisible2"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form :model="form">
+        <el-form-item label="公告标题">
+          <el-input
+            type="text"
+            placeholder="请输入内容"
+            v-model="text"
+            maxlength="20"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+
+        <div style="margin: 20px 0"></div>
+
+        <el-form-item label="公告内容">
+          <el-input
+            type="textarea"
+            placeholder="请输入内容"
+            v-model="textarea"
+            maxlength="60"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+
+        <el-form-item label="设为顶置">
+          <el-switch
+            v-model="value"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+              <el-button @click="dialogVisible2 = false">取消修改</el-button>
+        <!-- <el-button @click="dialogVisible = false">保存并退出</el-button> -->
+              <el-button type="primary" @click="dialogVisible2 = false"
+              >确认修改</el-button
+              >
+            </span>
+    </el-dialog>
+
+  </div>
 </template>
 
 <script>
+import {addNotificationList, getNotificationList, deleteNotification} from "../../../api/data";
+import {getReadableTime} from "../../store/notification";
+
 export default {
   name: "manageNotification",
   data() {
-    return{
-      notificationList: [{
-        'a':1,
-        'b':2
-      },{
-        'a':1,
-        'b':2
-      }]
+    return {
+      value: true,
+      text: "",
+      textarea: "",
+      dialogVisible1: false,
+      dialogVisible2: false,
+    };
+  },
+  mounted() {
+  },
+  methods: {
+    getCreatedTime(ts) {
+      return `发布时间：${getReadableTime(ts)}`;
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {
+        });
+    },
+    handleAdd() {
+      var body = {
+        title: "",
+        content: "",
+        sticked: false,
+      };
+      body.title = this.text;
+      body.content = this.textarea;
+      // body.sticked = this.sticked;
+      addNotificationList(body)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error.response.data.reason);
+        });
+    },
+    handleDelete(id) {
+    },
+    handleEdit(Id) {
+    },
+    stickNotification() {
+
+    },
+    changeStickSituation(notification, index){
+
     }
   },
-  methods: {}
-}
+  computed: {
+    notificationList() {
+      return this.$store.state.notificationList
+    }
+  }
+};
 </script>
 
 <style scoped>
+.text {
+  font-size: 14px;
+}
 
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.box-card {
+  width: 98%;
+  height: 100%;
+  margin: 10px;
+  padding: 5px;
+  text-align: left;
+}
+
+.head {
+  font-weight: bolder;
+  font-size: 140%;
+}
+
+.mybt {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.right {
+  float: right;
+  margin-right: 0px;
+}
+
+.left {
+  float: left;
+  margin-left: 0px;
+}
 </style>
