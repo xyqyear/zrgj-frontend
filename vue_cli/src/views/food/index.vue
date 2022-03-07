@@ -5,7 +5,7 @@
         <p style="margin-left: 20px; color: #545c64">查找到{{ find }}条</p>
       </div>
       <div style="margin-right: 20px; display: flex">
-        <el-input placeholder="请输入内容" v-model="input" clearable>
+        <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
@@ -273,6 +273,9 @@ import { addFood } from "../../../api/data.js";
 import { upload } from "../../../api/data.js";
 import { updateFood } from "../../../api/data.js";
 import { deleteFood } from "../../../api/data.js";
+
+import pinyin from "pinyin";
+
 export default {
   name: "home",
   data() {
@@ -280,7 +283,6 @@ export default {
       perChange: [],
       perSet: [],
       selectVal: this.value || "",
-      input: "",
       find: "",
       dialogFormVisible: false,
       dialogChangeVisible: false,
@@ -295,6 +297,7 @@ export default {
         type: "",
         id: "",
       },
+      searchInput: "",
       imageUrl: "",
       tableData: [
         // {
@@ -316,6 +319,7 @@ export default {
         //   operation: "哇哩哇",
         // },
       ],
+      fullTableData: [],
       options: [
         {
           value: "选项1",
@@ -620,10 +624,40 @@ export default {
               this.tableData.push(item);
             }
           }
+          this.fullTableData = this.tableData;
         })
         .catch((error) => {
           console.log(error.response.data.reason);
         });
+    },
+
+    onSearchInput(value) {
+      if (value === "") {
+        this.tableData = this.fullTableData;
+      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.name.includes(value);
+        });
+      } else if (/^[a-zA-Z]+$/.test(value)) {
+        this.tableData = 
+          this.fullTableData.filter((item) => {
+            return pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
+          }).concat(
+          this.fullTableData.filter((item) => {
+            const py = pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '');
+            return !py.startsWith(value) && py.includes(value);
+          }));
+      } else if (/^\d+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.id === Number(value);
+        });
+      } else {
+        this.tableData = [];
+      }
     },
   },
 };
