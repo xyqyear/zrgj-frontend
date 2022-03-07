@@ -5,7 +5,7 @@
       :default-active="activeIndex2"
       class="el-menu-demo"
       mode="horizontal"
-      router=true
+      :router="true"
       @select="handleSelect"
       background-color="#fff"
       text-color="#545C64"

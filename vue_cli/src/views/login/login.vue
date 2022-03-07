@@ -36,8 +36,7 @@
       </el-form-item>
       <el-form-item class="login-submit">
         <el-button type="primary" @click="login" class="login_submit"
-        >登录
-        </el-button
+          >登录</el-button
         >
       </el-form-item>
     </el-form>
@@ -50,18 +49,43 @@ export default {
   name: "login",
   token: "",
   data() {
+    var checkNum = (rule,value,callback)=>{
+      let numReg = /^\d+$/;
+      if(!value){
+        callback(new Error('请输入数字'))
+      }else{
+        if(numReg.test(value)){//如果是数字
+          callback();
+        }else{
+          callback(new Error('请输入数字'))
+        }
+      }
+    }
     return {
       form: {},
       rules: {
         username: [
-          {required: true, message: "请输入员工号", trigger: "blur"},
+          { required: true, message: "请输入员工号", trigger: "blur" },
+          {
+            max: 8,
+            message: "员工号长度不能多于8位",
+            trigger: "blur",
+          },
+          // 必须是数字
+          { validator: checkNum, trigger: 'blur' },
         ],
-        password: [{required: true, message: "请输入密码", trigger: "blur"}],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          // 必须是数字
+          { validator: checkNum, trigger: 'blur' },
+          ],
       },
     };
   },
   methods: {
     login() {
+      //数字则返回true
+      //if(/^\d+$/.test(this.form.username)){
       localStorage.setItem('accountId', this.form.username);
       var account = {
         id: parseInt(this.form.username),
@@ -94,13 +118,11 @@ export default {
   border: 1px solid #eaeaea;
   box-shadow: 0 0 25px #cac6c6;
 }
-
 .login-title {
   margin: 0px auto 40px auto;
   text-align: center;
   color: #505458;
 }
-
 .login-submit {
   margin: 10px auto 0px auto;
 }
