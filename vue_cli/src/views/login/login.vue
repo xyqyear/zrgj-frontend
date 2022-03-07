@@ -86,6 +86,7 @@ export default {
   },
   methods: {
     login() {
+      console.log('sessionStorage.getItem',sessionStorage.getItem('isNum'))
       let numReg = /^\d+$/;
       if(numReg.test(this.form.username) && numReg.test(this.form.password)){
       //数字则返回true
