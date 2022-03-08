@@ -35,16 +35,17 @@
         </el-table-column>
         <el-table-column prop="state" label="状态" width="100px">
           <template slot-scope="scope">
-            {{ ["已完成", "排队中", "烹饪中"][scope.row.state] }}
+            {{ getOrderItemDescription(scope.row.state) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="100">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.state !== 0"
+              v-if="scope.row.state === 1 || scope.row.state === 2"
               size="mini"
               @click="handle(scope.row.state, item.id, scope.row.id)"
-              >{{ [null, "烹饪", "完成"][scope.row.state] }}</el-button
+            >{{ [null, "烹饪", "完成"][scope.row.state] }}
+            </el-button
             >
           </template>
         </el-table-column>
@@ -58,11 +59,13 @@ el-table {
   display: flex;
   justify-content: space-between;
 }
+
 el-collapse-item {
   margin-top: 30px;
   margin-bottom: 50px;
   border-radius: 5px;
 }
+
 .header {
   width: 100%;
   height: 100%;
@@ -72,6 +75,7 @@ el-collapse-item {
   justify-content: left;
   align-items: center;
   text-align: center;
+
   div {
     height: 100%;
     vertical-align: middle;
@@ -80,7 +84,8 @@ el-collapse-item {
 }
 </style>
 <script>
-import { getAllFood, getCurrOrders, updateOrderItem } from "../../../api/data";
+import {getAllFood, getCurrOrders, updateOrderItem} from "../../../api/data";
+
 export default {
   name: "table",
   data() {
@@ -96,42 +101,48 @@ export default {
     populateData() {
       Promise.all([getAllFood(), getCurrOrders()]).then((res) => {
         let dishMap = res[0].data.data.reduce((acc, curr) => {
-                  acc[curr.id] = curr.name;
-                  return acc;
-                }, {});
+          acc[curr.id] = curr.name;
+          return acc;
+        }, {});
         let orders = res[1].data.data;
-          for (let order of orders) {
-            // if all items are finished, skip
-            if (order.orderItems.every((item) => item.state === 0)) {
-              continue;
-            }
-
-            let displayOrder = {
-              id: order.id,
-              time: new Date(order.createTime).toLocaleTimeString(),
-              tableId: order.tableId,
-              orderItems: {},
-            };
-
-            for (let orderItem of order.orderItems) {
-              displayOrder.orderItems[orderItem.id] = {
-                id: orderItem.id,
-                name: dishMap[orderItem.dishId],
-                amount: orderItem.amount,
-                note: orderItem.note,
-                state: orderItem.state,
-              };
-            }
-
-            order.orderItems = order.orderItems.reduce((acc, curr) => {
-              acc[curr.id] = curr;
-              return acc;
-            }, {});
-
-            this.$set(this.orderData, order.id, displayOrder);
-            this.$set(this.rawOrderData, order.id, order);
+        for (let order of orders) {
+          // if all items are finished, skip
+          if (order.orderItems.every((item) => item.state === 0 || item.state === -1)) {
+            continue;
           }
+
+          let displayOrder = {
+            id: order.id,
+            time: new Date(order.createTime).toLocaleTimeString(),
+            tableId: order.tableId,
+            orderItems: {},
+          };
+
+          for (let orderItem of order.orderItems) {
+            displayOrder.orderItems[orderItem.id] = {
+              id: orderItem.id,
+              name: dishMap[orderItem.dishId],
+              amount: orderItem.amount,
+              note: orderItem.note,
+              state: orderItem.state,
+            };
+          }
+
+          order.orderItems = order.orderItems.reduce((acc, curr) => {
+            acc[curr.id] = curr;
+            return acc;
+          }, {});
+
+          this.$set(this.orderData, order.id, displayOrder);
+          this.$set(this.rawOrderData, order.id, order);
+        }
       })
+    },
+    getOrderItemDescription(state) {
+      if (state === -1){
+        return "已取消";
+      }
+      return ["已完成", "排队中", "烹饪中", "上菜中"][state];
     },
     handle(state, orderId, orderItemId) {
       switch (state) {
