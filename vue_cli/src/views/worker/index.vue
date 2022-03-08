@@ -2,7 +2,7 @@
   <el-row class="home" :gutter="20">
     <div class="operation">
       <div style="margin-right: 20px; display: flex">
-        <el-input placeholder="请输入内容" v-model="input" clearable>
+        <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
@@ -189,10 +189,9 @@
   </el-row>
 </template>
 <script>
-import { getUserlist } from "../../../api/data.js";
-import { chaAccount } from "../../../api/data.js";
-import { addAccount } from "../../../api/data.js";
-import { deAccount } from "../../../api/data.js";
+import { getUserlist, chaAccount, addAccount, deAccount } from "../../../api/data.js";
+import pinyin from "pinyin";
+
 export default {
   name: "home",
   data() {
@@ -330,6 +329,7 @@ export default {
       input: "",
       find: "22",
       tableData: [],
+      fullTableData: [],
       radio1: "1",
       radio2: "",
       dialogFormVisible: false,
@@ -562,6 +562,7 @@ export default {
             this.tableData.push(item);
           }
           console.log(this.tableData);
+          this.fullTableData = this.tableData;
         })
         .catch((error) => {
           console.log(error.response.data.reason);
@@ -664,7 +665,7 @@ export default {
           console.log(body.id);
           deAccount(body).then((res) => {
             console.log(res);
-            if (res.status == 200) {
+            if (res.status === 200) {
               this.$message({
                 type: "success",
                 message: "删除成功!",
@@ -680,6 +681,34 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    onSearchInput(value) {
+      if (value === "") {
+        this.tableData = this.fullTableData;
+      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.username.includes(value);
+        });
+      } else if (/^[a-zA-Z]+$/.test(value)) {
+        this.tableData =
+          this.fullTableData.filter((item) => {
+            return pinyin(item.username, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
+          }).concat(
+          this.fullTableData.filter((item) => {
+            const py = pinyin(item.username, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '');
+            return !py.startsWith(value) && py.includes(value);
+          }));
+      } else if (/^\d+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.id === Number(value);
+        });
+      } else {
+        this.tableData = [];
+      }
     },
   },
 };

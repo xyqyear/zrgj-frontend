@@ -1,5 +1,6 @@
 <template>
   <div style="position: relative">
+
     <el-tabs v-model="activeName">
       <el-tab-pane
         v-for="(category, index) in dishCategories"
@@ -108,6 +109,13 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+    <!-- --------------------------查询------------------------------ -->
+    <el-col :span="10" style="position:absolute;top:0px;bottom:2px;left:45%;height:40px;">
+            <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
+          <el-button slot="append" icon="el-icon-search" @click="searchFood"></el-button>
+        </el-input>
+        </el-col>
+    <!-- --------------------------查询------------------------------ -->
     <!-- ----------------------------Dialog表单--------------------------------------- -->
     <el-dialog
       :title="foodName"
@@ -147,6 +155,7 @@
         <div class="alreadyChoose">已选规格：{{ note }} {{ textarea }}</div>
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <div class="left">
         <div class="foodMoney">{{ foodMoney }}元/份</div>
         <div>
           <el-popover
@@ -174,6 +183,7 @@
               {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
             </el-button>
           </el-popover>
+        </div>
         </div>
         <div class="right">
           <!-- 这里的条件有所改变 -->
@@ -241,7 +251,19 @@
             prop="amount"
             label="数量"
             width="100"
-          ></el-table-column>
+          >
+          <template slot-scope="scope">
+          <!-- //这里放啥啊 -->
+          <el-input-number
+              v-model="scope.row.amount"
+              @change="handleChange2(scope.row.dishId)"
+              size="mini"
+              :min="0"
+              :max="20"
+              style="width: 100px"
+            ></el-input-number>
+             </template>
+          </el-table-column>
           <el-table-column
             prop="note"
             label="备注"
@@ -287,7 +309,10 @@ import {
   getAllFood,
   getCurrOrders,
   getRestaurant,
+  addNewOrderItem
 } from "../../../api/data";
+
+import pinyin from "pinyin";
 
 export default {
   name: "perCen",
@@ -298,6 +323,7 @@ export default {
       accountId: localStorage.getItem("accountId"),
       num: 1,
       dishList: [],
+      fullDishList: [],
       dishCategories: [
         "全部菜品",
         "荤菜",
@@ -329,10 +355,15 @@ export default {
       tableId: 0,
       tableNum: 10,
       occupied: [],
+      ////////////////////////////查询//////////////////////////
+      searchInput:'',
+      ////////////////////////////加菜/////////////////////
+      curOrderId:'',
     };
   },
 
   mounted() {
+    this.getAddMeal();
     this.refreshDishList();
     // 获取餐厅最大桌号
     this.occupied = new Array(this.tableNum);
@@ -343,17 +374,26 @@ export default {
     });
   },
   methods: {
+    //////////////////////////获取加菜信息///////////////
+    getAddMeal(){
+      if(sessionStorage.getItem('curOrder')){
+        const curOrder = JSON.parse(sessionStorage.getItem('curOrder'))
+          this.tableId =  curOrder.tableId
+          this.curOrderId = curOrder.id
+          sessionStorage.removeItem('curOrder')
+      }
+    },
+    ////////////////////////////查询/////////////////////////////
+    searchFood(){
+     // input
+    },
     //////////////////////////选规格////////////////////////////
     commitOrderItem() {
+      //计算所有菜数量
+
       var flag = false;
       if (this.currItem != null && this.amount != 0) {
         this.orderItems.forEach((element) => {
-          // console.log('哇哩哇')
-          // console.log(this.currItem.dishId == element.dishId)
-          // console.log(this.currItem)
-          // console.log(this.currItem.note)
-          // console.log((this.note+';'+this.textarea))
-          // console.log(this.currItem.note===(this.note+';'+this.textarea))
           if (
             this.currItem.dishId == element.dishId &&
             this.currItem.note === this.note + ";" + this.textarea
@@ -365,12 +405,6 @@ export default {
         });
         //如果没有相同的项就，覆盖amount,这咋全覆盖了啊
         if (!flag) {
-          //console.log('????')
-          //因为这里是引用而非值拷贝
-          // tempItem.amount = this.amount
-          // tempItem.note = this.note+';'+this.textarea
-          // console.log('tempItem',tempItem)
-          // console.log('this.currItem',this.currItem)
           this.currItem.amount = this.amount;
           //存放note
           this.currItem.note = this.note + ";" + this.textarea;
@@ -378,6 +412,11 @@ export default {
           this.orderItems.push(tempItem);
         }
       }
+      //设置购物车上的数字
+      this.foodNum = 0
+      this.orderItems.forEach((element) => {
+        this.foodNum += element.amount
+      })
       //console.log('this.orderItems',this.orderItems)
       this.dialogFormVisible = false;
     },
@@ -425,7 +464,6 @@ export default {
           this.totalPrice += dish.amount * dish.price;
         }
       }
-      console.log("this.totalPrice", this.totalPrice);
       if (this.orderItems.length === 0 || this.tableId === 0) {
         this.centerDialogVisible = true;
         return;
@@ -433,44 +471,83 @@ export default {
       this.drawer = true;
     },
     uploadOrder() {
-      let newOrder = {
-        tableId: this.tableId,
-        orderItems: this.orderItems,
-      };
-      addOrder(newOrder)
-        .then((res) => {
-          this.$message({
-            message: "创建订单成功",
-            type: "success",
-          });
-          this.refreshDishList();
-          this.refreshTableSituation();
-          this.occupied[this.tableId - 1] = true;
-          this.tableId = 0;
-          this.drawer = false;
-        })
-        .catch((error) => {
-          console.log(error);
-          this.$message.error("网络异常，生成订单失败");
+      console.log('this.orderItems',this.orderItems)
+      //如果当前的订单号不为空
+      if(this.curOrderId!=''){
+        this.orderItems.forEach(element => {
+          let addOrder = {
+            'orderId':this.curOrderId,
+            'dishId':element.id,
+            'amount':element.amount,
+            'note':element.note
+          };
+          addNewOrderItem(addOrder)
+          .then((res) => {
+            this.$message({
+              message: "添加菜品成功",
+              type: "success",
+            });
+          })
+          .catch((error)=>{
+            console.log(error)
+          })
         });
-      //对当前订单清空
+        console.log('this.curOrderId',this.curOrderId)
+        
+      }else//如果当前的订单号是空的
+      {
+        let newOrder = {
+          tableId: this.tableId,
+          orderItems: this.orderItems,
+        };
+        addOrder(newOrder)
+          .then((res) => {
+            this.$message({
+              message: "创建订单成功",
+              type: "success",
+            });
+            this.refreshDishList();
+            this.refreshTableSituation();
+            this.occupied[this.tableId - 1] = true;
+            this.tableId = 0;
+            this.drawer = false;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.$message.error("网络异常，生成订单失败");
+          });
+        对当前订单清空
+      }
       this.orderItems = [];
       this.totalPrice = 0;
     },
     refreshDishList() {
       getAllFood().then((res) => {
         this.dishList = res.data.data;
-        // 给每个菜品加上orderItem所需属性
-        for (let i = 0; i < this.dishList.length; i++) {
-          this.dishList[i].amount = 0;
-          this.dishList[i].note = "";
-          this.dishList[i].dishId = this.dishList[i].id;
-        }
+        this.fullDishList = this.dishList;
       });
     },
     handleChange(dishIndex) {
       this.$forceUpdate();
       this.dialogFormVisible = true;
+    },
+    handleChange2(dishId) {
+      this.orderItems.forEach(element => {
+        if(element.dishId == dishId && element.amount==0){
+          console.log('????')
+          for(let i = 0;i<this.orderItems.length;i++){
+            if(element==this.orderItems[i]){
+              this.orderItems.splice(i,i+1)
+            }
+          }
+        }
+      });
+      //设置购物车上的数字
+      this.foodNum = 0
+      this.orderItems.forEach((element) => {
+        this.foodNum += element.amount
+      })
+      this.createNewOrder()
     },
     refreshTableSituation() {
       for (let i = 0; i < this.tableNum; i++) {
@@ -489,6 +566,30 @@ export default {
           done();
         })
         .catch((_) => {});
+    },
+    onSearchInput(value) {
+      if (value === "") {
+        this.dishList = this.fullDishList;
+      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
+        this.dishList = this.fullDishList.filter((item) => {
+          return item.name.includes(value);
+        });
+      } else if (/^[a-zA-Z]+$/.test(value)) {
+        this.dishList =
+          this.fullDishList.filter((item) => {
+            return pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
+          }).concat(
+          this.fullDishList.filter((item) => {
+            const py = pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '');
+            return !py.startsWith(value) && py.includes(value);
+          }));
+      } else {
+        this.dishList = [];
+      }
     },
   },
 };
@@ -519,6 +620,11 @@ export default {
   text-align: center;
   line-height: 100%;
   .right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .left {
     display: flex;
     justify-content: center;
     align-items: center;

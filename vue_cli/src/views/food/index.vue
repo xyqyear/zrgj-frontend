@@ -5,7 +5,7 @@
         <p style="margin-left: 20px; color: #545c64">查找到{{ find }}条</p>
       </div>
       <div style="margin-right: 20px; display: flex">
-        <el-input placeholder="请输入内容" v-model="input" clearable>
+        <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
@@ -15,8 +15,29 @@
           <el-form :model="form" :rules="addRules">
             <el-form-item label="菜品名称" prop="name">
               <el-input v-model="form.name" autocomplete="off"></el-input>
+              <!-- <el-alert
+                v-show="alertBlankVisible"
+                title="菜名不能为空！"
+                type="error"
+                show-icon
+                :closable="false"
+              ></el-alert>
+              <el-alert
+                v-show="alertAgainVisible"
+                title="与已有菜名重复，请更改！"
+                type="error"
+                show-icon
+                :closable="false"
+              ></el-alert>
+              <el-alert
+                v-show="alertContentVisible"
+                title="输入内容不满足格式，必须包含汉字、英文字母中至少一种！"
+                type="error"
+                show-icon
+                :closable="false"
+              ></el-alert> -->
             </el-form-item>
-            <el-form-item label="价格">
+            <el-form-item label="价格" prop="price">
               <el-input v-model="form.price" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="类别">
@@ -34,18 +55,97 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="图片">
+            <el-form-item label="图片" prop="iamge">
               <el-upload
+                class="upload-demo"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                multiple
+                :limit="3"
+                :on-exceed="handleExceed"
+                :file-list="fileList"
+              >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                
+                <div slot="tip" class="el-upload__tip">
+                  只能上传jpg/png文件，且不超过500kb
+                </div>
+              </el-upload>
+              <!-- <el-upload
                 class="avatar-uploader"
                 action=" "
                 :show-file-list="false"
                 :auto-upload="false"
+                :on-preview="handlePreview"
+                :limit="1"
+                :file-list="fileList"
                 :on-change="uploadFiles"
-                :on-success="handle_success"
+                :before-remove="beforeRemove"
               >
                 <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-              </el-upload>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+              </el-upload> -->
+            </el-form-item>
+            <el-form-item>
+              <div style="justify-content: left">个性化设置</div>
+              <el-card v-for="item in perSet" :key="item.id">
+                <el-row justify="end">
+                  <el-col :span="5">
+                    <el-input v-model="item.key" placeholder="属性名">
+                    </el-input>
+                  </el-col>
+                  <el-col :span="19">
+                    <el-row>
+                      <el-input
+                        v-model="item.value1"
+                        placeholder="属性值1"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value2"
+                        placeholder="属性值2"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value3"
+                        placeholder="属性值3"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                    <el-row>
+                      <el-input
+                        v-model="item.value4"
+                        placeholder="属性值4"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value5"
+                        placeholder="属性值5"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value6"
+                        placeholder="属性值6"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                  </el-col>
+                  <el-col>
+                    <i class="el-icon-delete" @click="delSet()"></i>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-button type="primary" @click="addSet()">增加属性</el-button>
             </el-form-item>
             <el-form-item>
               <div style="justify-content: left">个性化设置</div>
@@ -106,8 +206,9 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="handleAdd()">确 定</el-button>
+            <el-button type="primary" @click="handleAdd()">确定添加</el-button>
+            <el-button @click="dialogFormVisible = false">保存并退出</el-button>
+            <el-button @click="clearForm">退 出</el-button>
           </div>
         </el-dialog>
       </div>
@@ -273,32 +374,75 @@ import { addFood } from "../../../api/data.js";
 import { upload } from "../../../api/data.js";
 import { updateFood } from "../../../api/data.js";
 import { deleteFood } from "../../../api/data.js";
+
+import pinyin from "pinyin";
+
 export default {
   name: "home",
   data() {
-    var checkNum = (rule, value, callback) => {
-      if(!/^[\u4e00-\u9fa5]/.test(value) &&!/^[a-zA-Z]/.test(value)){
-        callback(new Error('输入内容不满足格式，必须包含汉字、英文字母中至少一种！'))
+    var checkName = (rule, value, callback) => {
+      if (!/^[\u4e00-\u9fa5]/.test(value) && !/^[a-zA-Z]/.test(value)) {
+        callback(
+          new Error("输入内容不满足格式，必须包含汉字、英文字母中至少一种！")
+        );
       } else {
-        this.tableData.forEach(element => {
-          if(element.name === value){
-            callback(new Error('与已有菜名重复，请更改！'))
+        this.tableData.forEach((element) => {
+          if (element.name === value) {
+            callback(new Error("与已有菜名重复，请更改！"));
           }
-        })
+        });
         callback();
+      }
+    };
+    var checkNum = (rule, value, callback) => {
+      let numReg = /^\d+$/;
+      if (!value) {
+        callback(new Error("请输入数字"));
+      } else {
+        if (numReg.test(value)) {
+          //如果是数字
+          callback();
+        } else {
+          callback(
+            new Error("输入内容不满足格式，必须是非负，小数点后最多保留一位")
+          );
+        }
+      }
+    };
+    var checkImage = (rule, value, callback) => {
+      console.log("value", value);
+      let numReg = /^\d+$/;
+      if (!value) {
+        callback(new Error("请输入数字"));
+      } else {
+        if (numReg.test(value)) {
+          //如果是数字
+          callback();
+        } else {
+          callback(
+            new Error("输入内容不满足格式，必须是非负，小数点后最多保留一位")
+          );
+        }
       }
     };
     return {
       addRules: {
         name: [
-          { required: true, message: "菜品名不能为空！", trigger: "blur" },
+          { required: true, message: "该内容不能为空！", trigger: "blur" },
+          { validator: checkName, trigger: "blur" },
+        ],
+        price: [
+          { required: true, message: "该内容不能为空！", trigger: "blur" },
           { validator: checkNum, trigger: "blur" },
+        ],
+        image: [
+          { required: true, message: "该内容不能为空！", trigger: "blur" },
+          { validator: checkImage, trigger: "blur" },
         ],
       },
       perChange: [],
       perSet: [],
       selectVal: this.value || "",
-      input: "",
       find: "",
       dialogFormVisible: false,
       dialogChangeVisible: false,
@@ -316,6 +460,7 @@ export default {
         type: "",
         id: "",
       },
+      searchInput: "",
       imageUrl: "",
       tableData: [
         // {
@@ -337,6 +482,7 @@ export default {
         //   operation: "哇哩哇",
         // },
       ],
+      fullTableData: [],
       options: [
         {
           value: "选项1",
@@ -364,7 +510,7 @@ export default {
         },
       ],
       value: "",
-      fileList: [],
+     fileList: [],
       flavour: [],
       /////////////////////////allfood///////////
       allFood: [],
@@ -374,6 +520,37 @@ export default {
     this.getFoodData();
   },
   methods: {
+    /////////////////////////清空表单////////////////////
+    clearForm() {
+      this.form.name = "";
+      this.form.price = "";
+      this.fileList.length = 0
+      this.selectVal = ''
+      this.dialogFormVisible = false;
+    },
+    // blur() {
+    //   if (this.form.name === "") {
+    //     this.alertBlankVisible = true;
+    //   } else {
+    //     this.alertBlankVisible = false;
+    //   }
+    //   for (let i = 0; i < this.tableData.length; i++) {
+    //     if (this.form.name === this.tableData[i].name) {
+    //       this.alertAgainVisible = true;
+    //       break;
+    //     } else {
+    //       this.alertAgainVisible = false;
+    //     }
+    //   }
+    //   if (
+    //     !/^[\u4e00-\u9fa5]/.test(this.form.name) &&
+    //     !/^[a-zA-Z]/.test(this.form.name)
+    //   ) {
+    //     this.alertContentVisible = true;
+    //   } else {
+    //     this.alertContentVisible = false;
+    //   }
+    // },
     delChange() {
       this.perChange.splice(this.perChange.length - 1, 1);
     },
@@ -391,6 +568,8 @@ export default {
     activeAddFoodDialog() {
       this.dialogFormVisible = true;
       this.perSet.length = 0;
+      this.imageUrl = '';
+      this.selectVal = ''
     },
     addSet() {
       var a = this.perSet.length;
@@ -519,12 +698,26 @@ export default {
       });
     },
     uploadFiles(file, _) {
-      const fd = new FormData();
+      console.log('???')
+      console.log('file',file)
+      let fileTest = file.name.substring(file.name.lastIndexOf(".") + 1);
+      console.log('fileTest',fileTest)
+      let allowFile = ["png", "jpg", "jpeg", "js", "css", "html"];
+      console.log("fileTest", fileTest);
+      if (allowFile.indexOf(fileTest) === -1) {
+        this.$message.error("文件格式不符合要求，请重新上传。");
+        return false;
+      }else{
+        const fd = new FormData();
       fd.append("file", file.raw);
       upload(fd).then((res) => {
         console.log(res);
         this.imageUrl = res.data.data.fileUrl;
+        console.log('this.imageUrl',this.imageUrl)
       });
+      }
+
+      
     },
     handle_success(res) {
       console.log(res);
@@ -534,9 +727,11 @@ export default {
       console.log(file, fileList);
     },
     handlePreview(file) {
-      console.log(file);
+      console.log("????");
+      //sessionStorage.setItem
     },
     handleExceed(files, fileList) {
+      //原来这么简单就可以弹框啊
       this.$message.warning(
         `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
           files.length + fileList.length
@@ -640,10 +835,40 @@ export default {
               this.tableData.push(item);
             }
           }
+          this.fullTableData = this.tableData;
         })
         .catch((error) => {
           console.log(error.response.data.reason);
         });
+    },
+
+    onSearchInput(value) {
+      if (value === "") {
+        this.tableData = this.fullTableData;
+      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.name.includes(value);
+        });
+      } else if (/^[a-zA-Z]+$/.test(value)) {
+        this.tableData = 
+          this.fullTableData.filter((item) => {
+            return pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
+          }).concat(
+          this.fullTableData.filter((item) => {
+            const py = pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER,
+            }).reduce((acc, cur) => acc + cur[0], '');
+            return !py.startsWith(value) && py.includes(value);
+          }));
+      } else if (/^\d+$/.test(value)) {
+        this.tableData = this.fullTableData.filter((item) => {
+          return item.id === Number(value);
+        });
+      } else {
+        this.tableData = [];
+      }
     },
   },
 };

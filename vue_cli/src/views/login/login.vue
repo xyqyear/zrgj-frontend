@@ -43,29 +43,54 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import { postLogin } from "../../../api/data";
+import {postLogin} from "../../../api/data";
+
 export default {
   name: "login",
   token: "",
   data() {
+    var checkNum = (rule,value,callback)=>{
+      let numReg = /^\d+$/;
+      if(!value){
+        callback(new Error('请输入数字'))
+      }else{
+        if(numReg.test(value)){//如果是数字
+          sessionStorage.setItem('isNum',true)
+          callback();
+        }else{
+          sessionStorage.setItem('isNum',false)
+          callback(new Error('请输入数字'))
+        }
+      }
+    }
     return {
       form: {},
       rules: {
         username: [
-          { required: true, message: "请输入员工号", trigger: "blur" },
-          // {
-          //   min: 3,
-          //   message: "用户名长度不能小于3位",
-          //   trigger: "blur",
-          // },
+          { required: true, message: "员工号不能为空", trigger: "blur" },
+          {
+            max: 8,
+            message: "员工号长度不能多于8位",
+            trigger: "blur",
+          },
+          // 必须是数字
+          { validator: checkNum, trigger: 'blur' },
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        password: [
+          { required: true, message: "密码不能为空", trigger: "blur" },
+          // 必须是数字
+          { validator: checkNum, trigger: 'blur' },
+          ],
       },
     };
   },
   methods: {
     login() {
+      console.log('sessionStorage.getItem',sessionStorage.getItem('isNum'))
+      let numReg = /^\d+$/;
+      if(numReg.test(this.form.username) && numReg.test(this.form.password)){
+      //数字则返回true
+      //if(/^\d+$/.test(this.form.username)){
       localStorage.setItem('accountId', this.form.username);
       var account = {
         id: parseInt(this.form.username),
@@ -73,43 +98,19 @@ export default {
       };
       postLogin(account)
         .then((res) => {
-          console.log(res);
-          if (res.status === 200) {
-            this.$store.commit("clearMenu");
-            console.log(res.data.data.account.position);
-            this.$store.commit("setMenu", res.data.data.account.position);
-            this.$store.commit("setToken", res.data.data.token);
-            //console.log(res.data.data.token)
-            localStorage.setItem("position", res.data.data.account.position);
-            localStorage.setItem("token", "Bearer " + res.data.data.token);
-            //访问接口，加请求头
-            axios.defaults.headers.common["Authorization"] =
-              localStorage.getItem("token");
-            //console.log(localStorage.getItem('token'))
-            this.$store.commit("addMenu", this.$router);
-            if (res.data.data.account.position == 0) {
-              console.log("position0");
-              this.$router.push({ name: "home" });
-            } else if (res.data.data.account.position == 2) {
-              this.$router.push({ name: "chef" });
-            } else if (res.data.data.account.position == 1) {
-              this.$router.push({ name: "serFood" });
-            }
-          } else {
-            console.log("错误啦");
-            //this.$message.warning(res.reason);
-          }
-          this.token = res.data.data.token;
+          localStorage.setItem("position", res.data.data.account.position);
+          localStorage.setItem("accountId", res.data.data.account.id);
+          localStorage.setItem("token", "Bearer " + res.data.data.token);
+          localStorage.setItem("restaurantId", res.data.data.account.restaurantId);
+          this.$store.commit("setMenu", res.data.data.account.position);
+          this.$router.push({name: {0: "home", 1: "serFood", 2: "chef"}[res.data.data.account.position]})
         })
         .catch((error) => {
-          console.log("status" + error.response.status);
-          if (error.response.status === 400) {
-            console.log("???" + error.response.data.reason);
-            this.$store.commit("setToken", this.token);
-            this.$message.error(error.response.data.reason);
-          }
+          this.$message.error(error.response.data.reason);
         });
-    },
+       }
+   },
+  
   },
 };
 </script>

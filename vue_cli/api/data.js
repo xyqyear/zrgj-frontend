@@ -7,8 +7,8 @@ import axios from './axios'
 //   })
 // }
 
-const apiPrefix = 'http://www.muzi.fun:5678';
-// const apiPrefix = 'http://localhost:5678';
+export const apiPrefix = 'http://www.muzi.fun:5678';
+// export const apiPrefix = 'http://localhost:5678';
 
 export const getHome = () => {
   return axios.request({
@@ -249,6 +249,24 @@ export const getUncompletedOrderItems = () => {
     }
   })
 }
+//添加新的订单项
+// Body:
+// {
+//   "orderId": 92,
+//   "dishId": 2,
+//   "amount": 1,
+//   "note": "可恶妈的"
+// }
+export const addNewOrderItem = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/order_item/add`,
+    method: 'POST',
+    data:param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
 //更新订单项
 /*
 Body:
@@ -421,6 +439,54 @@ export const getNotificationList = () => {
   return axios.request({
     url: `${apiPrefix}/api/v1/notification/get`,
     method:'POST',
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 新建推送列表
+export const addNotification = (notification) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/add',
+    method:'POST',
+    data: notification,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 删除推送列表
+export const deleteNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/delete',
+    method:'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 修改推送列表
+export const updateNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/update',
+    method:'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 确认推送
+export const confirmNotification = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/notification/confirm',
+    method:'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }

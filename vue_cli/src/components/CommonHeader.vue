@@ -47,6 +47,7 @@ export default {
           break;
         case 'quit':
           this.$router.push({name: 'login'});
+          this.$store.commit("clearMenu");
           localStorage.removeItem('token');
 
           break;

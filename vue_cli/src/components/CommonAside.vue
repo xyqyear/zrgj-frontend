@@ -1,6 +1,6 @@
 <template>
   <!-- default-active="1-4-1"  -->
-  <div>
+  <div style="flex: 1">
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
@@ -26,28 +26,31 @@
           <el-menu-item @click="clickMenu(subItem.name)" :index="subIndex+''">{{ subItem.label }}</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <div v-if="!isCollapse" >
-        <el-button @click="clickMenu('notification')">
-          <el-image fit="fill" style="width: 100px; height: 100px" :src="notificationImg" />
-        </el-button>
+      <div class="filler"></div>
+      <div v-if="!isCollapse">
+        <el-menu-item @click="showNotificationPage" index="/notification" style="display: flex; flex-direction: row; align-content: center">
+          <div class=el-icon-message-solid style="display: flex; flex-direction: column; justify-content: center"></div>
+          <span>通知</span>
+          <div>
+            <el-badge :value="notificationNum" style="bottom: 10px; left: 3px">
+            </el-badge>
+          </div>
+        </el-menu-item>
       </div>
     </el-menu>
   </div>
 </template>
 <style lang="less" scoped>
-.item {
-  margin-top: 0;
-  margin-right: 0;
-}
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
-  min-height: 800px;
+  height: 100%;
 }
 
 .el-menu {
-  height: 100%;
   border: none;
+  display: flex;
+  flex-direction: column;
 
   h3 {
     color: #fff;
@@ -66,53 +69,28 @@
   .el-submenu {
     text-align: left;
   }
-}
 
+  .filler {
+    flex: 1;
+  }
+}
 
 </style>
 <script>
-import SockJS from  'sockjs-client';
-import  Stomp from 'stompjs';
-import {apiPrefix, getNotificationList} from '../../api/data'
 export default {
   data() {
     return {
       notificationImg: require("../assets/images/notification.png"),
       menu: [],
-      notificationList:[]
     };
   },
+  created() {
+  },
   mounted() {
-    // 获取推送信息
-    this.getNotificationListFromServer();
-    // 建立sockjs连接
-    this.initConnection();
   },
   methods: {
-    getNotificationListFromServer(){
-      getNotificationList()
-        .then(res=>{
-          this.notificationList = res.data.data;
-        })
-        .catch(err=>{
-          console.log(err)
-        })
-    },
-    initConnection(){
-      let serverInterface = `${apiPrefix}/api/v1/ws?token=${localStorage.getItem("token").substring(7)}`
-      console.log(serverInterface);
-      let socket = new SockJS(serverInterface);
-      let stompClient = Stomp.over(socket);
-      stompClient.connect({}, function (frame) {
-        let subscribeChannel = "/notification/" + localStorage.getItem("restaurantId") + '/' + localStorage.getItem('position');
-        stompClient.subscribe(subscribeChannel, function (message) {
-          let notification = message.body;
-          this.handleNewNotification(notification)
-        });
-      });
-    },
-    handleNewNotification(notification){
-
+    showNotificationPage() {
+      this.clickMenu('notification');
     },
     handleOpen(key, keyPath) {
       // console.log(key, keyPath);
@@ -123,22 +101,17 @@ export default {
     test(item) {
       // console.log(item.name)
     },
-    //应该就是通过这玩意，通过name推过去
     clickMenu(name) {
-      // console.log(item.name)
       if (this.$route.path === '/' + name) {
-        // console.log('invalid page change')
       } else {
         this.$router.push({name: name})
       }
-
     }
 
   },
   computed: {
     noChildren() {
       return this.asyncMenu.filter(item => !item.children)//如果当前item没有子项目就直接return
-
     },
     hasChildren() {
       return this.asyncMenu.filter(item => item.children)//如果当前item没有子项目就直接return
@@ -148,9 +121,13 @@ export default {
     },
     asyncMenu() {
       this.$store.commit('setMenu', localStorage.getItem('position'))
-      //console(this.$store.state.tab.menu)
       return this.$store.state.tab.menu
-      // return localStorage.getItem('menu')
+    },
+    notificationList() {
+      return this.$store.state.notificationList
+    },
+    notificationNum() {
+      return this.$store.state.notificationNum
     }
   }
 };
