@@ -75,7 +75,7 @@
         </span>
               <div class="right">
                 <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
-                <el-button @click="dialogVisible2 = true" class="mybt"
+                <el-button @click="openEditBox(item, index)" class="mybt"
                 >编辑
                 </el-button
                 >
@@ -251,6 +251,12 @@ export default {
           this.$set(this.$store.state.notificationList[index], "sticked", temp);
           this.$store.commit("refreshNotificationList", this.$store.state.notificationList);
         })
+    },
+    openEditBox(notification, index){
+      this.dialogVisible2 = true;
+      this.changeText = notification.title;
+      this.changeTextarea = notification.content;
+      this.sticked = notification.sticked;
     }
   },
   computed: {
