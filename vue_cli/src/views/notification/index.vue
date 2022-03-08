@@ -20,9 +20,10 @@
         <span style="float: left; margin-top: 16px; margin-left:10px">
           {{ getCreatedTime(notification.createTime) }}
         </span>
-              <div class="right">
+              <div class="right" v-if="!notification.confirmed">
                 <el-button class="mybt" @click="handleConfirm(notification, index)">确认</el-button>
               </div>
+              <span class="confirm-info" v-if="notification.confirmed">已查看..</span>
             </el-row>
           </div>
         </el-col>
@@ -70,8 +71,9 @@ export default {
 }
 
 .item {
-  margin-bottom: 18px;
-  margin-top: 18px;
+  margin-bottom: 5px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
 .clearfix:before,
@@ -109,6 +111,11 @@ export default {
   float: right;
   margin-right: 0px;
 }
+.confirm-info {
+  float: right;
+  margin-top: 15px;
+  margin-right: 10px;
+}
 
 .left {
   float: left;
@@ -121,6 +128,7 @@ export default {
   margin-left: 100px;
   margin-top: 8px;
 }
+
 .grid-content {
   border-radius: 4px;
   min-height: 47px;

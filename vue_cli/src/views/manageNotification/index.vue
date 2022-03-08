@@ -144,8 +144,8 @@
 </template>
 
 <script>
-import {addNotificationList, deleteNotification, updateNotification} from "../../../api/data";
-import notification, {getReadableTime} from "../../store/notification";
+import {addNotification, deleteNotification, updateNotification} from "../../../api/data";
+import {getReadableTime} from "../../store/notification";
 
 export default {
   name: "manageNotification",
@@ -181,7 +181,7 @@ export default {
         content: this.textarea,
         sticked: this.sticked,
       };
-      addNotificationList(body)
+      addNotification(body)
         .then((res) => {
           this.$store.dispatch("getNotificationListFromServer");
         })

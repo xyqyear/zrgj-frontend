@@ -71,6 +71,13 @@ export default {
         }
       ], [//服务员
         {
+          path: '/serFood',
+          name: 'serFood',
+          label: '全部菜品',
+          icon: 's-order',//自己记得改icon
+          url: 'serFood/index.vue'
+        },
+        {
           path: '/serOrder',
           name: 'serOrder',
           label: '当前订单',
