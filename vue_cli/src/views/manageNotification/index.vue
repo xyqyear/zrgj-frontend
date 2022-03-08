@@ -121,7 +121,7 @@
           </el-input>
         </el-form-item>
 
-        <el-form-item label="设为顶置">
+        <el-form-item label="设为置顶">
           <el-switch
             v-model="sticked"
             active-color="#13ce66"
@@ -153,7 +153,7 @@ export default {
     return {
       text: "",
       textarea: "",
-      sticked: false,
+      sticked: true,
       dialogVisible1: false,
       dialogVisible2: false,
       changeText: "",
@@ -176,10 +176,10 @@ export default {
         });
     },
     handleAdd() {
-      var body = {
-        title: this.text,
-        content: this.textarea,
-        sticked: this.sticked,
+      let body = {
+        "title": this.text,
+        "content": this.textarea,
+        "sticked": this.sticked,
       };
       addNotification(body)
         .then((res) => {
@@ -188,6 +188,9 @@ export default {
         .catch((error) => {
           console.log(error.response.data.reason);
         });
+      this.text = "";
+      this.textarea = "";
+      this.sticked = true;
     },
     handleDelete(notification, index) {
       this.$confirm("此操作将撤销该公告, 是否继续?", "提示", {
@@ -218,12 +221,6 @@ export default {
           });
         });
     },
-    handleChange(notification) {
-      this.editId = notification.id;
-      this.changeText = notification.title;
-      this.changeTextarea = notification.content;
-      this.sticked = notification.sticked;
-    },
     handleEdit(id) {
       let body = {
         id: id,
@@ -242,6 +239,7 @@ export default {
         .catch((error) => {
           console.log(error.response.data.reason);
         });
+      this.dialogVisible2 = false;
     },
     changeStickSituation(notification, index) {
       const temp = !notification.sticked;
@@ -254,6 +252,7 @@ export default {
     },
     openEditBox(notification, index){
       this.dialogVisible2 = true;
+      this.editId = notification.id;
       this.changeText = notification.title;
       this.changeTextarea = notification.content;
       this.sticked = notification.sticked;

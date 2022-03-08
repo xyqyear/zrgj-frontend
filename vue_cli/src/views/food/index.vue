@@ -147,6 +147,63 @@
               </el-card>
               <el-button type="primary" @click="addSet()">增加属性</el-button>
             </el-form-item>
+            <el-form-item>
+              <div style="justify-content: left">个性化设置</div>
+              <el-card v-for="item in perSet" :key="item.id">
+                <el-row justify="end">
+                  <el-col :span="5">
+                    <el-input v-model="item.key" placeholder="属性名">
+                    </el-input>
+                  </el-col>
+                  <el-col :span="19">
+                    <el-row>
+                      <el-input
+                        v-model="item.value1"
+                        placeholder="属性值1"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value2"
+                        placeholder="属性值2"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value3"
+                        placeholder="属性值3"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                    <el-row>
+                      <el-input
+                        v-model="item.value4"
+                        placeholder="属性值4"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value5"
+                        placeholder="属性值5"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value6"
+                        placeholder="属性值6"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                  </el-col>
+                  <el-col>
+                    <i class="el-icon-delete" @click="delSet()"></i>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-button type="primary" @click="addSet()">增加属性</el-button>
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="handleAdd()">确定添加</el-button>
@@ -467,6 +524,8 @@ export default {
     clearForm() {
       this.form.name = "";
       this.form.price = "";
+      this.fileList.length = 0
+      this.selectVal = ''
       this.dialogFormVisible = false;
     },
     // blur() {
@@ -509,6 +568,8 @@ export default {
     activeAddFoodDialog() {
       this.dialogFormVisible = true;
       this.perSet.length = 0;
+      this.imageUrl = '';
+      this.selectVal = ''
     },
     addSet() {
       var a = this.perSet.length;
@@ -637,20 +698,26 @@ export default {
       });
     },
     uploadFiles(file, _) {
+      console.log('???')
+      console.log('file',file)
       let fileTest = file.name.substring(file.name.lastIndexOf(".") + 1);
+      console.log('fileTest',fileTest)
       let allowFile = ["png", "jpg", "jpeg", "js", "css", "html"];
       console.log("fileTest", fileTest);
       if (allowFile.indexOf(fileTest) === -1) {
         this.$message.error("文件格式不符合要求，请重新上传。");
         return false;
-      }
-
-      const fd = new FormData();
+      }else{
+        const fd = new FormData();
       fd.append("file", file.raw);
       upload(fd).then((res) => {
         console.log(res);
         this.imageUrl = res.data.data.fileUrl;
+        console.log('this.imageUrl',this.imageUrl)
       });
+      }
+
+      
     },
     handle_success(res) {
       console.log(res);

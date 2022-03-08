@@ -3,7 +3,8 @@
     <el-card class="box-card" v-for="(notification, index) in notificationList"
              :label="index"
              :name="index"
-             :key="index">
+             :key="index"
+             body-style="padding: 0px">
       <div slot="header" class="header">
         <div v-if="notification.sticked" class="left">
           <el-button type="primary">置顶</el-button>
