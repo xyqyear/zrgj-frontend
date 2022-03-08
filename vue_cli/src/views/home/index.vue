@@ -310,7 +310,13 @@ export default {
         .then((res) => {
           // console.log(res);
           for (let i = 0; i < res.data.data.length; i++) {
-            todayMoney += res.data.data[i].totalPrice; //今日营业额
+            todayMoney += res.data.data[i].orderItems
+                .filter((orderItem) => orderItem.state !== -1)
+                .reduce(
+                  (acc, cur) =>
+                    acc + this.dishMap[cur.dishId].price * cur.amount,
+                  0
+                ); //今日营业额
             if (res.data.data[i].state == 0) todayOrder += 1; //今日有效订单
           }
           this.todayAmount.Money = todayMoney;
