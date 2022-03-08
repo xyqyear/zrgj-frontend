@@ -20,18 +20,16 @@
     <el-col :span="24">
       <div class="tables">
         <div
-          @click="dialogVisible = true"
           v-for="table in tableData"
           :key="table.tableName"
           class="tableInfo"
         >
-          <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}" class="cardTop">
-            <div style="font-size: large; color: #371722; margin: 10px">{{ table.tableName }} 号桌</div>
-            <div style="font-size: small; color: #C0C2CE; margin-top: 20px">{{ table.occupied ? "占用中" : "空闲" }}</div>
+          <div :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF'}" class="cardTop" style="display: flex; flex-direction: row; justify-content: center; align-items: center">
+            <div style="font-size: large; color: #371722;">{{ table.tableName }} 号桌</div>
           </div>
           <el-button @click="displayOderDetail(tableMap[table.tableName])"
                      :disabled="! table.occupied" class="cardBottom">
-            <p>{{ table.occupied ? "查看订单" : "" }}</p>
+            {{getTableStatus(table.tableName)}}
 
           </el-button>
         </div>
@@ -54,8 +52,7 @@
           </el-table>
           <el-descriptions column=4>
             <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
-            <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
-            <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
+            <el-descriptions-item label="总金额">{{ curOrder.actualSum }}</el-descriptions-item>
             <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
           </el-descriptions>
           <!-- ------------------------------------------------ -->
@@ -68,12 +65,11 @@
       </div>
     </el-col>
 
-
   </el-row>
 </template>
 
 <script>
-import {getRestaurant, getCurrOrders, getAllFood, getObjectMap, payOrders} from '../../../api/data';
+import { getRestaurant, getCurrOrders, getAllFood, getObjectMap, payOrders } from '../../../api/data';
 
 export default {
   name: "table",
@@ -116,8 +112,8 @@ export default {
       this.tableData = [];
       for (let i = 1; i <= this.totalTableNum; i++) {
         this.tableData.push({
-          'occupied': false,
-          'tableName': i
+          occupied: false,
+          tableName: i
         })
       }
       // orderItems 添加上菜品信息
@@ -158,7 +154,7 @@ export default {
         type: 'info'
       }).then(() => {
         // 发送结束订单请求
-        payOrders({'orderId': this.curOrder.id})
+        payOrders({ orderId: this.curOrder.id })
           .then(res => {
             this.refreshOrderData()
             this.$message({
@@ -173,6 +169,22 @@ export default {
           message: '已取消结账'
         });
       });
+    },
+    getTableStatus(tableName) {
+      console.log(tableName)
+      if (!(tableName in this.tableMap)) {
+        return "空闲";
+      } else {
+        const orderItems = this.tableMap[tableName].orderItems;
+        const finishedCount = orderItems.filter(item => item.state === 0).length;
+        if (finishedCount === 0) {
+          return "排队中...";
+        } else if (finishedCount < orderItems.length) {
+          return "烹饪中...\n(进度" + finishedCount + "/" + orderItems.length + ")";
+        } else {
+          return "就餐中...";
+        }
+      }
     }
   },
 };

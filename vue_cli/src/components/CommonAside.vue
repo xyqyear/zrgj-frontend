@@ -28,7 +28,7 @@
       </el-submenu>
       <div class="filler"></div>
       <div v-if="!isCollapse">
-        <el-menu-item @click="showNotificationPage" style="display: flex; flex-direction: row; align-content: center">
+        <el-menu-item @click="showNotificationPage" index="/notification" style="display: flex; flex-direction: row; align-content: center">
           <div class=el-icon-message-solid style="display: flex; flex-direction: column; justify-content: center"></div>
           <span>通知</span>
           <div>
