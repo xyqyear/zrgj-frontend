@@ -54,8 +54,7 @@
           </el-table>
           <el-descriptions column=4>
             <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
-            <el-descriptions-item label="订单总金额">{{ curOrder.totalPrice }}</el-descriptions-item>
-            <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
+            <el-descriptions-item label="总金额">{{ curOrder.actualSum }}</el-descriptions-item>
             <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
           </el-descriptions>
           <!-- ------------------------------------------------ -->
