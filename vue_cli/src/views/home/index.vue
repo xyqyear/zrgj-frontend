@@ -267,14 +267,14 @@ export default {
     };
   },
   created() {
-    this.getTodayAmount();
-    this.getStatistic();
   },
   // mounted(){
 
   //   console.log(this.todayAmount)
   // },
-  mounted() {
+  async mounted() {
+    await this.getStatistic();
+    this.getTodayAmount();
     this.chooseDays(this.radio1); //首先setbody数据
   },
   methods: {
@@ -340,14 +340,14 @@ export default {
           console.log(error.response.data.reason);
         });
       //////////////////////获取商品数量///////////////////////////////
-      getAllFood()
+      return getAllFood()
         .then((res) => {
           good = res.data.data.length;
           const foodData = res.data.data
                 //获取dishMap
-      this.dishMap = getObjectMap(foodData);
-          this.statistic.goods = good;
-        })
+          this.dishMap = getObjectMap(foodData);
+              this.statistic.goods = good;
+            })
         .catch((error) => {
           console.log(error.response.data.reason);
         });
