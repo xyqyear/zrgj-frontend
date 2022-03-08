@@ -3,24 +3,32 @@
     <el-card class="box-card" v-for="(notification, index) in notificationList"
              :label="index"
              :name="index"
-             :key="index">
-      <div slot="header" class="clearfix">
+             :key="index"
+             body-style="padding: 0px">
+      <div slot="header" class="header">
         <div v-if="notification.sticked" class="left">
-          <el-button type="primary">顶置</el-button>
+          <el-button type="primary">置顶</el-button>
         </div>
         <div class="head">{{ notification.title }}</div>
       </div>
       <div class="text item">
         {{ notification.content }}
       </div>
-      <div  >
-        <span style="float: left">
+      <el-row>
+        <el-col :span="24">
+          <div class="grid-content bg-purple-dark">
+            <el-row>
+        <span style="float: left; margin-top: 16px; margin-left:10px">
           {{ getCreatedTime(notification.createTime) }}
         </span>
-        <el-row v-if="!notification.confirmed" class="right">
-          <el-button class="mybt" @click="handleConfirm(notification, index)">确认</el-button>
-        </el-row>
-      </div>
+              <div class="right" v-if="!notification.confirmed">
+                <el-button class="mybt" @click="handleConfirm(notification, index)">确认</el-button>
+              </div>
+              <span class="confirm-info" v-if="notification.confirmed">已查看..</span>
+            </el-row>
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
   </div>
 
@@ -58,55 +66,71 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .text {
   font-size: 14px;
 }
 
 .item {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-.clearfix:after {
-  clear: both;
+  .left {
+    margin-right: 10px;
+  }
+
+  .head {
+    font-weight: bolder;
+    font-size: 140%;
+  }
 }
 
 .box-card {
-  width: 98%;
+  width: 100%;
   height: 100%;
   margin: 10px;
   padding: 5px;
   text-align: left;
 }
 
-.head {
-  margin-top: 10px;
-  margin-left: 90px;
-  font-weight: bolder;
-  font-size: 140%;
-}
-
 .mybt {
   margin-left: 10px;
-  margin-right: 10px;
-  padding: 10px 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-right: 20px;
+  padding: 5px 10px;
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 
 .right {
   float: right;
   margin-right: 0px;
 }
+.confirm-info {
+  float: right;
+  margin-top: 15px;
+  margin-right: 10px;
+}
 
-.left {
-  float: left;
-  margin-left: 0px;
+.nothead {
+  font-weight: bolder;
+  font-size: 140%;
+  margin-left: 100px;
+  margin-top: 8px;
+}
+
+.grid-content {
+  border-radius: 4px;
+  min-height: 47px;
+}
+
+.bg-purple-dark {
+  background: #eae6e6;
 }
 </style>

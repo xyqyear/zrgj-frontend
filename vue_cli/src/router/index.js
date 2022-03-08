@@ -35,6 +35,11 @@ const routes = [
         component: () => import('../views/table')
       },
       {
+        path: '/VIP',
+        name: 'VIP',
+        component: () => import('../views/VIP')
+      },
+      {
         path: '/case',
         name: 'case',
         component: () => import('../views/case'),

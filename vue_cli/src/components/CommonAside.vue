@@ -1,6 +1,6 @@
 <template>
   <!-- default-active="1-4-1"  -->
-  <div>
+  <div style="flex: 1">
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
@@ -26,30 +26,31 @@
           <el-menu-item @click="clickMenu(subItem.name)" :index="subIndex+''">{{ subItem.label }}</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+      <div class="filler"></div>
       <div v-if="!isCollapse">
-        <el-badge :value="notificationNum" class="item">
-          <el-button @click="showNotificationPage">
-            <el-image fit="fill" style="width: 100px; height: 100px" :src="notificationImg"/>
-          </el-button>
-        </el-badge>
+        <el-menu-item @click="showNotificationPage" index="/notification" style="display: flex; flex-direction: row; align-content: center">
+          <div class=el-icon-message-solid style="display: flex; flex-direction: column; justify-content: center"></div>
+          <span>通知</span>
+          <div>
+            <el-badge :value="notificationNum" style="bottom: 10px; left: 3px">
+            </el-badge>
+          </div>
+        </el-menu-item>
       </div>
     </el-menu>
   </div>
 </template>
 <style lang="less" scoped>
-.item {
-  margin-top: 10px;
-  margin-right: 20px;
-}
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
-  min-height: 800px;
+  height: 100%;
 }
 
 .el-menu {
-  height: 100%;
   border: none;
+  display: flex;
+  flex-direction: column;
 
   h3 {
     color: #fff;
@@ -68,8 +69,11 @@
   .el-submenu {
     text-align: left;
   }
-}
 
+  .filler {
+    flex: 1;
+  }
+}
 
 </style>
 <script>

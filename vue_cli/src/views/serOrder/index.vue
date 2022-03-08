@@ -37,7 +37,11 @@
             </div>
           </div>
           <el-button
+<<<<<<< HEAD
             @click="displayOderDetail(tableMap[table.tableName],table.tableName)"
+=======
+            @click="displayOderDetail(tableMap[table.tableName])"
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
             :disabled="!table.occupied"
             class="cardBottom"
           >
@@ -49,7 +53,11 @@
           <div slot="title" class="dialog-title">
             <!-- <i class="el-icon-edit-outline"></i> -->
             <div class="left">
+<<<<<<< HEAD
               <el-badge class="mark" :value="curOrder.id" style="font-size:24px" />
+=======
+              <el-badge class="mark" :value="curOrder.id" />
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
               <span class="title-text">订单号{{ curOrder.createTime }}</span>
               <div class="button-right">
                 <span class="title-close"></span>
@@ -61,7 +69,11 @@
           </div>
           <!-- ---------------------------------------------- -->
           <el-table :data="curOrder.orderItems" height="400">
+<<<<<<< HEAD
             <el-table-column type="index" width="50"></el-table-column>
+=======
+            <el-table-column type="index" width="30"></el-table-column>
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
             <el-table-column
               prop="name"
               label="菜名"
@@ -116,6 +128,7 @@
           </el-descriptions>
           <div class="operations">
             <div class="left">
+<<<<<<< HEAD
               <el-button type="danger" @click="addNewMeal" round style="margin-right: 50px"
                 >加菜
                 <i
@@ -128,15 +141,34 @@
                 <i
                   class="el-icon-circle-plus-outline"
                   style=" font-size: 16px"
+=======
+              <el-button type="danger" round style="margin-right: 50px"
+                >加菜
+                <i
+                  class="el-icon-circle-plus-outline"
+                  style="width: 50px; font-size: 16px"
+                ></i>
+              </el-button>
+              <el-button type="danger" round style="margin-right: 50px;font-size:20px"
+                >退菜
+                <i
+                  class="el-icon-circle-plus-outline"
+                  style="width: 50px; font-size: 16px"
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
                 ></i>
               </el-button>
             </div>
             <div class="right">
+<<<<<<< HEAD
               <el-button round @click="orderDetailVisible = false" style="margin-right: 50px;border:1px solid #FD3A4B"
+=======
+              <el-button round style="margin-right: 50px;border:1px solid #FD3A4B"
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
                 >退出
               </el-button>
             </div>
           </div>
+<<<<<<< HEAD
           <!-- ------------------------退菜弹窗------------------------ -->
         </el-dialog>
         <el-dialog class="deleteItem" :visible.sync="deleteItemVisible" width="50%">
@@ -199,6 +231,9 @@
           <el-button  round @click="deleteItemVisible=false" style="border:1px solid #F56C6C;margin-right: 10px"
                 >返回
               </el-button>
+=======
+          <!-- ------------------------------------------------ -->
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
         </el-dialog>
         <!-- ------------------------------------- -->
       </div>
@@ -211,7 +246,10 @@ import {
   getCurrOrders,
   getAllFood,
   getObjectMap,
+<<<<<<< HEAD
   updateOrderItem,
+=======
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
 } from "../../../api/data";
 
 export default {
@@ -239,8 +277,12 @@ export default {
         getAllFood().then((res) => {
           let dishList = res.data.data;
           this.dishMap = getObjectMap(dishList);
+<<<<<<< HEAD
           this.refreshOrderData();//更新orderList
           this.generateTableList();//更新tableMap
+=======
+          this.refreshOrderData();
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
         });
       })
       .catch((err) => {
@@ -308,7 +350,11 @@ export default {
       this.$router.push({name: 'serFood'})
     },
     refreshOrderData() {
+<<<<<<< HEAD
       return getCurrOrders().then((res) => {
+=======
+      getCurrOrders().then((res) => {
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
         this.orderList = res.data.data;
         this.generateTableList();
       });
@@ -332,6 +378,7 @@ export default {
         }
       }
 
+      console.log("this.tableData", this.tableData);
       // 桌号与订单对应
       for (let i = 0; i < this.orderList.length; i++) {
         let tableName = this.orderList[i].tableId;
@@ -342,10 +389,16 @@ export default {
       //console.log('this.tableData[tableName - 1].occupied',this.tableData[tableName - 1].occupied)
       // console.log(this.tableData)
     },
+<<<<<<< HEAD
     displayOderDetail(order,tableNum) {
       this.tableNum = tableNum
       this.curOrder = order;
       console.log("this.tableNum", tableNum);
+=======
+    displayOderDetail(order) {
+      this.curOrder = order;
+      console.log("this.curOrder", this.curOrder);
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
       this.orderDetailVisible = true;
     },
   },
@@ -353,6 +406,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+<<<<<<< HEAD
 ////////////////////////删除订单项///////////////
 .deleteItem-title{
 width: 80%;
@@ -372,6 +426,12 @@ width: 80%;
   .left{
     display: flex;
   }
+=======
+.operations {
+  display: flex;
+  width: 100%;
+  height: 50px;
+>>>>>>> 0cdc77b9510bdf3c829abcdf15e12375f689d002
 }
 .dialog-title {
   width: 85%;

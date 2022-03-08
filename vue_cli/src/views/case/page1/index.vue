@@ -17,6 +17,11 @@
         </div>-->
     <el-col :span="24">
       <el-card
+        v-if="orderList.length === 0"
+      >
+      今日暂无订单
+      </el-card>
+      <el-card
         v-for="(curOrder,index) in orderList"
         :key="index"
         style="margin-top: 20px;"

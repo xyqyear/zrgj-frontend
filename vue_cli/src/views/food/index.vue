@@ -511,6 +511,8 @@ export default {
     activeAddFoodDialog() {
       this.dialogFormVisible = true;
       this.perSet.length = 0;
+      this.imageUrl = '';
+      this.selectVal = ''
     },
     addSet() {
       var a = this.perSet.length;
@@ -639,20 +641,26 @@ export default {
       });
     },
     uploadFiles(file, _) {
+      console.log('???')
+      console.log('file',file)
       let fileTest = file.name.substring(file.name.lastIndexOf(".") + 1);
+      console.log('fileTest',fileTest)
       let allowFile = ["png", "jpg", "jpeg", "js", "css", "html"];
       console.log("fileTest", fileTest);
       if (allowFile.indexOf(fileTest) === -1) {
         this.$message.error("文件格式不符合要求，请重新上传。");
         return false;
-      }
-
-      const fd = new FormData();
+      }else{
+        const fd = new FormData();
       fd.append("file", file.raw);
       upload(fd).then((res) => {
         console.log(res);
         this.imageUrl = res.data.data.fileUrl;
+        console.log('this.imageUrl',this.imageUrl)
       });
+      }
+
+      
     },
     handle_success(res) {
       console.log(res);
