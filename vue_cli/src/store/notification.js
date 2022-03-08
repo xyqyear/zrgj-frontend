@@ -13,7 +13,7 @@ export const getReadableTime = (ts) => {
   return `${year}/${month}/${day}  ${hour}:${minute}`;
 }
 
-const state = sessionStorage.getItem('state') ? JSON.parse(sessionStorage.getItem('state')) : {
+const state = {
   // 公共数据模块
   notificationNum: 0,
   notificationList: []

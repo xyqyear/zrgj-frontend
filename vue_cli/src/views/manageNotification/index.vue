@@ -58,7 +58,7 @@
     >
       <div slot="header" class="clearfix">
         <div v-if="item.sticked" class="left">
-          <el-button type="primary" @click="stickNotification">置顶</el-button>
+          <el-button type="primary" @click="changeStickSituation">置顶</el-button>
         </div>
 
         <div class="head">{{ item.title }}</div>
@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import {addNotificationList, getNotificationList, deleteNotification} from "../../../api/data";
+import {addNotificationList, getNotificationList, deleteNotification, updateNotification} from "../../../api/data";
 import {getReadableTime} from "../../store/notification";
 
 export default {
@@ -176,6 +176,7 @@ export default {
       // body.sticked = this.sticked;
       addNotificationList(body)
         .then((res) => {
+          this.$store.commit("addNotification")
           console.log(res);
         })
         .catch((error) => {
@@ -186,11 +187,12 @@ export default {
     },
     handleEdit(Id) {
     },
-    stickNotification() {
-
-    },
     changeStickSituation(notification, index){
-
+      notification.sticked = ! notification.sticked;
+      updateNotification(notification)
+      .then(res=>{
+        this.$set(this.$store.state.notificationList[index], "sticked", notification.sticked);
+      })
     }
   },
   computed: {
