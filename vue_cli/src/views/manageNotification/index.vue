@@ -1,12 +1,12 @@
 <template>
   <div>
-
-      <el-button type="text" @click="dialogVisible1 = true" style="float:right">
+    <div class="right">
+      <el-button type="text" @click="dialogVisible1 = true">
         <el-row>
           <el-button type="primary" class="head">发布公告</el-button>
         </el-row>
       </el-button>
-
+    </div>
 
     <el-dialog
       :visible.sync="dialogVisible1"
@@ -35,9 +35,9 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="设为置顶">
+        <el-form-item label="设为顶置">
           <el-switch
-            v-model="value"
+            v-model="sticked"
             active-color="#13ce66"
             inactive-color="#ff4949"
           >
@@ -47,7 +47,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible1 = false">退 出</el-button>
         <!-- <el-button @click="dialogVisible1 = false">保存并退出</el-button> -->
-        <el-button type="primary" @click="handleAdd()">发 布</el-button>
+        <el-button type="primary" @click="handleAdd();dialogVisible1 = false">发 布</el-button>
       </span>
     </el-dialog>
 
@@ -55,38 +55,37 @@
       class="box-card"
       v-for="(item, index) in notificationList"
       :key="index"
-      body-style="padding: 0px"
     >
       <div slot="header" class="clearfix">
         <div v-if="item.sticked" class="left">
-          <el-button type="primary" @click="changeStickSituation">置顶</el-button>
+          <el-button type="primary" @click="stickNotification(item, index)">置顶</el-button>
         </div>
 
-        <div class="nothead">{{ item.title }}</div>
+        <div class="head">{{ item.title }}</div>
       </div>
       <div class="text item">
         {{ item.content }}
       </div>
-      <el-row>
-  <el-col :span="24"><div class="grid-content bg-purple-dark">
-      <el-row>
-        <span style="float: left; margin-top: 16px; margin-left:10px">
+      <div class="right">
+        <el-row>
+          <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
+
+          <span style="float: left; margin-top: 17px">
           {{ getCreatedTime(item.createTime) }}
         </span>
-      <div class="right">
-          <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
-          <el-button @click="dialogVisible2 = true" class="mybt"
+          <el-button @click="dialogVisible2 = true; handleChange(item)" class="mybt"
           >编辑
           </el-button
           >
-          <el-button class="mybt" @click="changeStickSituation(item, index)">{{ item.sticked ? "取消置顶" : "置顶" }}</el-button>
-          <el-button class="mybt">撤 销</el-button>
-          <!-- @click="handleDelete(item.id)" -->
-      </div>
- </el-row>
-  </div></el-col>
-</el-row>
 
+          <el-button class="mybt" @click="changeStickSituation(item, index)">{{
+              item.sticked ? "取消置顶" : "置顶"
+            }}
+          </el-button>
+          <el-button class="mybt" @click="handleDelete(item.id)">撤 销</el-button>
+          <!-- @click="handleDelete(item.id)" -->
+        </el-row>
+      </div>
     </el-card>
     <el-dialog
       :visible.sync="dialogVisible2"
@@ -98,7 +97,7 @@
           <el-input
             type="text"
             placeholder="请输入内容"
-            v-model="text"
+            v-model="changeText"
             maxlength="20"
             show-word-limit
           >
@@ -111,7 +110,7 @@
           <el-input
             type="textarea"
             placeholder="请输入内容"
-            v-model="textarea"
+            v-model="changeTextarea"
             maxlength="60"
             show-word-limit
           >
@@ -120,7 +119,7 @@
 
         <el-form-item label="设为顶置">
           <el-switch
-            v-model="value"
+            v-model="sticked"
             active-color="#13ce66"
             inactive-color="#ff4949"
           >
@@ -131,7 +130,7 @@
       <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible2 = false">取消修改</el-button>
         <!-- <el-button @click="dialogVisible = false">保存并退出</el-button> -->
-              <el-button type="primary" @click="dialogVisible2 = false"
+              <el-button type="primary" @click="handleEdit(editId)"
               >确认修改</el-button
               >
             </span>
@@ -148,11 +147,14 @@ export default {
   name: "manageNotification",
   data() {
     return {
-      value: true,
       text: "",
       textarea: "",
+      sticked: false,
       dialogVisible1: false,
       dialogVisible2: false,
+      changeText: "",
+      changeTextarea: "",
+      editId: null,
     };
   },
   mounted() {
@@ -171,33 +173,81 @@ export default {
     },
     handleAdd() {
       var body = {
-        title: "",
-        content: "",
-        sticked: false,
+        title: this.text,
+        content: this.textarea,
+        sticked: this.sticked,
       };
-      body.title = this.text;
-      body.content = this.textarea;
-      // body.sticked = this.sticked;
       addNotificationList(body)
         .then((res) => {
-          this.$store.commit("addNotification")
-          console.log(res);
+          this.$store.dispatch("getNotificationListFromServer");
         })
         .catch((error) => {
           console.log(error.response.data.reason);
         });
     },
     handleDelete(id) {
-    },
-    handleEdit(Id) {
-    },
-    changeStickSituation(notification, index){
-      const temp = ! notification.sticked;
-      notification.sticked = ! notification.sticked;
-      updateNotification(notification)
-      .then(res=>{
-        this.$set(this.$store.state.notificationList[index], "sticked", temp);
+      this.$confirm("此操作将撤销该公告, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
+        .then(() => {
+          var body = {
+            id: "",
+          };
+          body.id = id;
+          console.log(body.id);
+          deleteNotification(body).then((res) => {
+            console.log(res);
+            if (res.status == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功!",
+              });
+
+              this.$store.dispatch("getNotificationListFromServer");
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    handleChange(notification) {
+      this.editId = notification.id;
+      this.changeText = notification.title;
+      this.changeTextarea = notification.content;
+      this.sticked = notification.sticked;
+    },
+    handleEdit(id) {
+      let body = {
+        id: id,
+        title: this.changeText,
+        content: this.changeTextarea,
+        sticked: this.sticked,
+      };
+      updateNotification(body)
+        .then((res) => {
+          this.$message({
+            type: "success",
+            message: "修改成功!",
+          });
+          this.$store.dispatch("getNotificationListFromServer")
+        })
+        .catch((error) => {
+          console.log(error.response.data.reason);
+        });
+    },
+    changeStickSituation(notification, index) {
+      const temp = !notification.sticked;
+      notification.sticked = !notification.sticked;
+      updateNotification(notification)
+        .then(res => {
+          this.$set(this.$store.state.notificationList[index], "sticked", temp);
+        })
     }
   },
   computed: {
@@ -215,7 +265,6 @@ export default {
 
 .item {
   margin-bottom: 18px;
-  margin-top: 18px;
 }
 
 .clearfix:before,
@@ -229,7 +278,7 @@ export default {
 }
 
 .box-card {
-  width: 100%;
+  width: 98%;
   height: 100%;
   margin: 10px;
   padding: 5px;
@@ -243,10 +292,10 @@ export default {
 
 .mybt {
   margin-left: 10px;
-  margin-right: 20px;
-  padding: 5px 10px;
-  margin-top: 10px;
-  margin-bottom: 4px;
+  margin-right: 10px;
+  padding: 10px 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .right {
@@ -258,20 +307,4 @@ export default {
   float: left;
   margin-left: 0px;
 }
-
-.nothead {
-  font-weight: bolder;
-  font-size: 140%;
-  margin-left: 100px;
-  margin-top: 8px;
-}
-
-.grid-content {
-    border-radius: 4px;
-    min-height: 47px;
-  }
-
-  .bg-purple-dark {
-    background: #99a9bf;
-  }
 </style>
