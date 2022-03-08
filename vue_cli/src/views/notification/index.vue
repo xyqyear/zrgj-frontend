@@ -4,7 +4,7 @@
              :label="index"
              :name="index"
              :key="index">
-      <div slot="header" class="clearfix">
+      <div slot="header" class="header">
         <div v-if="notification.sticked" class="left">
           <el-button type="primary">置顶</el-button>
         </div>
@@ -64,7 +64,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .text {
   font-size: 14px;
 }
@@ -74,14 +74,19 @@ export default {
   margin-top: 18px;
 }
 
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-.clearfix:after {
-  clear: both;
+  .left {
+    margin-right: 10px;
+  }
+
+  .head {
+    font-weight: bolder;
+    font-size: 140%;
+  }
 }
 
 .box-card {
@@ -90,11 +95,6 @@ export default {
   margin: 10px;
   padding: 5px;
   text-align: left;
-}
-
-.head {
-  font-weight: bolder;
-  font-size: 140%;
 }
 
 .mybt {
@@ -110,11 +110,6 @@ export default {
   margin-right: 0px;
 }
 
-.left {
-  float: left;
-  margin-left: 0px;
-}
-
 .nothead {
   font-weight: bolder;
   font-size: 140%;
@@ -127,6 +122,6 @@ export default {
 }
 
 .bg-purple-dark {
-  background: #99a9bf;
+  background: #eae6e6;
 }
 </style>
