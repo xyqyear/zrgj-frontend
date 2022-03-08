@@ -22,11 +22,11 @@
     </el-col>
     <!-- ------------------------------- -->
     <!-- <el-col :span="12">
-      <div class="statistic" style="display:flex"> 
-      <el-card shadow="hover" style="width:200px;height: 180px"> 
-      </el-card> 
-      <el-card shadow="hover" style="height: 180px"> 
-      </el-card> 
+      <div class="statistic" style="display:flex">
+      <el-card shadow="hover" style="width:200px;height: 180px">
+      </el-card>
+      <el-card shadow="hover" style="height: 180px">
+      </el-card>
       </div>
     </el-col> -->
     <!-- -------------第二行------------------ -->
@@ -220,13 +220,8 @@
 }
 </style>
 <script>
-import axios from "axios";
-import { getMenu } from "../../../api/data.js";
-import { getData } from "../../../api/data.js";
-import { getGivenTimeOrders } from "../../../api/data.js";
-import { getObjectMap } from "../../../api/data.js";
-import { getUserlist } from "../../../api/data";
-import { getAllFood } from "../../../api/data";
+import { getGivenTimeOrders, getObjectMap, getUserlist, getAllFood } from "../../../api/data.js";
+
 import * as echarts from "echarts";
 export default {
   name: "home",
@@ -251,7 +246,7 @@ export default {
       //第三行——表格
       radio1: "近一周",
       xData: [],
-      interval:1,
+      interval: 1,
       body: {
         from: 0,
         to: 0,
@@ -262,7 +257,6 @@ export default {
       sale_count: "147",
       worker_count: "28",
       provider_count: "3",
-
 
     };
   },
@@ -286,11 +280,8 @@ export default {
     },
     //获取某一天的开始时间
     getTimeNum(day){
-      const todayStartTime = new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime()/1000
-      // console.log(day+'天前')
-      // console.log(todayStartTime)
       return Math.ceil(
-        new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime()/1000
+        new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime() / 1000
       );
     },
     //获取今日的数据
@@ -317,7 +308,7 @@ export default {
                     acc + this.dishMap[cur.dishId].price * cur.amount,
                   0
                 ); //今日营业额
-            if (res.data.data[i].state == 0) todayOrder += 1; //今日有效订单
+            if (res.data.data[i].state === 0) todayOrder += 1; //今日有效订单
           }
           this.todayAmount.Money = todayMoney;
           this.todayAmount.Order = todayOrder;
@@ -329,7 +320,7 @@ export default {
     getStatistic() {
       var worker = 0;
       var good = 0;
-      
+
       //////////////////////获取员工数量///////////////////////////////
       getUserlist()
         .then((res) => {
@@ -381,12 +372,12 @@ export default {
       //设置横坐标xData
         this.xData.length = 0;
         // console.log(this.interval)
-        for (let i = 0; i < days; i++) {//啊啊啊想一想啊
-          var oldTime  = new Date(Date.now() - i  * 24 * 3600 * 1000);
-          var newTime = new Date(oldTime); 
+        for (let i = 0; i < days; i++) { //啊啊啊想一想啊
+          var oldTime = new Date(Date.now() - i * 24 * 3600 * 1000);
+          var newTime = new Date(oldTime);
           var date = {
             year: newTime.getFullYear(),
-            month: newTime.getMonth()+1,
+            month: newTime.getMonth() + 1,
             day: newTime.getDate(),
           };
           var systemDate =
@@ -411,16 +402,16 @@ export default {
       //   type: "line",
       // });
       //哇哩哇加油！
-      
+
       var totalPrice = 0;
       var seriesArray = [];
-      var keyArray=[];
+      var keyArray = [];
       ///body的三个时间
       var tempTime = 0
       var fromTime = this.getNowTimeNum();
       var toTime = 0
       keyArray.push('营业额')
-      console.log('days',days)
+      console.log('days', days)
       for (let i = 0; i < days; i++) {
         tempTime = fromTime;
         toTime = tempTime;
@@ -443,7 +434,7 @@ export default {
           }
 
         // for (let j = 0; j < dataArray.length; j++) {
-        //   if (dataArray[j].createTime >= fromTime && 
+        //   if (dataArray[j].createTime >= fromTime &&
         //   dataArray[j].createTime <= toTime) {
         //     totalPrice += dataArray[j].totalPrice;
         //     // console.log('dataArray[j].totalPrice')
@@ -481,9 +472,6 @@ export default {
         const E = echarts.init(this.$refs.echarts);
         E.setOption(option);
     });
-
-  
-    
     },
   },
 };
