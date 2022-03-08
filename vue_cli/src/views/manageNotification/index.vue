@@ -1,12 +1,12 @@
 <template>
   <div>
-    
+
       <el-button type="text" @click="dialogVisible1 = true" style="float:right">
         <el-row>
           <el-button type="primary" class="head">发布公告</el-button>
         </el-row>
       </el-button>
-    
+
 
     <el-dialog
       :visible.sync="dialogVisible1"
@@ -73,7 +73,7 @@
         <span style="float: left; margin-top: 16px; margin-left:10px">
           {{ getCreatedTime(item.createTime) }}
         </span>
-      <div class="right"> 
+      <div class="right">
           <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
           <el-button @click="dialogVisible2 = true" class="mybt"
           >编辑
@@ -93,7 +93,7 @@
       width="30%"
       :before-close="handleClose"
     >
-      <el-form :model="form">
+      <el-form>
         <el-form-item label="公告标题">
           <el-input
             type="text"
@@ -192,10 +192,11 @@ export default {
     handleEdit(Id) {
     },
     changeStickSituation(notification, index){
+      const temp = ! notification.sticked;
       notification.sticked = ! notification.sticked;
       updateNotification(notification)
       .then(res=>{
-        this.$set(this.$store.state.notificationList[index], "sticked", notification.sticked);
+        this.$set(this.$store.state.notificationList[index], "sticked", temp);
       })
     }
   },
@@ -267,7 +268,7 @@ export default {
 
 .grid-content {
     border-radius: 4px;
-    min-height: 47px; 
+    min-height: 47px;
   }
 
   .bg-purple-dark {

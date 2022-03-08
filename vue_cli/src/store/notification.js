@@ -76,7 +76,7 @@ export default {
       stompClient.connect({}, function (frame) {
         let subscribeChannel = "/notification/" + localStorage.getItem("restaurantId") + '/' + localStorage.getItem('position');
         stompClient.subscribe(subscribeChannel, function (message) {
-          let notification = message.body;
+          let notification = JSON.parse(message.body);
           dispatch("handleNewNotification", notification)
         });
       });
