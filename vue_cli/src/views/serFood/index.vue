@@ -309,6 +309,7 @@ import {
   getAllFood,
   getCurrOrders,
   getRestaurant,
+  addNewOrderItem
 } from "../../../api/data";
 
 import pinyin from "pinyin";
@@ -356,10 +357,13 @@ export default {
       occupied: [],
       ////////////////////////////查询//////////////////////////
       searchInput:'',
+      ////////////////////////////加菜/////////////////////
+      curOrderId:'',
     };
   },
 
   mounted() {
+    this.getAddMeal();
     this.refreshDishList();
     // 获取餐厅最大桌号
     this.occupied = new Array(this.tableNum);
@@ -370,6 +374,15 @@ export default {
     });
   },
   methods: {
+    //////////////////////////获取加菜信息///////////////
+    getAddMeal(){
+      if(sessionStorage.getItem('curOrder')){
+        const curOrder = JSON.parse(sessionStorage.getItem('curOrder'))
+          this.tableId =  curOrder.tableId
+          this.curOrderId = curOrder.id
+          sessionStorage.removeItem('curOrder')
+      }
+    },
     ////////////////////////////查询/////////////////////////////
     searchFood(){
      // input
@@ -381,12 +394,6 @@ export default {
       var flag = false;
       if (this.currItem != null && this.amount != 0) {
         this.orderItems.forEach((element) => {
-          // console.log('哇哩哇')
-          // console.log(this.currItem.dishId == element.dishId)
-          // console.log(this.currItem)
-          // console.log(this.currItem.note)
-          // console.log((this.note+';'+this.textarea))
-          // console.log(this.currItem.note===(this.note+';'+this.textarea))
           if (
             this.currItem.dishId == element.dishId &&
             this.currItem.note === this.note + ";" + this.textarea
@@ -398,12 +405,6 @@ export default {
         });
         //如果没有相同的项就，覆盖amount,这咋全覆盖了啊
         if (!flag) {
-          //console.log('????')
-          //因为这里是引用而非值拷贝
-          // tempItem.amount = this.amount
-          // tempItem.note = this.note+';'+this.textarea
-          // console.log('tempItem',tempItem)
-          // console.log('this.currItem',this.currItem)
           this.currItem.amount = this.amount;
           //存放note
           this.currItem.note = this.note + ";" + this.textarea;
@@ -415,7 +416,6 @@ export default {
       this.foodNum = 0
       this.orderItems.forEach((element) => {
         this.foodNum += element.amount
-        console.log('element.amount',element.amount)
       })
       //console.log('this.orderItems',this.orderItems)
       this.dialogFormVisible = false;
@@ -464,7 +464,6 @@ export default {
           this.totalPrice += dish.amount * dish.price;
         }
       }
-      console.log("this.totalPrice", this.totalPrice);
       if (this.orderItems.length === 0 || this.tableId === 0) {
         this.centerDialogVisible = true;
         return;
@@ -472,27 +471,53 @@ export default {
       this.drawer = true;
     },
     uploadOrder() {
-      let newOrder = {
-        tableId: this.tableId,
-        orderItems: this.orderItems,
-      };
-      addOrder(newOrder)
-        .then((res) => {
-          this.$message({
-            message: "创建订单成功",
-            type: "success",
-          });
-          this.refreshDishList();
-          this.refreshTableSituation();
-          this.occupied[this.tableId - 1] = true;
-          this.tableId = 0;
-          this.drawer = false;
-        })
-        .catch((error) => {
-          console.log(error);
-          this.$message.error("网络异常，生成订单失败");
+      console.log('this.orderItems',this.orderItems)
+      //如果当前的订单号不为空
+      if(this.curOrderId!=''){
+        this.orderItems.forEach(element => {
+          let addOrder = {
+            'orderId':this.curOrderId,
+            'dishId':element.id,
+            'amount':element.amount,
+            'note':element.note
+          };
+          addNewOrderItem(addOrder)
+          .then((res) => {
+            this.$message({
+              message: "添加菜品成功",
+              type: "success",
+            });
+          })
+          .catch((error)=>{
+            console.log(error)
+          })
         });
-      //对当前订单清空
+        console.log('this.curOrderId',this.curOrderId)
+        
+      }else//如果当前的订单号是空的
+      {
+        let newOrder = {
+          tableId: this.tableId,
+          orderItems: this.orderItems,
+        };
+        addOrder(newOrder)
+          .then((res) => {
+            this.$message({
+              message: "创建订单成功",
+              type: "success",
+            });
+            this.refreshDishList();
+            this.refreshTableSituation();
+            this.occupied[this.tableId - 1] = true;
+            this.tableId = 0;
+            this.drawer = false;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.$message.error("网络异常，生成订单失败");
+          });
+        对当前订单清空
+      }
       this.orderItems = [];
       this.totalPrice = 0;
     },
@@ -521,9 +546,7 @@ export default {
       this.foodNum = 0
       this.orderItems.forEach((element) => {
         this.foodNum += element.amount
-        console.log('element.amount',element.amount)
       })
-      console.log('orderItems',this.orderItems)
       this.createNewOrder()
     },
     refreshTableSituation() {
