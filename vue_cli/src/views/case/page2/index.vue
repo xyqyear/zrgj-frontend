@@ -52,14 +52,14 @@ import {
   getGivenTimeOrders,
   getUserlist,
   getObjectMap,
-  getAllFood,
-} from "../../../../api/data";
+  getAllFood
+} from '../../../../api/data'
 export default {
-  name: "home",
+  name: 'home',
   data() {
     return {
-      input: "",
-      find: "22",
+      input: '',
+      find: '22',
       date: {},
       usernameMap: {},
       tableData: [],
@@ -67,48 +67,48 @@ export default {
       pickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text: '最近一周',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
-            },
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
           },
           {
-            text: "最近一个月",
+            text: '最近一个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit("pick", [start, end]);
-            },
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
           },
           {
-            text: "最近三个月",
+            text: '最近三个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit("pick", [start, end]);
-            },
-          },
-        ],
-      },
-    };
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
+            }
+          }
+        ]
+      }
+    }
   },
   async mounted() {
-    this.dishMap = getObjectMap((await getAllFood()).data.data);
-    await this.populateUserMap();
-    await this.populateData(0, Math.round(new Date().getTime() / 1000));
+    this.dishMap = getObjectMap((await getAllFood()).data.data)
+    await this.populateUserMap()
+    await this.populateData(0, Math.round(new Date().getTime() / 1000))
   },
   methods: {
     async populateData(start, end) {
-      let rangeOrderResponse = await getGivenTimeOrders({
+      const rangeOrderResponse = await getGivenTimeOrders({
         from: start,
-        to: end,
-      });
-      console.log(rangeOrderResponse.data.data);
+        to: end
+      })
+      console.log(rangeOrderResponse.data.data)
       this.tableData = rangeOrderResponse.data.data.map((order) => {
         return {
           id: order.id,
@@ -120,27 +120,27 @@ export default {
               0
             ),
           name: this.usernameMap[order.waiterId],
-          state: order.state,
-        };
-      });
-      console.log(this.tableData);
+          state: order.state
+        }
+      })
+      console.log(this.tableData)
     },
     async populateUserMap() {
-      let accountListResponse = await getUserlist();
+      const accountListResponse = await getUserlist()
       this.usernameMap = accountListResponse.data.data.reduce((acc, curr) => {
-        acc[curr.id] = curr.username;
-        return acc;
-      }, {});
+        acc[curr.id] = curr.username
+        return acc
+      }, {})
     },
     onDatePickerChange() {
       this.populateData(
         Math.round(this.date[0].getTime() / 1000),
         // because the date picker gets the start of a day
         Math.round(this.date[1].getTime() / 1000 + 60 * 60 * 24)
-      );
-    },
-  },
-};
+      )
+    }
+  }
+}
 </script>
 <style lang="less" scoped>
 .operation {

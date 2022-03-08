@@ -1,10 +1,13 @@
 <template>
   <div>
-    <el-card class="box-card" v-for="(notification, index) in notificationList"
-             :label="index"
-             :name="index"
-             :key="index"
-             body-style="padding: 0px">
+    <el-card
+      class="box-card"
+      v-for="(notification, index) in notificationList"
+      :label="index"
+      :name="index"
+      :key="index"
+      body-style="padding: 0px"
+    >
       <div slot="header" class="header">
         <div v-if="notification.sticked" class="left">
           <el-button type="primary">置顶</el-button>
@@ -18,33 +21,37 @@
         <el-col :span="24">
           <div class="grid-content bg-purple-dark">
             <el-row>
-        <span style="float: left; margin-top: 16px; margin-left:10px">
-          {{ getCreatedTime(notification.createTime) }}
-        </span>
+              <span style="float: left; margin-top: 16px; margin-left: 10px">
+                {{ getCreatedTime(notification.createTime) }}
+              </span>
               <div class="right" v-if="!notification.confirmed">
-                <el-button class="mybt" @click="handleConfirm(notification, index)">确认</el-button>
+                <el-button
+                  class="mybt"
+                  @click="handleConfirm(notification, index)"
+                  >确认</el-button
+                >
               </div>
-              <span class="confirm-info" v-if="notification.confirmed">已查看..</span>
+              <span class="confirm-info" v-if="notification.confirmed"
+                >已查看..</span
+              >
             </el-row>
           </div>
         </el-col>
       </el-row>
     </el-card>
   </div>
-
 </template>
 
 <script>
-import {confirmNotification} from '../../../api/data'
-import {getReadableTime} from '../../store/notification'
+import { confirmNotification } from '../../../api/data'
+import { getReadableTime } from '../../store/notification'
 
 export default {
-  name: "notification",
+  name: 'notification',
   data() {
     return {}
   },
-  mounted() {
-  },
+  mounted() {},
   computed: {
     notificationList() {
       return this.$store.state.notificationList
@@ -52,15 +59,12 @@ export default {
   },
   methods: {
     handleConfirm(notification, index) {
-      confirmNotification({"id": notification.id})
-        .then(res => {
-          this.$set(this.$store.state.notificationList[index], "confirmed", true);
-        })
-        .catch(err => {
-        })
+      confirmNotification({ id: notification.id }).then((res) => {
+        this.$set(this.$store.state.notificationList[index], 'confirmed', true)
+      })
     },
     getCreatedTime(ts) {
-      return `发布时间：${getReadableTime(ts)}`;
+      return `发布时间：${getReadableTime(ts)}`
     }
   }
 }

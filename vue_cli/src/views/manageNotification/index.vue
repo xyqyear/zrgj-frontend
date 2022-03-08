@@ -1,12 +1,10 @@
 <template>
   <div>
-
-    <el-button type="text" @click="dialogVisible1 = true" style="float:right">
+    <el-button type="text" @click="dialogVisible1 = true" style="float: right">
       <el-row>
         <el-button type="primary" class="head">发布公告</el-button>
       </el-row>
     </el-button>
-
 
     <el-dialog
       :visible.sync="dialogVisible1"
@@ -47,7 +45,14 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible1 = false">退 出</el-button>
         <!-- <el-button @click="dialogVisible1 = false">保存并退出</el-button> -->
-        <el-button type="primary" @click="handleAdd();dialogVisible1 = false">发 布</el-button>
+        <el-button
+          type="primary"
+          @click="
+            handleAdd();
+            dialogVisible1 = false;
+          "
+          >发 布</el-button
+        >
       </span>
     </el-dialog>
 
@@ -70,26 +75,29 @@
         <el-col :span="24">
           <div class="grid-content bg-purple-dark">
             <el-row>
-        <span style="float: left; margin-top: 16px; margin-left:10px">
-          {{ getCreatedTime(item.createTime) }}
-        </span>
+              <span style="float: left; margin-top: 16px; margin-left: 10px">
+                {{ getCreatedTime(item.createTime) }}
+              </span>
               <div class="right">
                 <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
                 <el-button @click="openEditBox(item, index)" class="mybt"
-                >编辑
-                </el-button
+                  >编辑
+                </el-button>
+                <el-button
+                  class="mybt"
+                  @click="changeStickSituation(item, index)"
                 >
-                <el-button class="mybt" @click="changeStickSituation(item, index)">
                   {{ item.sticked ? "取消置顶" : "置顶" }}
                 </el-button>
-                <el-button class="mybt" @click="handleDelete(item, index)">撤 销</el-button>
+                <el-button class="mybt" @click="handleDelete(item, index)"
+                  >撤 销</el-button
+                >
                 <!-- @click="handleDelete(item.id)" -->
               </div>
             </el-row>
           </div>
         </el-col>
       </el-row>
-
     </el-card>
     <el-dialog
       :visible.sync="dialogVisible2"
@@ -132,130 +140,133 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible2 = false">取消修改</el-button>
+        <el-button @click="dialogVisible2 = false">取消修改</el-button>
         <!-- <el-button @click="dialogVisible = false">保存并退出</el-button> -->
-              <el-button type="primary" @click="handleEdit(editId)"
-              >确认修改</el-button
-              >
-            </span>
+        <el-button type="primary" @click="handleEdit(editId)"
+          >确认修改</el-button
+        >
+      </span>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import {addNotification, deleteNotification, updateNotification} from "../../../api/data";
-import {getReadableTime} from "../../store/notification";
+import {
+  addNotification,
+  deleteNotification,
+  updateNotification
+} from '../../../api/data'
+import { getReadableTime } from '../../store/notification'
 
 export default {
-  name: "manageNotification",
+  name: 'manageNotification',
   data() {
     return {
-      text: "",
-      textarea: "",
+      text: '',
+      textarea: '',
       sticked: true,
       dialogVisible1: false,
       dialogVisible2: false,
-      changeText: "",
-      changeTextarea: "",
-      editId: null,
-    };
+      changeText: '',
+      changeTextarea: '',
+      editId: null
+    }
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     getCreatedTime(ts) {
-      return `发布时间：${getReadableTime(ts)}`;
+      return `发布时间：${getReadableTime(ts)}`
     },
     handleClose(done) {
-      this.$confirm("确认关闭？")
+      this.$confirm('确认关闭？')
         .then((_) => {
-          done();
+          done()
         })
-        .catch((_) => {
-        });
+        .catch((_) => {})
     },
     handleAdd() {
-      let body = {
-        "title": this.text,
-        "content": this.textarea,
-        "sticked": this.sticked,
-      };
+      const body = {
+        title: this.text,
+        content: this.textarea,
+        sticked: this.sticked
+      }
       addNotification(body)
         .then((res) => {
-          this.$store.dispatch("getNotificationListFromServer");
+          this.$store.dispatch('getNotificationListFromServer')
         })
         .catch((error) => {
-          console.log(error.response.data.reason);
-        });
-      this.text = "";
-      this.textarea = "";
-      this.sticked = true;
+          console.log(error.response.data.reason)
+        })
+      this.text = ''
+      this.textarea = ''
+      this.sticked = true
     },
     handleDelete(notification, index) {
-      this.$confirm("此操作将撤销该公告, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('此操作将撤销该公告, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          deleteNotification({id: notification.id,})
-            .then((res) => {
+          deleteNotification({ id: notification.id })
+            .then((_) => {
               this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-              this.$store.commit("deleteNotification", index);
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$store.commit('deleteNotification', index)
             })
-            .catch(err => {
+            .catch((_) => {
               this.$message({
-                type: "warning",
-                message: "网络故障，删除失败",
-              });
-            });
+                type: 'warning',
+                message: '网络故障，删除失败'
+              })
+            })
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     handleEdit(id) {
-      let body = {
+      const body = {
         id: id,
         title: this.changeText,
         content: this.changeTextarea,
-        sticked: this.sticked,
-      };
+        sticked: this.sticked
+      }
       updateNotification(body)
         .then((res) => {
           this.$message({
-            type: "success",
-            message: "修改成功!",
-          });
-          this.$store.dispatch("getNotificationListFromServer")
+            type: 'success',
+            message: '修改成功!'
+          })
+          this.$store.dispatch('getNotificationListFromServer')
         })
         .catch((error) => {
-          console.log(error.response.data.reason);
-        });
-      this.dialogVisible2 = false;
+          console.log(error.response.data.reason)
+        })
+      this.dialogVisible2 = false
     },
     changeStickSituation(notification, index) {
-      const temp = !notification.sticked;
-      notification.sticked = !notification.sticked;
-      updateNotification(notification)
-        .then(res => {
-          this.$set(this.$store.state.notificationList[index], "sticked", temp);
-          this.$store.commit("refreshNotificationList", this.$store.state.notificationList);
-        })
+      const temp = !notification.sticked
+      notification.sticked = !notification.sticked
+      updateNotification(notification).then((res) => {
+        this.$set(this.$store.state.notificationList[index], 'sticked', temp)
+        this.$store.commit(
+          'refreshNotificationList',
+          this.$store.state.notificationList
+        )
+      })
     },
-    openEditBox(notification, index){
-      this.dialogVisible2 = true;
-      this.editId = notification.id;
-      this.changeText = notification.title;
-      this.changeTextarea = notification.content;
-      this.sticked = notification.sticked;
+    openEditBox(notification, index) {
+      this.dialogVisible2 = true
+      this.editId = notification.id
+      this.changeText = notification.title
+      this.changeTextarea = notification.content
+      this.sticked = notification.sticked
     }
   },
   computed: {
@@ -263,7 +274,7 @@ export default {
       return this.$store.state.notificationList
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

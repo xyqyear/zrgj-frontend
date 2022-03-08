@@ -10,11 +10,11 @@
       background-color="#fff"
       text-color="#545C64"
       active-text-color="#3A96FF"
-      style="display: flex; justify-content: space-between;margin-bottom:20px;"
+      style="display: flex; justify-content: space-between; margin-bottom: 20px"
     >
-      <el-menu-item @click="clickMenu('1')" index="/page1">今日订单</el-menu-item>
-      <el-menu-item @click="clickMenu('2')" index="/page2">订单列表</el-menu-item>
-      <el-menu-item @click="clickMenu('3')" index="/page3">销售统计</el-menu-item>
+      <el-menu-item index="/page1">今日订单</el-menu-item>
+      <el-menu-item index="/page2">订单列表</el-menu-item>
+      <el-menu-item index="/page3">销售统计</el-menu-item>
     </el-menu>
     <div class="content">
       <router-view></router-view>
@@ -30,44 +30,25 @@ el-header {
 export default {
   data() {
     return {
-      activeIndex2: "1",
+      activeIndex2: '1',
       menu: [
         {
-          path: "/case/page1",
-          name: "page1",
-        },
-      ],
-    };
+          path: '/case/page1',
+          name: 'page1'
+        }
+      ]
+    }
   },
-  mounted(){
+  mounted() {
     console.log('刷新啦')
-
   },
-  created(){
+  created() {
     this.activeIndex2 = '1'
-
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    clickMenu(index) {
-      var path='';
-      switch(index){
-        case '1':
-          path='page1';
-          break;
-        case '2':
-          path='page2';
-          break;
-        case '3':
-          path='page3';
-          break;
-      }
-      // this.$router.push({
-      //   name: path,
-      // });
-    },
-  },
-};
+      console.log(key, keyPath)
+    }
+  }
+}
 </script>

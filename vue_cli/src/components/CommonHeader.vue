@@ -4,22 +4,28 @@
       <el-button
         @click="handleMenu"
         plain
-        :icon="tabPacked?'el-icon-d-arrow-right':'el-icon-d-arrow-left'"
+        :icon="tabPacked ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"
         size="mini"
       ></el-button>
     </div>
     <!-- 个人信息 -->
     <div class="r-content">
-      <el-dropdown trigger="click" szie="medium " style="font-size:24px" @command="handleCommand">
+      <el-dropdown
+        trigger="click"
+        szie="medium "
+        style="font-size: 24px"
+        @command="handleCommand"
+      >
         <span class="el-dropdown-link">
           <!-- <img class="user" :src="userImg" > -->
           <i class="el-icon-user-solid"></i>
           <!-- 这里也可以换成图片，我嫌麻烦就没搞了 -->
         </span>
         <el-dropdown-menu slot="dropdown">
-<!--          <el-dropdown-item icon="el-icon-edit" command="perCen">个人中心</el-dropdown-item>-->
-          <el-dropdown-item icon="el-icon-s-operation" command="quit">退出</el-dropdown-item>
-
+          <!--          <el-dropdown-item icon="el-icon-edit" command="perCen">个人中心</el-dropdown-item>-->
+          <el-dropdown-item icon="el-icon-s-operation" command="quit"
+            >退出</el-dropdown-item
+          >
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -28,7 +34,7 @@
 
 <script>
 export default {
-  name: "CommonHeader",
+  name: 'CommonHeader',
   data() {
     return {
       userImg: require('../assets/images/logo.png'),
@@ -43,18 +49,17 @@ export default {
     handleCommand(command) {
       switch (command) {
         case 'perCen':
-
-          break;
+          break
         case 'quit':
-          this.$router.push({name: 'login'});
-          this.$store.commit("clearMenu");
-          localStorage.removeItem('token');
+          this.$router.push({ name: 'login' })
+          this.$store.commit('clearMenu')
+          localStorage.removeItem('token')
 
-          break;
+          break
       }
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>

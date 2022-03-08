@@ -11,6 +11,7 @@ module.exports = {
     parser: 'babel-eslint'
   },
   "rules": {
-    "prettier/prettier": ["error"]
+    "no-var": "error",
+    "space-before-function-paren": ["error", "never"],
   },
 }

@@ -5,7 +5,12 @@
         <p style="margin-left: 20px; color: #545c64">查找到{{ find }}条</p>
       </div>
       <div style="margin-right: 20px; display: flex">
-        <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
+        <el-input
+          placeholder="请输入内容"
+          v-model="searchInput"
+          @input="onSearchInput"
+          clearable
+        >
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
@@ -67,9 +72,9 @@
                 :on-exceed="handleExceed"
                 :file-list="fileList"
               >
-              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                
+                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+
                 <div slot="tip" class="el-upload__tip">
                   只能上传jpg/png文件，且不超过500kb
                 </div>
@@ -369,99 +374,101 @@
   </el-row>
 </template>
 <script>
-import { getAllFood } from "../../../api/data.js";
-import { addFood } from "../../../api/data.js";
-import { upload } from "../../../api/data.js";
-import { updateFood } from "../../../api/data.js";
-import { deleteFood } from "../../../api/data.js";
+import {
+  getAllFood,
+  addFood,
+  upload,
+  updateFood,
+  deleteFood
+} from '../../../api/data.js'
 
-import pinyin from "pinyin";
+import pinyin from 'pinyin'
 
 export default {
-  name: "home",
+  name: 'home',
   data() {
-    var checkName = (rule, value, callback) => {
+    const checkName = (rule, value, callback) => {
       if (!/^[\u4e00-\u9fa5]/.test(value) && !/^[a-zA-Z]/.test(value)) {
         callback(
-          new Error("输入内容不满足格式，必须包含汉字、英文字母中至少一种！")
-        );
+          new Error('输入内容不满足格式，必须包含汉字、英文字母中至少一种！')
+        )
       } else {
         this.tableData.forEach((element) => {
           if (element.name === value) {
-            callback(new Error("与已有菜名重复，请更改！"));
+            callback(new Error('与已有菜名重复，请更改！'))
           }
-        });
-        callback();
+        })
+        callback()
       }
-    };
-    var checkNum = (rule, value, callback) => {
-      let numReg = /^\d+$/;
+    }
+    const checkNum = (rule, value, callback) => {
+      const numReg = /^\d+$/
       if (!value) {
-        callback(new Error("请输入数字"));
+        callback(new Error('请输入数字'))
       } else {
         if (numReg.test(value)) {
-          //如果是数字
-          callback();
+          // 如果是数字
+          callback()
         } else {
           callback(
-            new Error("输入内容不满足格式，必须是非负，小数点后最多保留一位")
-          );
+            new Error('输入内容不满足格式，必须是非负，小数点后最多保留一位')
+          )
         }
       }
-    };
-    var checkImage = (rule, value, callback) => {
-      console.log("value", value);
-      let numReg = /^\d+$/;
+    }
+    const checkImage = (rule, value, callback) => {
+      console.log('value', value)
+      const numReg = /^\d+$/
       if (!value) {
-        callback(new Error("请输入数字"));
+        callback(new Error('请输入数字'))
       } else {
         if (numReg.test(value)) {
-          //如果是数字
-          callback();
+          // 如果是数字
+          callback()
         } else {
           callback(
-            new Error("输入内容不满足格式，必须是非负，小数点后最多保留一位")
-          );
+            new Error('输入内容不满足格式，必须是非负，小数点后最多保留一位')
+          )
         }
       }
-    };
+    }
     return {
       addRules: {
         name: [
-          { required: true, message: "该内容不能为空！", trigger: "blur" },
-          { validator: checkName, trigger: "blur" },
+          { required: true, message: '该内容不能为空！', trigger: 'blur' },
+          { validator: checkName, trigger: 'blur' }
         ],
         price: [
-          { required: true, message: "该内容不能为空！", trigger: "blur" },
-          { validator: checkNum, trigger: "blur" },
+          { required: true, message: '该内容不能为空！', trigger: 'blur' },
+          { validator: checkNum, trigger: 'blur' }
         ],
         image: [
-          { required: true, message: "该内容不能为空！", trigger: "blur" },
-          { validator: checkImage, trigger: "blur" },
-        ],
+          { required: true, message: '该内容不能为空！', trigger: 'blur' },
+          { validator: checkImage, trigger: 'blur' }
+        ]
       },
       perChange: [],
       perSet: [],
-      selectVal: this.value || "",
-      find: "",
+      selectVal: this.value || '',
+      find: '',
       dialogFormVisible: false,
       dialogChangeVisible: false,
       alertBlankVisible: false,
       alertAgainVisible: false,
       alertContentVisible: false,
       form: {
-        name: "",
-        price: "",
+        name: '',
+        price: ''
       },
       formChange: {
-        name: "",
-        price: "",
-        imageUrl: "",
-        type: "",
-        id: "",
+        name: '',
+        price: '',
+        imageUrl: '',
+        type: '',
+        id: ''
       },
-      searchInput: "",
-      imageUrl: "",
+      searchInput: '',
+      imageUrl: '',
       tableData: [
         // {
         //   index: "1",
@@ -485,48 +492,48 @@ export default {
       fullTableData: [],
       options: [
         {
-          value: "选项1",
-          label: "荤菜",
+          value: '选项1',
+          label: '荤菜'
         },
         {
-          value: "选项2",
-          label: "素菜",
+          value: '选项2',
+          label: '素菜'
         },
         {
-          value: "选项3",
-          label: "汤类",
+          value: '选项3',
+          label: '汤类'
         },
         {
-          value: "选项4",
-          label: "小吃",
+          value: '选项4',
+          label: '小吃'
         },
         {
-          value: "选项5",
-          label: "饮品",
+          value: '选项5',
+          label: '饮品'
         },
         {
-          value: "选项6",
-          label: "主食",
-        },
+          value: '选项6',
+          label: '主食'
+        }
       ],
-      value: "",
-     fileList: [],
+      value: '',
+      fileList: [],
       flavour: [],
-      /////////////////////////allfood///////////
-      allFood: [],
-    };
+      /// //////////////////////allfood///////////
+      allFood: []
+    }
   },
   mounted() {
-    this.getFoodData();
+    this.getFoodData()
   },
   methods: {
-    /////////////////////////清空表单////////////////////
+    /// //////////////////////清空表单////////////////////
     clearForm() {
-      this.form.name = "";
-      this.form.price = "";
+      this.form.name = ''
+      this.form.price = ''
       this.fileList.length = 0
       this.selectVal = ''
-      this.dialogFormVisible = false;
+      this.dialogFormVisible = false
     },
     // blur() {
     //   if (this.form.name === "") {
@@ -552,76 +559,76 @@ export default {
     //   }
     // },
     delChange() {
-      this.perChange.splice(this.perChange.length - 1, 1);
+      this.perChange.splice(this.perChange.length - 1, 1)
     },
     addChange() {
-      var a = this.perChange.length;
-      var body = {
-        id: a,
-      };
-      this.perChange.push(body);
+      const a = this.perChange.length
+      const body = {
+        id: a
+      }
+      this.perChange.push(body)
     },
     delSet() {
-      this.perSet.splice(this.perSet.length - 1, 1);
+      this.perSet.splice(this.perSet.length - 1, 1)
     },
-    ///////////////////////上架菜品的dialog打开事件
+    /// ////////////////////上架菜品的dialog打开事件
     activeAddFoodDialog() {
-      this.dialogFormVisible = true;
-      this.perSet.length = 0;
-      this.imageUrl = '';
+      this.dialogFormVisible = true
+      this.perSet.length = 0
+      this.imageUrl = ''
       this.selectVal = ''
     },
     addSet() {
-      var a = this.perSet.length;
-      var body = {
-        id: a + 1,
-      };
-      this.perSet.push(body);
+      const a = this.perSet.length
+      const body = {
+        id: a + 1
+      }
+      this.perSet.push(body)
     },
     handleDelete(index, row) {
-      this.$confirm("此操作将删除该菜品, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('此操作将删除该菜品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          var body = {
-            id: "",
-          };
-          body.id = row.id;
-          console.log(body.id);
+          const body = {
+            id: ''
+          }
+          body.id = row.id
+          console.log(body.id)
           deleteFood(body).then((res) => {
-            console.log(res);
-            if (res.status == 200) {
+            console.log(res)
+            if (res.status === 200) {
               this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-              this.tableData.length = 0;
-              this.getFoodData();
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.tableData.length = 0
+              this.getFoodData()
             }
-          });
+          })
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     handleEdit(index, row) {
-      this.dialogChangeVisible = true;
-      this.formChange.name = row.name;
-      this.formChange.price = row.price;
-      this.imageUrl = row.img;
-      this.formChange.id = row.id;
-      this.selectVal = row.type;
-      let id = row.id;
-      console.log(id);
-      this.perChange.length = 0;
+      this.dialogChangeVisible = true
+      this.formChange.name = row.name
+      this.formChange.price = row.price
+      this.imageUrl = row.img
+      this.formChange.id = row.id
+      this.selectVal = row.type
+      const id = row.id
+      console.log(id)
+      this.perChange.length = 0
       if (this.allFood[id - 1].flavour != null) {
         for (let i = 0; i < this.allFood[id - 1].flavour.length; i++) {
-          let body = {
+          const body = {
             id: i,
             key: this.allFood[id - 1].flavour[i].key,
             value1: null,
@@ -629,249 +636,251 @@ export default {
             value3: null,
             value4: null,
             value5: null,
-            value6: null,
-          };
+            value6: null
+          }
           if (this.allFood[id - 1].flavour[i].value[0] != null) {
-            body.value1 = this.allFood[id - 1].flavour[i].value[0];
+            body.value1 = this.allFood[id - 1].flavour[i].value[0]
           }
           if (this.allFood[id - 1].flavour[i].value[1] != null) {
-            body.value2 = this.allFood[id - 1].flavour[i].value[1];
+            body.value2 = this.allFood[id - 1].flavour[i].value[1]
           }
           if (this.allFood[id - 1].flavour[i].value[2] != null) {
-            body.value3 = this.allFood[id - 1].flavour[i].value[2];
+            body.value3 = this.allFood[id - 1].flavour[i].value[2]
           }
           if (this.allFood[id - 1].flavour[i].value[3] != null) {
-            body.value4 = this.allFood[id - 1].flavour[i].value[3];
+            body.value4 = this.allFood[id - 1].flavour[i].value[3]
           }
           if (this.allFood[id - 1].flavour[i].value[4] != null) {
-            body.value5 = this.allFood[id - 1].flavour[i].value[4];
+            body.value5 = this.allFood[id - 1].flavour[i].value[4]
           }
           if (this.allFood[id - 1].flavour[i].value[5] != null) {
-            body.value6 = this.allFood[id - 1].flavour[i].value[5];
+            body.value6 = this.allFood[id - 1].flavour[i].value[5]
           }
-          console.log(body);
-          this.perChange.push(body);
+          console.log(body)
+          this.perChange.push(body)
         }
-        console.log(this.perChange);
+        console.log(this.perChange)
       }
     },
     handleEditSure() {
-      this.dialogChangeVisible = false;
-      var body = {
+      this.dialogChangeVisible = false
+      const body = {
         id: this.formChange.id,
         name: this.formChange.name,
         price: this.formChange.price,
         imageUrl: this.imageUrl,
         category: this.selectVal,
-        flavour: [],
-      };
+        flavour: []
+      }
       for (let i = 0; i < this.perChange.length; i++) {
-        var body1 = {
+        const body1 = {
           key: this.perChange[i].key,
-          value: [],
-        };
+          value: []
+        }
         if (this.perChange[i].value1 != null) {
-          body1.value.push(this.perChange[i].value1);
+          body1.value.push(this.perChange[i].value1)
         }
         if (this.perChange[i].value2 != null) {
-          body1.value.push(this.perChange[i].value2);
+          body1.value.push(this.perChange[i].value2)
         }
         if (this.perChange[i].value3 != null) {
-          body1.value.push(this.perChange[i].value3);
+          body1.value.push(this.perChange[i].value3)
         }
         if (this.perChange[i].value4 != null) {
-          body1.value.push(this.perChange[i].value4);
+          body1.value.push(this.perChange[i].value4)
         }
         if (this.perChange[i].value5 != null) {
-          body1.value.push(this.perChange[i].value5);
+          body1.value.push(this.perChange[i].value5)
         }
         if (this.perChange[i].value6 != null) {
-          body1.value.push(this.perChange[i].value6);
+          body1.value.push(this.perChange[i].value6)
         }
-        body.flavour.push(body1);
+        body.flavour.push(body1)
       }
-      console.log(body);
+      console.log(body)
       updateFood(body).then((res) => {
-        console.log(res);
-        this.tableData.length = 0;
-        this.getFoodData();
-      });
+        console.log(res)
+        this.tableData.length = 0
+        this.getFoodData()
+      })
     },
     uploadFiles(file, _) {
       console.log('???')
-      console.log('file',file)
-      let fileTest = file.name.substring(file.name.lastIndexOf(".") + 1);
-      console.log('fileTest',fileTest)
-      let allowFile = ["png", "jpg", "jpeg", "js", "css", "html"];
-      console.log("fileTest", fileTest);
+      console.log('file', file)
+      const fileTest = file.name.substring(file.name.lastIndexOf('.') + 1)
+      console.log('fileTest', fileTest)
+      const allowFile = ['png', 'jpg', 'jpeg', 'js', 'css', 'html']
+      console.log('fileTest', fileTest)
       if (allowFile.indexOf(fileTest) === -1) {
-        this.$message.error("文件格式不符合要求，请重新上传。");
-        return false;
-      }else{
-        const fd = new FormData();
-      fd.append("file", file.raw);
-      upload(fd).then((res) => {
-        console.log(res);
-        this.imageUrl = res.data.data.fileUrl;
-        console.log('this.imageUrl',this.imageUrl)
-      });
+        this.$message.error('文件格式不符合要求，请重新上传。')
+        return false
+      } else {
+        const fd = new FormData()
+        fd.append('file', file.raw)
+        upload(fd).then((res) => {
+          console.log(res)
+          this.imageUrl = res.data.data.fileUrl
+          console.log('this.imageUrl', this.imageUrl)
+        })
       }
-
-      
     },
     handle_success(res) {
-      console.log(res);
-      this.$message.success("图片上传成功");
+      console.log(res)
+      this.$message.success('图片上传成功')
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      console.log(file, fileList)
     },
     handlePreview(file) {
-      console.log("????");
-      //sessionStorage.setItem
+      console.log('????')
+      // sessionStorage.setItem
     },
     handleExceed(files, fileList) {
-      //原来这么简单就可以弹框啊
+      // 原来这么简单就可以弹框啊
       this.$message.warning(
         `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
           files.length + fileList.length
         } 个文件`
-      );
+      )
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+      return this.$confirm(`确定移除 ${file.name}？`)
     },
     handleChange(data) {
-      //如果上面:value赋的是对象，则可以将返回的对象赋予其他变量，这里的data是选中的对象，那么data.label则是reasonTypes中的label值，如果下拉中选中美国，那么this.selectVal 值为“美国”
-      this.selectVal = data.label;
+      // 如果上面:value赋的是对象，则可以将返回的对象赋予其他变量，这里的data是选中的对象，那么data.label则是reasonTypes中的label值，如果下拉中选中美国，那么this.selectVal 值为“美国”
+      this.selectVal = data.label
     },
     handleAdd() {
-      console.log(this.perSet);
-      var body = {
-        name: "",
-        price: "",
-        imageUrl: "",
-        category: "",
-        flavour: [],
-      };
-      body.name = this.form.name;
-      body.price = this.form.price;
-      body.imageUrl = this.imageUrl;
-      body.category = this.selectVal;
+      console.log(this.perSet)
+      const body = {
+        name: '',
+        price: '',
+        imageUrl: '',
+        category: '',
+        flavour: []
+      }
+      body.name = this.form.name
+      body.price = this.form.price
+      body.imageUrl = this.imageUrl
+      body.category = this.selectVal
       for (let i = 0; i < this.perSet.length; i++) {
-        var body1 = {
+        const body1 = {
           key: this.perSet[i].key,
-          value: [],
-        };
+          value: []
+        }
         if (this.perSet[i].value1 != null) {
-          body1.value.push(this.perSet[i].value1);
+          body1.value.push(this.perSet[i].value1)
         }
         if (this.perSet[i].value2 != null) {
-          body1.value.push(this.perSet[i].value2);
+          body1.value.push(this.perSet[i].value2)
         }
         if (this.perSet[i].value3 != null) {
-          body1.value.push(this.perSet[i].value3);
+          body1.value.push(this.perSet[i].value3)
         }
         if (this.perSet[i].value4 != null) {
-          body1.value.push(this.perSet[i].value4);
+          body1.value.push(this.perSet[i].value4)
         }
         if (this.perSet[i].value5 != null) {
-          body1.value.push(this.perSet[i].value5);
+          body1.value.push(this.perSet[i].value5)
         }
         if (this.perSet[i].value6 != null) {
-          body1.value.push(this.perSet[i].value6);
+          body1.value.push(this.perSet[i].value6)
         }
-        body.flavour.push(body1);
+        body.flavour.push(body1)
       }
       addFood(body).then((res) => {
-        console.log(res);
-        this.dialogFormVisible = false;
-        this.tableData.length = 0;
-        this.getFoodData();
-      });
+        console.log(res)
+        this.dialogFormVisible = false
+        this.tableData.length = 0
+        this.getFoodData()
+      })
     },
     getFoodData() {
       getAllFood()
         .then((res) => {
-          console.log(res);
-          this.allFood = res.data.data;
+          console.log(res)
+          this.allFood = res.data.data
           res.data.data = res.data.data.filter((i) => {
-            return !i.deleted;
-          });
+            return !i.deleted
+          })
 
-          console.log(this.allFood);
+          console.log(this.allFood)
 
-          this.find = res.data.data.length;
+          this.find = res.data.data.length
 
           for (let i = 0; i < res.data.data.length; i++) {
-            let flavour = "";
+            let flavour = ''
             if (res.data.data[i].flavour !== null) {
               for (let j = 0; j < res.data.data[i].flavour.length; j++) {
-                flavour = flavour + res.data.data[i].flavour[j].key + "：";
+                flavour = flavour + res.data.data[i].flavour[j].key + '：'
                 for (
                   let k = 0;
                   k < res.data.data[i].flavour[j].value.length;
                   k++
                 ) {
-                  if (k == res.data.data[i].flavour[j].value.length - 1) {
+                  if (k === res.data.data[i].flavour[j].value.length - 1) {
                     flavour =
-                      flavour + res.data.data[i].flavour[j].value[k] + "；";
+                      flavour + res.data.data[i].flavour[j].value[k] + '；'
                   } else {
                     flavour =
-                      flavour + res.data.data[i].flavour[j].value[k] + "，";
+                      flavour + res.data.data[i].flavour[j].value[k] + '，'
                   }
                 }
               }
             }
             if (res.data.data[i].deleted === false) {
-              let item = {
+              const item = {
                 id: res.data.data[i].id,
                 name: res.data.data[i].name,
                 type: res.data.data[i].category,
                 price: res.data.data[i].price,
                 img: res.data.data[i].imageUrl,
-                flavour: flavour,
-              };
-              this.tableData.push(item);
+                flavour: flavour
+              }
+              this.tableData.push(item)
             }
           }
-          this.fullTableData = this.tableData;
+          this.fullTableData = this.tableData
         })
         .catch((error) => {
-          console.log(error.response.data.reason);
-        });
+          console.log(error.response.data.reason)
+        })
     },
 
     onSearchInput(value) {
-      if (value === "") {
-        this.tableData = this.fullTableData;
+      if (value === '') {
+        this.tableData = this.fullTableData
       } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
         this.tableData = this.fullTableData.filter((item) => {
-          return item.name.includes(value);
-        });
+          return item.name.includes(value)
+        })
       } else if (/^[a-zA-Z]+$/.test(value)) {
-        this.tableData = 
-          this.fullTableData.filter((item) => {
+        this.tableData = this.fullTableData
+          .filter((item) => {
             return pinyin(item.name, {
-              style: pinyin.STYLE_FIRST_LETTER,
-            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
-          }).concat(
-          this.fullTableData.filter((item) => {
-            const py = pinyin(item.name, {
-              style: pinyin.STYLE_FIRST_LETTER,
-            }).reduce((acc, cur) => acc + cur[0], '');
-            return !py.startsWith(value) && py.includes(value);
-          }));
+              style: pinyin.STYLE_FIRST_LETTER
+            })
+              .reduce((acc, cur) => acc + cur[0], '')
+              .startsWith(value)
+          })
+          .concat(
+            this.fullTableData.filter((item) => {
+              const py = pinyin(item.name, {
+                style: pinyin.STYLE_FIRST_LETTER
+              }).reduce((acc, cur) => acc + cur[0], '')
+              return !py.startsWith(value) && py.includes(value)
+            })
+          )
       } else if (/^\d+$/.test(value)) {
         this.tableData = this.fullTableData.filter((item) => {
-          return item.id === Number(value);
-        });
+          return item.id === Number(value)
+        })
       } else {
-        this.tableData = [];
+        this.tableData = []
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style lang="less" scoped>
 .noteClass {

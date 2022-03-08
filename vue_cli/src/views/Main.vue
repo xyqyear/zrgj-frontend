@@ -2,7 +2,7 @@
 <template>
   <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
   <el-container style="height: 100%">
-    <el-aside width="auto" style="display: flex; flex-direction: column;">
+    <el-aside width="auto" style="display: flex; flex-direction: column">
       <common-aside></common-aside>
       <!-- 驼峰命名，注意这里，不过可能也用不到了 -->
     </el-aside>
@@ -75,23 +75,23 @@ body {
 }
 </style>
 
-// <script>
+<script>
 // import CommonAside from "../components/CommonAside.vue";
 export default {
   data() {
-    return {
-    };
-  },
-};
-// </script>
+    return {}
+  }
+}
+//
+</script>
 <script>
-import CommonAside from "../components/CommonAside.vue";
-import CommonHeader from "../components/CommonHeader.vue";
+import CommonAside from '../components/CommonAside.vue'
+import CommonHeader from '../components/CommonHeader.vue'
 export default {
-  name: "Main",
+  name: 'Main',
   created() {
-    this.$store.dispatch("getNecessaryDataAfterLogin")
+    this.$store.dispatch('getNecessaryDataAfterLogin')
   },
-  components: { CommonAside,CommonHeader },
-};
+  components: { CommonAside, CommonHeader }
+}
 </script>

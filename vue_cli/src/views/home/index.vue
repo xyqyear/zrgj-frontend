@@ -139,7 +139,7 @@
 </template>
 
 <style lang="less" scoped>
-.timebar{
+.timebar {
   display: flex;
   justify-content: right;
 }
@@ -220,205 +220,208 @@
 }
 </style>
 <script>
-import { getGivenTimeOrders, getObjectMap, getUserlist, getAllFood } from "../../../api/data.js";
+import {
+  getGivenTimeOrders,
+  getObjectMap,
+  getUserlist,
+  getAllFood
+} from '../../../api/data.js'
 
-import * as echarts from "echarts";
+import * as echarts from 'echarts'
 export default {
-  name: "home",
-  toTime: "",
+  name: 'home',
+  toTime: '',
   data() {
     return {
-      //第一行
-      name: "餐饮管理有限公司XX分店",
-      phone: "15608209829",
-      location: "重庆市渝北区华山南路16号",
-      roomImage: require("../../assets/images/logo.png"),
-      //第二行,今日营业额，今日有效订单数
+      // 第一行
+      name: '餐饮管理有限公司XX分店',
+      phone: '15608209829',
+      location: '重庆市渝北区华山南路16号',
+      roomImage: require('../../assets/images/logo.png'),
+      // 第二行,今日营业额，今日有效订单数
       todayAmount: {
         Money: 0,
-        Order: 0,
+        Order: 0
       },
-      //商品数量，员工数量
+      // 商品数量，员工数量
       statistic: {
         goods: 0,
-        workers: 0,
+        workers: 0
       },
-      //第三行——表格
-      radio1: "近一周",
+      // 第三行——表格
+      radio1: '近一周',
       xData: [],
       interval: 1,
       body: {
         from: 0,
-        to: 0,
+        to: 0
       },
       dishMap: {},
-      //第四行
-      sale_kinds: "46",
-      sale_count: "147",
-      worker_count: "28",
-      provider_count: "3",
-
-    };
+      // 第四行
+      sale_kinds: '46',
+      sale_count: '147',
+      worker_count: '28',
+      provider_count: '3'
+    }
   },
-  created() {
-  },
+  created() {},
   // mounted(){
 
   //   console.log(this.todayAmount)
   // },
   async mounted() {
-    await this.getStatistic();
-    this.getTodayAmount();
-    this.chooseDays(this.radio1); //首先setbody数据
+    await this.getStatistic()
+    this.getTodayAmount()
+    this.chooseDays(this.radio1) // 首先setbody数据
   },
   methods: {
-    //获取时间戳,现在的时间
+    // 获取时间戳,现在的时间
     getNowTimeNum() {
-      return Math.ceil(
-        new Date(Date.now()).getTime() / 1000
-      );
+      return Math.ceil(new Date(Date.now()).getTime() / 1000)
     },
-    //获取某一天的开始时间
-    getTimeNum(day){
+    // 获取某一天的开始时间
+    getTimeNum(day) {
       return Math.ceil(
-        new Date(new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000).getTime() / 1000
-      );
+        new Date(
+          new Date().setHours(0, 0, 0, 0) - day * 24 * 3600 * 1000
+        ).getTime() / 1000
+      )
     },
-    //获取今日的数据
+    // 获取今日的数据
     getTodayAmount() {
-      /////////////////////获取所有订单/////////////////////
-      let fromTime = this.getTimeNum(0);//修改成当天开始的时间戳
-      this.toTime = this.getNowTimeNum();
-      var body = {};
-      body.from = fromTime;
-      body.to = this.toTime;
+      /// //////////////////获取所有订单/////////////////////
+      const fromTime = this.getTimeNum(0) // 修改成当天开始的时间戳
+      this.toTime = this.getNowTimeNum()
+      const body = {}
+      body.from = fromTime
+      body.to = this.toTime
       // console.log(body);
-      /////////////////返回值/////////////////////////
-      var todayMoney = 0;
-      var todayOrder = 0;
-      //////////////////////////////////////////
+      /// //////////////返回值/////////////////////////
+      let todayMoney = 0
+      let todayOrder = 0
+      /// ///////////////////////////////////////
       getGivenTimeOrders(body)
         .then((res) => {
           // console.log(res);
           for (let i = 0; i < res.data.data.length; i++) {
             todayMoney += res.data.data[i].orderItems
-                .filter((orderItem) => orderItem.state !== -1)
-                .reduce(
-                  (acc, cur) =>
-                    acc + this.dishMap[cur.dishId].price * cur.amount,
-                  0
-                ); //今日营业额
-            if (res.data.data[i].state === 0) todayOrder += 1; //今日有效订单
+              .filter((orderItem) => orderItem.state !== -1)
+              .reduce(
+                (acc, cur) => acc + this.dishMap[cur.dishId].price * cur.amount,
+                0
+              ) // 今日营业额
+            if (res.data.data[i].state === 0) todayOrder += 1 // 今日有效订单
           }
-          this.todayAmount.Money = todayMoney;
-          this.todayAmount.Order = todayOrder;
+          this.todayAmount.Money = todayMoney
+          this.todayAmount.Order = todayOrder
         })
         .catch((error) => {
-          console.log("getGivenTimeOrders error" + error.response);
-        });
+          console.log('getGivenTimeOrders error' + error.response)
+        })
     },
     getStatistic() {
-      var worker = 0;
-      var good = 0;
+      let worker = 0
+      let good = 0
 
-      //////////////////////获取员工数量///////////////////////////////
+      /// ///////////////////获取员工数量///////////////////////////////
       getUserlist()
         .then((res) => {
-          worker = res.data.data.length;
-          this.statistic.workers = worker;
+          worker = res.data.data.length
+          this.statistic.workers = worker
         })
         .catch((error) => {
-          console.log(error.response.data.reason);
-        });
-      //////////////////////获取商品数量///////////////////////////////
+          console.log(error.response.data.reason)
+        })
+      /// ///////////////////获取商品数量///////////////////////////////
       return getAllFood()
         .then((res) => {
-          good = res.data.data.length;
+          good = res.data.data.length
           const foodData = res.data.data
-                //获取dishMap
-          this.dishMap = getObjectMap(foodData);
-              this.statistic.goods = good;
-            })
+          // 获取dishMap
+          this.dishMap = getObjectMap(foodData)
+          this.statistic.goods = good
+        })
         .catch((error) => {
-          console.log(error.response.data.reason);
-        });
+          console.log(error.response.data.reason)
+        })
     },
     chooseDays(value) {
-      //设置间隔
-      var days = 0
-      this.interval = 0;
+      // 设置间隔
+      let days = 0
+      this.interval = 0
       switch (this.radio1) {
-        case "近一周":
+        case '近一周':
           days = 7
-          this.interval = 0;
-          break;
-        case "近一月":
+          this.interval = 0
+          break
+        case '近一月':
           days = 30
-          this.interval = 1;
-          break;
-        case "近三月":
+          this.interval = 1
+          break
+        case '近三月':
           days = 90
-          this.interval = 4;
-          break;
-        case "近半年":
+          this.interval = 4
+          break
+        case '近半年':
           days = 180
-          this.interval = 12;
-          break;
+          this.interval = 12
+          break
       }
-      //设置body
-      let fromTime = this.getTimeNum(days);
-      this.body.from = fromTime;
-      this.body.to = this.getNowTimeNum();
-      //设置横坐标xData
-        this.xData.length = 0;
-        // console.log(this.interval)
-        for (let i = 0; i < days; i++) { //啊啊啊想一想啊
-          var oldTime = new Date(Date.now() - i * 24 * 3600 * 1000);
-          var newTime = new Date(oldTime);
-          var date = {
-            year: newTime.getFullYear(),
-            month: newTime.getMonth() + 1,
-            day: newTime.getDate(),
-          };
-          var systemDate =
-            date.year +
-            "-" +
-            (date.month >= 10 ? date.month : "0" + date.month) +
-            "-" +
-            (date.day >= 10 ? date.day : "0" + date.day);
-          //console.log(systemDate);
-          this.xData.push(systemDate);
-        }
-        this.xData.reverse();
-        //设置表格
-    const series = [];
-    getGivenTimeOrders(this.body).then((res) => {
-      var dataArray = res.data.data;
-      console.log('dataArray')
-      console.log(dataArray)
-      // series.push({
-      //   name: '营业额',
-      //   data: res.data.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
-      //   type: "line",
-      // });
-      //哇哩哇加油！
-
-      var totalPrice = 0;
-      var seriesArray = [];
-      var keyArray = [];
-      ///body的三个时间
-      var tempTime = 0
-      var fromTime = this.getNowTimeNum();
-      var toTime = 0
-      keyArray.push('营业额')
-      console.log('days', days)
+      // 设置body
+      const fromTime = this.getTimeNum(days)
+      this.body.from = fromTime
+      this.body.to = this.getNowTimeNum()
+      // 设置横坐标xData
+      this.xData.length = 0
+      // console.log(this.interval)
       for (let i = 0; i < days; i++) {
-        tempTime = fromTime;
-        toTime = tempTime;
-        fromTime = this.getTimeNum(i);
+        // 啊啊啊想一想啊
+        const oldTime = new Date(Date.now() - i * 24 * 3600 * 1000)
+        const newTime = new Date(oldTime)
+        const date = {
+          year: newTime.getFullYear(),
+          month: newTime.getMonth() + 1,
+          day: newTime.getDate()
+        }
+        const systemDate =
+          date.year +
+          '-' +
+          (date.month >= 10 ? date.month : '0' + date.month) +
+          '-' +
+          (date.day >= 10 ? date.day : '0' + date.day)
+        // console.log(systemDate);
+        this.xData.push(systemDate)
+      }
+      this.xData.reverse()
+      // 设置表格
+      const series = []
+      getGivenTimeOrders(this.body).then((res) => {
+        const dataArray = res.data.data
         console.log('dataArray')
         console.log(dataArray)
-        for (let j = 0; j < dataArray.length; j++) {
+        // series.push({
+        //   name: '营业额',
+        //   data: res.data.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
+        //   type: "line",
+        // });
+        // 哇哩哇加油！
+
+        let totalPrice = 0
+        const seriesArray = []
+        const keyArray = []
+        /// body的三个时间
+        let tempTime = 0
+        let fromTime = this.getNowTimeNum()
+        let toTime = 0
+        keyArray.push('营业额')
+        console.log('days', days)
+        for (let i = 0; i < days; i++) {
+          tempTime = fromTime
+          toTime = tempTime
+          fromTime = this.getTimeNum(i)
+          console.log('dataArray')
+          console.log(dataArray)
+          for (let j = 0; j < dataArray.length; j++) {
             if (
               dataArray[j].createTime >= fromTime &&
               dataArray[j].createTime <= toTime
@@ -429,50 +432,50 @@ export default {
                   (acc, cur) =>
                     acc + this.dishMap[cur.dishId].price * cur.amount,
                   0
-                );
+                )
             }
           }
 
-        // for (let j = 0; j < dataArray.length; j++) {
-        //   if (dataArray[j].createTime >= fromTime &&
-        //   dataArray[j].createTime <= toTime) {
-        //     totalPrice += dataArray[j].totalPrice;
-        //     // console.log('dataArray[j].totalPrice')
-        //     // console.log(dataArray[j].totalPrice)
-        //   }
-        // }
-        // console.log('totalPrice',totalPrice)
-        seriesArray.push(totalPrice);
-        totalPrice = 0;
-      }
-      seriesArray.reverse()
-      series.push({
-            name: '营业额',
-            data: seriesArray, //这就是一个7长度的数组，里面存数字
-            type: "line",
-          });
-    const option = {
+          // for (let j = 0; j < dataArray.length; j++) {
+          //   if (dataArray[j].createTime >= fromTime &&
+          //   dataArray[j].createTime <= toTime) {
+          //     totalPrice += dataArray[j].totalPrice;
+          //     // console.log('dataArray[j].totalPrice')
+          //     // console.log(dataArray[j].totalPrice)
+          //   }
+          // }
+          // console.log('totalPrice',totalPrice)
+          seriesArray.push(totalPrice)
+          totalPrice = 0
+        }
+        seriesArray.reverse()
+        series.push({
+          name: '营业额',
+          data: seriesArray, // 这就是一个7长度的数组，里面存数字
+          type: 'line'
+        })
+        const option = {
           xAxis: {
-            //横坐标？
+            // 横坐标？
             data: this.xData,
             axisLabel: {
               interval: this.interval,
               rotate: -30,
-              color: "#333",
-            },
+              color: '#333'
+            }
           },
-          yAxis: {}, //这些变量好像都要定义
+          yAxis: {}, // 这些变量好像都要定义
           legend: {
-            //这个不是图例吗，
-            data: keyArray,
+            // 这个不是图例吗，
+            data: keyArray
           },
-          series,
-        };
+          series
+        }
 
-        const E = echarts.init(this.$refs.echarts);
-        E.setOption(option);
-    });
-    },
-  },
-};
+        const E = echarts.init(this.$refs.echarts)
+        E.setOption(option)
+      })
+    }
+  }
+}
 </script>

@@ -7,7 +7,7 @@ import axios from './axios'
 //   })
 // }
 
-export const apiPrefix = 'http://www.muzi.fun:5678';
+export const apiPrefix = 'http://www.muzi.fun:5678'
 // export const apiPrefix = 'http://localhost:5678';
 
 export const getHome = () => {
@@ -31,10 +31,10 @@ export const getData = () => {
   })
 }
 
-///////////////////////账号///////////////////////
+/// ////////////////////账号///////////////////////
 
-//登录
-export const postLogin = (param) => {//这个接口名称需要改
+// 登录
+export const postLogin = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/login`,
     method: 'POST',
@@ -44,7 +44,7 @@ export const postLogin = (param) => {//这个接口名称需要改
     }
   })
 }
-//添加账号
+// 添加账号
 /*
 Body:
 {
@@ -54,7 +54,7 @@ Body:
     "avatarUrl": "https://portrait.gitee.com/uploads/avatars/user/2959/8878759_muzi-lh_1616823767.png!avatar200"
 }
 */
-export const addAccount = (param) => {//这个接口名称需要改
+export const addAccount = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/add`,
     method: 'POST',
@@ -64,14 +64,14 @@ export const addAccount = (param) => {//这个接口名称需要改
     }
   })
 }
-//删除账号
+// 删除账号
 /*
 Body:
 {
     "username": "test1"
 }
 */
-export const deAccount = (param) => {//这个接口名称需要改
+export const deAccount = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/delete`,
     method: 'POST',
@@ -81,7 +81,7 @@ export const deAccount = (param) => {//这个接口名称需要改
     }
   })
 }
-//更改用户信息
+// 更改用户信息
 /*
 Body:
 {
@@ -90,7 +90,7 @@ Body:
     "avatarUrl": "http://1122334.com/hello.png"
 }
 */
-export const chaAccount = (param) => {//这个接口名称需要改
+export const chaAccount = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/update`,
     method: 'POST',
@@ -100,7 +100,7 @@ export const chaAccount = (param) => {//这个接口名称需要改
     }
   })
 }
-//更改用户信息
+// 更改用户信息
 /*
 Body:
 {
@@ -109,7 +109,7 @@ Body:
     "avatarUrl": "http://1122334.com/hello.png"
 }
 */
-export const changePassword = (param) => {//这个接口名称需要改
+export const changePassword = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/change_password`,
     method: 'POST',
@@ -119,14 +119,14 @@ export const changePassword = (param) => {//这个接口名称需要改
     }
   })
 }
-//获取帐号信息
+// 获取帐号信息
 /*
 Body:
 {
     "username": "manager0"
 }
 */
-export const getAccount = (param) => {//这个接口名称需要改
+export const getAccount = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/get`,
     method: 'POST',
@@ -136,14 +136,14 @@ export const getAccount = (param) => {//这个接口名称需要改
     }
   })
 }
-//获取用户列表
+// 获取用户列表
 /*
 Body:
 {
     "restaurantId":1
 }
 */
-export const getUserlist = (param) => {//这个接口名称需要改
+export const getUserlist = (param) => { // 这个接口名称需要改
   return axios.request({
     url: `${apiPrefix}/api/v1/account/list`,
     method: 'POST',
@@ -154,9 +154,8 @@ export const getUserlist = (param) => {//这个接口名称需要改
   })
 }
 
-
-//////////////////订单管理/////////////////////////
-//创建新订单
+/// ///////////////订单管理/////////////////////////
+// 创建新订单
 /*
 Body:
 {
@@ -186,7 +185,7 @@ export const addOrder = (param) => {
     }
   })
 }
-//结账
+// 结账
 /*
 Body:
 {
@@ -203,7 +202,7 @@ export const payOrders = (param) => {
     }
   })
 }
-//获取当前进行中的订单
+// 获取当前进行中的订单
 /*
 无参数
 */
@@ -216,7 +215,7 @@ export const getCurrOrders = () => {
     }
   })
 }
-//获取给定时间段内的订单
+// 获取给定时间段内的订单
 /*
 Body:
 {
@@ -235,8 +234,8 @@ export const getGivenTimeOrders = (param) => {
     }
   })
 }
-//////////////////////订单项///////////////////////////////
-//获取未完成的订单项
+/// ///////////////////订单项///////////////////////////////
+// 获取未完成的订单项
 /*
 Body: None
 */
@@ -249,7 +248,7 @@ export const getUncompletedOrderItems = () => {
     }
   })
 }
-//添加新的订单项
+// 添加新的订单项
 // Body:
 // {
 //   "orderId": 92,
@@ -261,13 +260,13 @@ export const addNewOrderItem = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/order_item/add`,
     method: 'POST',
-    data:param,
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
   })
 }
-//更新订单项
+// 更新订单项
 /*
 Body:
 {
@@ -281,8 +280,8 @@ Body:
 export const updateOrderItem = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/order_item/update`,
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -298,14 +297,14 @@ Body:
 export const deleteOrderItem = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/order_item/delete`,
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
   })
 }
-///////////////////////菜品//////////////////////////
+/// ////////////////////菜品//////////////////////////
 
 // 添加新菜品
 /*
@@ -320,8 +319,8 @@ Body:
 export const addFood = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/dish/add`,
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -338,8 +337,8 @@ Body:
 export const deleteFood = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/dish/delete`,
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -360,8 +359,8 @@ Body:
 export const updateFood = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/dish/update`,
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -384,13 +383,13 @@ export const getAllFood = () => {
 
 export const getObjectMap = (objList) => {
   return objList.reduce((acc, curr) => {
-    acc[curr.id] = curr;
-    return acc;
-  }, {});
+    acc[curr.id] = curr
+    return acc
+  }, {})
 }
 
-//////////////////////文件///////////////////////////
-//上传文件
+/// ///////////////////文件///////////////////////////
+// 上传文件
 /*
 Body:见文档
 */
@@ -405,29 +404,29 @@ export const upload = (param) => {
   })
 }
 
-//////////////////////餐厅///////////////////////////
-//获取餐厅信息
+/// ///////////////////餐厅///////////////////////////
+// 获取餐厅信息
 /*
 Body:见文档
 */
 export const getRestaurant = () => {
   return axios.request({
     url: `${apiPrefix}/api/v1/restaurant/get`,
-    method:'POST',
+    method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
     }
   })
 }
-//修改餐厅信息
+// 修改餐厅信息
 /*
 Body:见文档
 */
 export const updateRestaurant = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/restaurant/update`,
-    method:'POST',
-    data:param,
+    method: 'POST',
+    data: param,
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -438,7 +437,7 @@ export const updateRestaurant = (param) => {
 export const getNotificationList = () => {
   return axios.request({
     url: `${apiPrefix}/api/v1/notification/get`,
-    method:'POST',
+    method: 'POST',
     headers: {
       Authorization: localStorage.getItem('token')
     }
@@ -449,7 +448,7 @@ export const getNotificationList = () => {
 export const addNotification = (notification) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/notification/add',
-    method:'POST',
+    method: 'POST',
     data: notification,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -461,7 +460,7 @@ export const addNotification = (notification) => {
 export const deleteNotification = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/notification/delete',
-    method:'POST',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -473,7 +472,7 @@ export const deleteNotification = (param) => {
 export const updateNotification = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/notification/update',
-    method:'POST',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')
@@ -485,7 +484,7 @@ export const updateNotification = (param) => {
 export const confirmNotification = (param) => {
   return axios.request({
     url: 'http://www.muzi.fun:5678/api/v1/notification/confirm',
-    method:'POST',
+    method: 'POST',
     data: param,
     headers: {
       Authorization: localStorage.getItem('token')

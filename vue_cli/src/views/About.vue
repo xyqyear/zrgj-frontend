@@ -10,18 +10,18 @@
   </div>
 </template>
 <script>
-export default{
-  name:'About',
-  data(){
+export default {
+  name: 'About',
+  data() {
     return {}
   }
 }
 </script>
 <style lang="less" scoped>
-.el-header{
+.el-header {
   background-color: #333;
 }
-.el-main{
+.el-main {
   padding-top: 0;
 }
 .el-footer {

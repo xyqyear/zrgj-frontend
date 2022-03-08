@@ -2,7 +2,12 @@
   <el-row class="home" :gutter="20">
     <div class="operation">
       <div style="margin-right: 20px; display: flex">
-        <el-input placeholder="请输入内容" v-model="searchInput" @input="onSearchInput" clearable>
+        <el-input
+          placeholder="请输入内容"
+          v-model="searchInput"
+          @input="onSearchInput"
+          clearable
+        >
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
       </div>
@@ -189,149 +194,154 @@
   </el-row>
 </template>
 <script>
-import { getUserlist, chaAccount, addAccount, deAccount } from "../../../api/data.js";
-import pinyin from "pinyin";
+import {
+  getUserlist,
+  chaAccount,
+  addAccount,
+  deAccount
+} from '../../../api/data.js'
+import pinyin from 'pinyin'
 
 export default {
-  name: "home",
+  name: 'home',
   data() {
-    var checkName = (rule, value, callback) => {
+    const checkName = (rule, value, callback) => {
       if (!value) {
-        this.isok.username = false;
-        this.ischaok.username = false;
-        callback();
+        this.isok.username = false
+        this.ischaok.username = false
+        callback()
       } else {
         if (/^[\u4e00-\u9fa5]{0,}$/.test(value)) {
-          this.isok.username = true;
-          this.ischaok.username = true;
-          callback();
+          this.isok.username = true
+          this.ischaok.username = true
+          callback()
         } else {
-          this.isok.username = false;
-          this.ischaok.username = false;
-          callback(new Error("该姓名存在非法字符！"));
+          this.isok.username = false
+          this.ischaok.username = false
+          callback(new Error('该姓名存在非法字符！'))
         }
       }
-    };
-    var checkPhone = (rule, value, callback) => {
+    }
+    const checkPhone = (rule, value, callback) => {
       if (!value) {
-        this.isok.telephone = false;
-        this.ischaok.telephone = false;
-        callback();
+        this.isok.telephone = false
+        this.ischaok.telephone = false
+        callback()
       } else {
         if (
           /^(13[0-9]|14[5|7]|15[0|1|2|3|4|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/.test(
             value
           )
         ) {
-          this.isok.telephone = true;
-          this.ischaok.telephone = true;
-          callback();
+          this.isok.telephone = true
+          this.ischaok.telephone = true
+          callback()
         } else {
-          this.isok.telephone = false;
-          this.ischaok.telephone = false;
-          callback(new Error("电话号码格式不正确！"));
+          this.isok.telephone = false
+          this.ischaok.telephone = false
+          callback(new Error('电话号码格式不正确！'))
         }
       }
-    };
-    var checkPass = (rule, value, callback) => {
+    }
+    const checkPass = (rule, value, callback) => {
       if (!value) {
-        this.isok.password = false;
-        this.ischaok.password = true;
-        callback();
+        this.isok.password = false
+        this.ischaok.password = true
+        callback()
       } else {
         if (/^(\w){6,20}$/.test(value)) {
-          this.isok.password = true;
-          this.ischaok.password = true;
+          this.isok.password = true
+          this.ischaok.password = true
           if (
             (value === this.form.passwordSure) |
             (value === this.formChange.passwordSure)
           ) {
-            this.isok.password = true;
-            this.ischaok.password = true;
-            callback();
+            this.isok.password = true
+            this.ischaok.password = true
+            callback()
           } else {
-            this.isok.password = false;
-            this.ischaok.password = false;
-            callback(new Error("两次输入密码不一致！"));
+            this.isok.password = false
+            this.ischaok.password = false
+            callback(new Error('两次输入密码不一致！'))
           }
         } else {
-          this.isok.password = false;
-          this.ischaok.password = false;
-          callback(new Error("密码必须为6-20个字母、数字、下划线！"));
+          this.isok.password = false
+          this.ischaok.password = false
+          callback(new Error('密码必须为6-20个字母、数字、下划线！'))
         }
       }
-    };
-    var checkPassSure = (rule, value, callback) => {
+    }
+    const checkPassSure = (rule, value, callback) => {
       if (!value) {
-        this.isok.passwordSure = false;
-        this.ischaok.passwordSure = true;
-        callback();
+        this.isok.passwordSure = false
+        this.ischaok.passwordSure = true
+        callback()
       } else {
         if (
           (value === this.form.password) |
           (value === this.formChange.password)
         ) {
-          this.isok.passwordSure = true;
-          this.ischaok.passwordSure = true;
-          callback();
+          this.isok.passwordSure = true
+          this.ischaok.passwordSure = true
+          callback()
         } else {
-          this.isok.passwordSure = false;
-          this.ischaok.passwordSure = false;
-          callback(new Error("两次输入密码不一致！"));
+          this.isok.passwordSure = false
+          this.ischaok.passwordSure = false
+          callback(new Error('两次输入密码不一致！'))
         }
       }
-    };
+    }
     return {
       changeRules: {
         username: [
-          { required: true, message: "员工姓名不能为空！", trigger: "blur" },
-          { validator: checkName, trigger: "blur" },
+          { required: true, message: '员工姓名不能为空！', trigger: 'blur' },
+          { validator: checkName, trigger: 'blur' }
         ],
         telephone: [
           {
             required: true,
-            message: "员工电话号码不能为空！",
-            trigger: "blur",
+            message: '员工电话号码不能为空！',
+            trigger: 'blur'
           },
-          { validator: checkPhone, trigger: "blur" },
+          { validator: checkPhone, trigger: 'blur' }
         ],
-        password: [{ validator: checkPass, trigger: "blur" }],
-        passwordSure: [{ validator: checkPassSure, trigger: "blur" }],
+        password: [{ validator: checkPass, trigger: 'blur' }],
+        passwordSure: [{ validator: checkPassSure, trigger: 'blur' }]
       },
       addRules: {
         idCardNo: [
-          { required: true, message: "身份证号不能为空！", trigger: "blur" },
-          { validator: this.checkCard, trigger: "blur" },
+          { required: true, message: '身份证号不能为空！', trigger: 'blur' },
+          { validator: this.checkCard, trigger: 'blur' }
         ],
         username: [
-          { required: true, message: "员工姓名不能为空！", trigger: "blur" },
-          { validator: checkName, trigger: "blur" },
+          { required: true, message: '员工姓名不能为空！', trigger: 'blur' },
+          { validator: checkName, trigger: 'blur' }
         ],
         telephone: [
           {
             required: true,
-            message: "员工电话号码不能为空！",
-            trigger: "blur",
+            message: '员工电话号码不能为空！',
+            trigger: 'blur'
           },
-          { validator: checkPhone, trigger: "blur" },
+          { validator: checkPhone, trigger: 'blur' }
         ],
         password: [
-          { required: true, message: "密码不能为空！", trigger: "blur" },
-          { validator: checkPass, trigger: "blur" },
+          { required: true, message: '密码不能为空！', trigger: 'blur' },
+          { validator: checkPass, trigger: 'blur' }
         ],
         passwordSure: [
-          { required: true, message: "确认密码不能为空！", trigger: "blur" },
-          { validator: checkPassSure, trigger: "blur" },
-        ],
+          { required: true, message: '确认密码不能为空！', trigger: 'blur' },
+          { validator: checkPassSure, trigger: 'blur' }
+        ]
       },
       Wi: [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2],
-      ValideCode: [1, 0, "X", 9, 8, 7, 6, 5, 4, 3, 2],
-      input: "",
-      find: "22",
+      ValideCode: [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2],
+      input: '',
+      find: '22',
       tableData: [],
       fullTableData: [],
-      radio1: "1",
-      radio2: "",
+      radio1: '1',
+      radio2: '',
       dialogFormVisible: false,
       dialogChangeVisible: false,
       isok: {
@@ -339,234 +349,232 @@ export default {
         username: false,
         telephone: false,
         password: false,
-        passwordSure: false,
+        passwordSure: false
       },
       ischaok: {
         username: true,
         telephone: true,
         password: true,
-        passwordSure: true,
+        passwordSure: true
       },
       form: {
-        username: "",
-        password: "",
-        telephone: "",
-        idCardNo: "",
-        birth: "",
-        passwordSure: "",
+        username: '',
+        password: '',
+        telephone: '',
+        idCardNo: '',
+        birth: '',
+        passwordSure: ''
       },
       formChange: {
-        id: "",
-        username: "",
-        telephone: "",
-        password: "",
-        idCardNo: "",
-        birth: "",
-        passwordSure: "",
+        id: '',
+        username: '',
+        telephone: '',
+        password: '',
+        idCardNo: '',
+        birth: '',
+        passwordSure: ''
       },
       formOrigin: {
-        username: "",
-        telephone: "",
-        position: "",
+        username: '',
+        telephone: '',
+        position: ''
       },
-      formLabelWidth: "120px",
-    };
+      formLabelWidth: '120px'
+    }
   },
   mounted() {
-    console.log("???");
+    console.log('???')
     // axios.defaults.headers.common["Authorization"] =
     //         localStorage.getItem("token");
-    this.getUserData();
+    this.getUserData()
   },
   methods: {
     handleCancel() {
       this.form = {
-        username: "",
-        password: "",
-        telephone: "",
-        idCardNo: "",
-        birth: "",
-        passwordSure: "",
-      };
-      this.dialogFormVisible = false;
+        username: '',
+        password: '',
+        telephone: '',
+        idCardNo: '',
+        birth: '',
+        passwordSure: ''
+      }
+      this.dialogFormVisible = false
     },
     checkCard() {
       if (!this.form.idCardNo) {
-        this.isok.idCardNo = false;
-        return;
+        this.isok.idCardNo = false
+        return
       }
-      let CardId = this.form.idCardNo;
-      if (CardId.length == 15) {
+      const CardId = this.form.idCardNo
+      if (CardId.length === 15) {
         if (this.is15Card(CardId)) {
-          this.go(CardId.length);
+          this.go(CardId.length)
         } else {
-          this.isok.idCardNo = false;
+          this.isok.idCardNo = false
           return this.$message({
-            type: "error",
+            type: 'error',
             message:
-              "您的身份证号有误！请输入你真实的身份证号，确保你的利益得到保障！",
-          });
+              '您的身份证号有误！请输入你真实的身份证号，确保你的利益得到保障！'
+          })
         }
-      } else if (CardId.length == 18) {
-        let a_iden = CardId.split("");
-        console.log(a_iden);
-        if (this.is18Card(CardId) && this.is18CardEnd(a_iden)) {
-          // && this.is18CardEnd(a_iden)
-          this.go(CardId.length);
+      } else if (CardId.length === 18) {
+        const idSplit = CardId.split('')
+        console.log(idSplit)
+        if (this.is18Card(CardId) && this.is18CardEnd(idSplit)) {
+          // && this.is18CardEnd(idSplit)
+          this.go(CardId.length)
           if (this.is18Card(CardId)) {
-            this.isok.idCardNo = true;
-            return true;
+            this.isok.idCardNo = true
+            return true
           }
         } else {
-          this.isok.idCardNo = false;
+          this.isok.idCardNo = false
           return this.$message({
-            type: "error",
+            type: 'error',
             message:
-              "您的身份证号有误！请输入你真实的身份证号，确保你的利益得到保障！",
-          });
+              '您的身份证号有误！请输入你真实的身份证号，确保你的利益得到保障！'
+          })
         }
       } else {
-        this.isok.idCardNo = false;
+        this.isok.idCardNo = false
         return this.$message({
-          type: "error",
+          type: 'error',
           message:
-            "您的身份证号有误！请输入你真实的身份证号，确保你的利益得到保障！",
-        });
+            '您的身份证号有误！请输入你真实的身份证号，确保你的利益得到保障！'
+        })
       }
     },
-    is18CardEnd(a_idCard) {
-      let sum = 0;
-      if (a_idCard[17].toLowerCase() == "x") {
-        a_idCard[17] = 10;
+    is18CardEnd(idSplit) {
+      let sum = 0
+      if (idSplit[17].toLowerCase() === 'x') {
+        idSplit[17] = 10
       }
-      for (var i = 0; i < 17; i++) {
-        sum += this.Wi[i] * Number(a_idCard[i]);
+      for (let i = 0; i < 17; i++) {
+        sum += this.Wi[i] * Number(idSplit[i])
       }
-      let valCodePosition = sum % 11;
-      if (a_idCard[17] == this.ValideCode[valCodePosition]) {
-        return true;
+      const valCodePosition = sum % 11
+      if (idSplit[17] === this.ValideCode[valCodePosition]) {
+        return true
       } else {
-        return false;
+        return false
       }
     },
     is18Card(idCard18) {
-      let year = idCard18.substring(6, 10);
-      let month = idCard18.substring(10, 12);
-      let day = idCard18.substring(12, 14);
-      let temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+      const year = idCard18.substring(6, 10)
+      const month = idCard18.substring(10, 12)
+      const day = idCard18.substring(12, 14)
+      const tempDate = new Date(year, parseFloat(month) - 1, parseFloat(day))
       if (
-        temp_date.getFullYear() != parseFloat(year) ||
-        temp_date.getMonth() != parseFloat(month) - 1 ||
-        temp_date.getDate() != parseFloat(day)
+        tempDate.getFullYear() !== parseFloat(year) ||
+        tempDate.getMonth() !== parseFloat(month) - 1 ||
+        tempDate.getDate() !== parseFloat(day)
       ) {
-        return false;
+        return false
       } else {
-        return true;
+        return true
       }
     },
 
     is15Card(idCard15) {
-      let year = idCard15.substring(6, 8);
-      let month = idCard15.substring(8, 10);
-      let day = idCard15.substring(10, 12);
-      let temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+      const year = idCard15.substring(6, 8)
+      const month = idCard15.substring(8, 10)
+      const day = idCard15.substring(10, 12)
+      const tempDate = new Date(year, parseFloat(month) - 1, parseFloat(day))
       if (
-        temp_date.getYear() != parseFloat(year) ||
-        temp_date.getMonth() != parseFloat(month) - 1 ||
-        temp_date.getDate() != parseFloat(day)
+        tempDate.getYear() !== parseFloat(year) ||
+        tempDate.getMonth() !== parseFloat(month) - 1 ||
+        tempDate.getDate() !== parseFloat(day)
       ) {
-        return false;
+        return false
       } else {
-        return true;
+        return true
       }
     },
     go(val) {
-      let iden = this.form.idCardNo;
-      let sex = null;
-      let birth = null;
-      let myDate = new Date();
-      let month = myDate.getMonth() + 1;
-      let day = myDate.getDate();
-      let age = 0;
+      const iden = this.form.idCardNo
+      let sex = null
+      let birth = null
+      const myDate = new Date()
+      const month = myDate.getMonth() + 1
+      const day = myDate.getDate()
+      let age = 0
 
       if (val === 18) {
-        age = myDate.getFullYear() - iden.substring(6, 10) - 1;
-        sex = iden.substring(16, 17);
+        age = myDate.getFullYear() - iden.substring(6, 10) - 1
+        sex = iden.substring(16, 17)
         birth =
           iden.substring(6, 10) +
-          "-" +
+          '-' +
           iden.substring(10, 12) +
-          "-" +
-          iden.substring(12, 14);
+          '-' +
+          iden.substring(12, 14)
         if (
           iden.substring(10, 12) < month ||
-          (iden.substring(10, 12) == month && iden.substring(12, 14) <= day)
-        )
-          age++;
+          (iden.substring(10, 12) === month && iden.substring(12, 14) <= day)
+        ) { age++ }
       }
       if (val === 15) {
-        age = myDate.getFullYear() - iden.substring(6, 8) - 1901;
-        sex = iden.substring(13, 14);
+        age = myDate.getFullYear() - iden.substring(6, 8) - 1901
+        sex = iden.substring(13, 14)
         birth =
-          "19" +
+          '19' +
           iden.substring(6, 8) +
-          "-" +
+          '-' +
           iden.substring(8, 10) +
-          "-" +
-          iden.substring(10, 12);
+          '-' +
+          iden.substring(10, 12)
         if (
           iden.substring(8, 10) < month ||
-          (iden.substring(8, 10) == month && iden.substring(10, 12) <= day)
-        )
-          age++;
+          (iden.substring(8, 10) === month && iden.substring(10, 12) <= day)
+        ) { age++ }
       }
 
-      if (sex % 2 === 0) sex = "女";
-      else sex = "男";
-      this.form.sex = sex;
-      this.form.age = age;
-      this.form.birthday = birth;
-      console.log(this.form);
+      if (sex % 2 === 0) sex = '女'
+      else sex = '男'
+      this.form.sex = sex
+      this.form.age = age
+      this.form.birthday = birth
+      console.log(this.form)
 
-      this.form.birth = birth;
+      this.form.birth = birth
     },
     getUserData() {
       getUserlist()
         .then((res) => {
-          console.log(res);
+          console.log(res)
           for (let i = 0; i <= res.data.data.length; i++) {
-            console.log();
-            var item = {
+            console.log()
+            const item = {
               index: i + 1,
               id: res.data.data[i].id,
               username: res.data.data[i].username,
               position: res.data.data[i].position,
-              type: "",
+              type: '',
               telephone: res.data.data[i].telephone,
               idCardNo: res.data.data[i].idCard,
-              password: "",
-              passwordSure: "",
-              birth: "",
-            };
-            if (item.position == 1) {
-              item.type = "服务员";
+              password: '',
+              passwordSure: '',
+              birth: ''
+            }
+            if (item.position === 1) {
+              item.type = '服务员'
             } else {
-              item.type = "厨师";
+              item.type = '厨师'
             }
             item.birth =
               item.idCardNo.substring(6, 10) +
-              "-" +
+              '-' +
               item.idCardNo.substring(10, 12) +
-              "-" +
-              item.idCardNo.substring(12, 14);
-            this.tableData.push(item);
+              '-' +
+              item.idCardNo.substring(12, 14)
+            this.tableData.push(item)
           }
-          console.log(this.tableData);
-          this.fullTableData = this.tableData;
+          console.log(this.tableData)
+          this.fullTableData = this.tableData
         })
         .catch((error) => {
-          console.log(error.response.data.reason);
-        });
+          console.log(error.response.data.reason)
+        })
     },
     handleEditSure() {
       if (
@@ -574,144 +582,148 @@ export default {
         this.formChange.telephone === this.formOrigin.telephone &&
         this.radio2 === this.formOrigin.position
       ) {
-        this.$message.error("未对员工信息进行更改！");
+        this.$message.error('未对员工信息进行更改！')
       } else {
-        this.dialogChangeVisible = false;
-        var body = {
-          id: "",
-          username: "",
-          position: "",
-          avatarUrl: "",
-          telephone: "",
-          password: "",
-        };
-        body.id = this.formChange.id;
-        body.username = this.formChange.username;
-        body.position = this.radio2;
-        body.telephone = this.formChange.telephone;
-        body.password = this.formChange.password;
+        this.dialogChangeVisible = false
+        const body = {
+          id: '',
+          username: '',
+          position: '',
+          avatarUrl: '',
+          telephone: '',
+          password: ''
+        }
+        body.id = this.formChange.id
+        body.username = this.formChange.username
+        body.position = this.radio2
+        body.telephone = this.formChange.telephone
+        body.password = this.formChange.password
         chaAccount(body).then((res) => {
-          console.log(res);
+          console.log(res)
           this.$message({
-              type: "success",
-              message: "修改成功!",
-            });
-          this.tableData.length = 0;
-          this.getUserData();
-        });
+            type: 'success',
+            message: '修改成功!'
+          })
+          this.tableData.length = 0
+          this.getUserData()
+        })
       }
     },
     handleAdd() {
-      console.log(this.isok);
+      console.log(this.isok)
       if (Object.values(this.isok).reduce((acc, cur) => acc && cur, true)) {
-        this.dialogFormVisible = false;
-        var body = {
-          username: "",
-          password: "",
-          position: "",
-          avatarUrl: "",
-          telephone: "",
-          idCard: "",
-        };
-        body.username = this.form.username;
-        body.password = this.form.password;
-        body.position = this.radio1;
-        body.telephone = this.form.telephone;
-        body.idCard = this.form.idCardNo;
+        this.dialogFormVisible = false
+        const body = {
+          username: '',
+          password: '',
+          position: '',
+          avatarUrl: '',
+          telephone: '',
+          idCard: ''
+        }
+        body.username = this.form.username
+        body.password = this.form.password
+        body.position = this.radio1
+        body.telephone = this.form.telephone
+        body.idCard = this.form.idCardNo
         addAccount(body).then((res) => {
-          console.log(res);
-          if (res.status == 200) {
+          console.log(res)
+          if (res.status === 200) {
             this.$message({
-              type: "success",
-              message: "添加成功!",
-            });
-            console.log("在这里");
-            this.tableData.length = 0;
-            this.getUserData();
+              type: 'success',
+              message: '添加成功!'
+            })
+            console.log('在这里')
+            this.tableData.length = 0
+            this.getUserData()
           }
-        });
+        })
       }
     },
     handleEdit(index, row) {
-      this.dialogChangeVisible = true;
-      console.log(row);
-      this.formOrigin.username = row.username;
-      this.formOrigin.position = "" + row.position;
-      this.formOrigin.telephone = row.telephone;
-      this.radio2 = "" + row.position;
-      this.formChange.username = row.username;
-      this.formChange.telephone = row.telephone;
-      this.formChange.id = row.id;
+      this.dialogChangeVisible = true
+      console.log(row)
+      this.formOrigin.username = row.username
+      this.formOrigin.position = '' + row.position
+      this.formOrigin.telephone = row.telephone
+      this.radio2 = '' + row.position
+      this.formChange.username = row.username
+      this.formChange.telephone = row.telephone
+      this.formChange.id = row.id
       this.tableData.forEach((element) => {
         if (element.id === row.id) {
-          this.formChange.birth = element.birth;
-          this.formChange.idCardNo = element.idCardNo;
-          this.formChange.password = element.password;
-          this.formChange.passwordSure = element.passwordSure;
+          this.formChange.birth = element.birth
+          this.formChange.idCardNo = element.idCardNo
+          this.formChange.password = element.password
+          this.formChange.passwordSure = element.passwordSure
         }
-      });
+      })
     },
     handleDelete(index, row) {
-      this.$confirm("此操作将删除该员工, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('此操作将删除该员工, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          var body = {
-            id: "",
-          };
-          body.id = row.id;
-          console.log(body.id);
+          const body = {
+            id: ''
+          }
+          body.id = row.id
+          console.log(body.id)
           deAccount(body).then((res) => {
-            console.log(res);
+            console.log(res)
             if (res.status === 200) {
               this.$message({
-                type: "success",
-                message: "删除成功!",
-              });
-              this.tableData.length = 0;
-              this.getUserData();
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.tableData.length = 0
+              this.getUserData()
             }
-          });
+          })
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     onSearchInput(value) {
-      if (value === "") {
-        this.tableData = this.fullTableData;
+      if (value === '') {
+        this.tableData = this.fullTableData
       } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
         this.tableData = this.fullTableData.filter((item) => {
-          return item.username.includes(value);
-        });
+          return item.username.includes(value)
+        })
       } else if (/^[a-zA-Z]+$/.test(value)) {
-        this.tableData =
-          this.fullTableData.filter((item) => {
+        this.tableData = this.fullTableData
+          .filter((item) => {
             return pinyin(item.username, {
-              style: pinyin.STYLE_FIRST_LETTER,
-            }).reduce((acc, cur) => acc + cur[0], '').startsWith(value);
-          }).concat(
-          this.fullTableData.filter((item) => {
-            const py = pinyin(item.username, {
-              style: pinyin.STYLE_FIRST_LETTER,
-            }).reduce((acc, cur) => acc + cur[0], '');
-            return !py.startsWith(value) && py.includes(value);
-          }));
+              style: pinyin.STYLE_FIRST_LETTER
+            })
+              .reduce((acc, cur) => acc + cur[0], '')
+              .startsWith(value)
+          })
+          .concat(
+            this.fullTableData.filter((item) => {
+              const py = pinyin(item.username, {
+                style: pinyin.STYLE_FIRST_LETTER
+              }).reduce((acc, cur) => acc + cur[0], '')
+              return !py.startsWith(value) && py.includes(value)
+            })
+          )
       } else if (/^\d+$/.test(value)) {
         this.tableData = this.fullTableData.filter((item) => {
-          return item.id === Number(value);
-        });
+          return item.id === Number(value)
+        })
       } else {
-        this.tableData = [];
+        this.tableData = []
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style lang="less" scoped>
 .operation {

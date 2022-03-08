@@ -11,17 +11,16 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
-
 Vue.config.productionTip = false
 // Vue.use(CollapseItem);
 
 Vue.prototype.$http = http
 
-router.beforeEach((to,from,next)=>{
-  const token = localStorage.getItem("token")
-  if(!token && to.name !== 'login'){
-    next({name:'login'})
-  }else{
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  if (!token && to.name !== 'login') {
+    next({ name: 'login' })
+  } else {
     next()
   }
 })

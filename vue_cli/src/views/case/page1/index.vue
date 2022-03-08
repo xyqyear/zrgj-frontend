@@ -16,15 +16,11 @@
           <el-button plain style="margin-left: 20px">添加订单</el-button>
         </div>-->
     <el-col :span="24">
+      <el-card v-if="orderList.length === 0"> 今日暂无订单 </el-card>
       <el-card
-        v-if="orderList.length === 0"
-      >
-      今日暂无订单
-      </el-card>
-      <el-card
-        v-for="(curOrder,index) in orderList"
+        v-for="(curOrder, index) in orderList"
         :key="index"
-        style="margin-top: 20px;"
+        style="margin-top: 20px"
       >
         <div class="order-header">
           <div class="left">
@@ -35,32 +31,71 @@
             <div class="time">{{ getTimeDistance(curOrder.createTime) }}</div>
           </div>
           <div class="down">
-            <el-tag :type="curOrder.state===0?'success':'info'">{{ curOrder.state === 0 ? '已支付' : '未支付' }}</el-tag>
+            <el-tag :type="curOrder.state === 0 ? 'success' : 'info'">{{
+              curOrder.state === 0 ? "已支付" : "未支付"
+            }}</el-tag>
             <!-- <el-tag type='info'>{{item.state=='1'?'已支付':'未支付'}}</el-tag> -->
           </div>
         </div>
         <div class="order-content">
           <el-table :data="curOrder.orderItems" height="150">
             <el-table-column type="index" width="50"></el-table-column>
-            <el-table-column prop="name" label="菜名" width="200"></el-table-column>
-            <el-table-column prop="amount" label="数量" width="100"></el-table-column>
-            <el-table-column prop="price" label="金额" width="100"></el-table-column>
+            <el-table-column
+              prop="name"
+              label="菜名"
+              width="200"
+            ></el-table-column>
+            <el-table-column
+              prop="amount"
+              label="数量"
+              width="100"
+            ></el-table-column>
+            <el-table-column
+              prop="price"
+              label="金额"
+              width="100"
+            ></el-table-column>
             <el-table-column prop="note" label="备注"></el-table-column>
             <el-table-column prop="state" label="订单状态" width="100">
               <template slot-scope="scope">
-                <el-tag :type="({'-1':'info','0':'success','1':'warning','2':'danger'})[scope.row.state]" effect="dark">
-                  {{ ({'-1': '已取消', '0': '已完成', '1': '排队中', '2': '烹饪中'})[scope.row.state] }}
+                <el-tag
+                  :type="
+                    {
+                      '-1': 'info',
+                      '0': 'success',
+                      '1': 'warning',
+                      '2': 'danger',
+                    }[scope.row.state]
+                  "
+                  effect="dark"
+                >
+                  {{
+                    {
+                      "-1": "已取消",
+                      "0": "已完成",
+                      "1": "排队中",
+                      "2": "烹饪中",
+                    }[scope.row.state]
+                  }}
                 </el-tag>
               </template>
             </el-table-column>
           </el-table>
         </div>
         <div class="order-bottom">
-          <el-descriptions :column='4'>
-            <el-descriptions-item label="桌号">{{ curOrder.tableId }}</el-descriptions-item>
-            <el-descriptions-item label="订单总金额">{{ curOrder.sum }}</el-descriptions-item>
-            <el-descriptions-item label="实际收款">{{ curOrder.actualSum }}</el-descriptions-item>
-            <el-descriptions-item label="下单账号"> {{ curOrder.waiterId }}</el-descriptions-item>
+          <el-descriptions :column="4">
+            <el-descriptions-item label="桌号">{{
+              curOrder.tableId
+            }}</el-descriptions-item>
+            <el-descriptions-item label="订单总金额">{{
+              curOrder.sum
+            }}</el-descriptions-item>
+            <el-descriptions-item label="实际收款">{{
+              curOrder.actualSum
+            }}</el-descriptions-item>
+            <el-descriptions-item label="下单账号">
+              {{ curOrder.waiterId }}</el-descriptions-item
+            >
           </el-descriptions>
         </div>
       </el-card>
@@ -68,70 +103,75 @@
   </el-row>
 </template>
 <script>
-import {getAllFood, getObjectMap, getGivenTimeOrders} from "../../../../api/data";
+import {
+  getAllFood,
+  getObjectMap,
+  getGivenTimeOrders
+} from '../../../../api/data'
 
 export default {
-  name: "home",
+  name: 'home',
   data() {
     return {
       orderList: [],
       dishMap: {},
       curTime: 0
-    };
+    }
   },
   mounted() {
-    getAllFood()
-      .then(res => {
-        let dishList = res.data.data;
-        this.dishMap = getObjectMap(dishList);
-        this.refreshOrderData()
-      })
+    getAllFood().then((res) => {
+      const dishList = res.data.data
+      this.dishMap = getObjectMap(dishList)
+      this.refreshOrderData()
+    })
   },
   methods: {
     refreshOrderData() {
-      this.curTime = Math.round(new Date().getTime() / 1000);
-      let fromTime = Math.round(new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000);
+      this.curTime = Math.round(new Date().getTime() / 1000)
+      const fromTime = Math.round(
+        new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000
+      )
 
       getGivenTimeOrders({
         from: fromTime,
         to: this.curTime
-      })
-        .then(res => {
-          this.orderList = res.data.data;
-          // orderItems 添加上菜品信息
-          for (let i = 0; i < this.orderList.length; i++) {
-            let sum = 0;
-            let actualSum = 0;
-            for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
-              let dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
-              this.orderList[i].orderItems[j].name = dish.name
-              this.orderList[i].orderItems[j].price = dish.price
-              this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
-              this.orderList[i].orderItems[j].category = dish.category
-              const price = this.orderList[i].orderItems[j].amount * this.orderList[i].orderItems[j].price
-              if (this.orderList[i].orderItems[j].state === 0) {
-                actualSum += price;
-              }
-              if (this.orderList[i].orderItems[j].state !== -1) {
-                sum += price;
-              }
+      }).then((res) => {
+        this.orderList = res.data.data
+        // orderItems 添加上菜品信息
+        for (let i = 0; i < this.orderList.length; i++) {
+          let sum = 0
+          let actualSum = 0
+          for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
+            const dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
+            this.orderList[i].orderItems[j].name = dish.name
+            this.orderList[i].orderItems[j].price = dish.price
+            this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
+            this.orderList[i].orderItems[j].category = dish.category
+            const price =
+              this.orderList[i].orderItems[j].amount *
+              this.orderList[i].orderItems[j].price
+            if (this.orderList[i].orderItems[j].state === 0) {
+              actualSum += price
             }
-            this.orderList[i].actualSum = actualSum;
-            this.orderList[i].sum = sum;
+            if (this.orderList[i].orderItems[j].state !== -1) {
+              sum += price
+            }
           }
-        });
+          this.orderList[i].actualSum = actualSum
+          this.orderList[i].sum = sum
+        }
+      })
     },
     getTimeDistance(createTime) {
-      let distance = this.curTime - createTime;
+      const distance = this.curTime - createTime
       if (distance > 60 * 60) {
         return Math.round(distance / 3600) + '小时前'
       } else {
         return Math.round(distance / 60) + '分钟前'
       }
     }
-
-  },
-};
+  }
+}
 </script>
 <style lang="less" scoped>
 .tableInfo {
@@ -178,7 +218,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  border-bottom: 2px solid #C1C1C1;
+  border-bottom: 2px solid #c1c1c1;
 
   .left {
     width: 200px;
@@ -197,15 +237,13 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-
-
 }
 
 .order-bottom {
   margin-top: 10px;
   width: 100%;
   height: 60px;
-  background: #FFFFFF;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -217,8 +255,6 @@ export default {
     display: flex;
     justify-content: right;
     align-items: center;
-
-
   }
 
   .down {
@@ -226,8 +262,6 @@ export default {
     display: flex;
     justify-content: right;
     align-items: center;
-
-
   }
 }
 </style>

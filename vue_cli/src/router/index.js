@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
-///到时候可能会有三个起始路径
+/// 到时候可能会有三个起始路径
 const routes = [
   {
     path: '/',
@@ -11,14 +11,14 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Main.vue'),
-    redirect:'/home',
+    redirect: '/home',
     children: [
       {
         path: '/notification',
         name: 'notification',
         component: () => import('../views/notification')
       },
-      ///////////////管理员端页面////////////////////////
+      /// ////////////管理员端页面////////////////////////
       {
         path: '/manageNotification',
         name: 'manageNotification',
@@ -78,47 +78,47 @@ const routes = [
         component: () => import('../views/perCen')
       },
       {
-        path: '/user',//这个可能是访问路径，和本地文件夹下的相对路径无关，规定这样打可以访问到下面import里指定路径的页面
+        path: '/user', // 这个可能是访问路径，和本地文件夹下的相对路径无关，规定这样打可以访问到下面import里指定路径的页面
         name: 'user',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ '../views/user')
       },
-      ///////////////服务员端页面////////////////////////
+      /// ////////////服务员端页面////////////////////////
       {
-        path:'/serFood',
-        name:'serFood',
-        component:()=>import('../views/serFood')
+        path: '/serFood',
+        name: 'serFood',
+        component: () => import('../views/serFood')
       },
       {
-        path:'/serMain',
-        name:'serMain',
-        component:()=>import('../views/serMain')
+        path: '/serMain',
+        name: 'serMain',
+        component: () => import('../views/serMain')
       },
       {
-        path:'/serOrder',
-        name:'serOrder',
-        component:()=>import('../views/serOrder')
+        path: '/serOrder',
+        name: 'serOrder',
+        component: () => import('../views/serOrder')
       },
       {
-        path:'/serShopping',
-        name:'serShopping',
-        component:()=>import('../views/serShopping')
+        path: '/serShopping',
+        name: 'serShopping',
+        component: () => import('../views/serShopping')
       },
-      ///////////////厨师端页面////////////////////////
+      /// ////////////厨师端页面////////////////////////
       {
-        path:'/chef',
-        name:'chef',
-        component:()=>import('../views/chef')
+        path: '/chef',
+        name: 'chef',
+        component: () => import('../views/chef')
       }
-    ],
+    ]
 
   },
   {
-    path:'/login',
-    name:'login',
-    component:()=>import('../views/login/login.vue')
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/login/login.vue')
   }
 
 ]
@@ -131,10 +131,10 @@ const router = new VueRouter({
 
 router.beforeEach((to, _, next) => {
   if (to.name !== 'login' && !localStorage.getItem('token')) {
-    next({ name: 'login' });
+    next({ name: 'login' })
   } else {
-    next();
+    next()
   }
-});
+})
 
 export default router
