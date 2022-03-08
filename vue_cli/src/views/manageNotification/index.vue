@@ -153,7 +153,7 @@ export default {
     return {
       text: "",
       textarea: "",
-      sticked: false,
+      sticked: true,
       dialogVisible1: false,
       dialogVisible2: false,
       changeText: "",
@@ -176,10 +176,10 @@ export default {
         });
     },
     handleAdd() {
-      var body = {
-        title: this.text,
-        content: this.textarea,
-        sticked: this.sticked,
+      let body = {
+        "title": this.text,
+        "content": this.textarea,
+        "sticked": this.sticked,
       };
       addNotification(body)
         .then((res) => {
@@ -188,6 +188,9 @@ export default {
         .catch((error) => {
           console.log(error.response.data.reason);
         });
+      this.text = "";
+      this.textarea = "";
+      this.sticked = true;
     },
     handleDelete(notification, index) {
       this.$confirm("此操作将撤销该公告, 是否继续?", "提示", {
@@ -242,6 +245,7 @@ export default {
         .catch((error) => {
           console.log(error.response.data.reason);
         });
+      this.dialogVisible2 = false;
     },
     changeStickSituation(notification, index) {
       const temp = !notification.sticked;
