@@ -73,6 +73,7 @@ export default {
       endTime: 0,
       dishMap: {},
       /// ////////表格1/////////////
+      lineData: [],
       xData1: [],
       xNum: 7, // 横坐标数量
       /// ////////表格2/////////////
@@ -115,12 +116,14 @@ export default {
       this.foodName.length = 0
       this.allFoodData.length = 0
       foodData.forEach((item) => {
-        this.foodName.push(item.name)
-        const element = {
-          id: item.id,
-          amount: 0
+        if (item.deleted === false) {
+          this.foodName.push(item.name)
+          const element = {
+            id: item.id,
+            amount: 0
+          }
+          this.allFoodData.push(element) // 成功！
         }
-        this.allFoodData.push(element) // 成功！
       })
 
       this.chooseDays(this.radio1) // 首先setbody数据
@@ -174,6 +177,7 @@ export default {
         ).getTime() / 1000
       )
     },
+    // 设置折线图x坐标
     getxNum(startTime, endTime) {
       const timestamp = this.getNowTimeNum() * 1000 // 计算当前时间戳 (毫秒级)
       const date3 =
@@ -185,7 +189,6 @@ export default {
       days = days + 1
       this.interval = parseInt(days / 20)
       this.xNum = days
-      console.log('this.interval', this.interval)
       // if(days>30&&days<=60){
       //   this.interval = 2
       // }else{
@@ -198,11 +201,10 @@ export default {
       //   }else if(days>20)
       //     this.xNum = 20
       // 日期选择设置body
-      const fromTime = this.getTimeNum(days)
+      const fromTime = this.getTimeNum(days - 1)
       const toTime = endTime / 1000
       this.body.from = fromTime
       this.body.to = toTime
-      console.log('this.body', this.body)
       this.setLineChart()
       this.setColumnChart()
     },
@@ -215,18 +217,8 @@ export default {
         const date3 = parseFloat(timestamp) - parseFloat(this.value1[1])
         days = Math.floor(date3 / (24 * 3600 * 1000))
       }
-      // 设置横坐标xData
+      // 设置横坐标xData正确！
       this.xData1.length = 0
-      // 时间戳相减
-      // console.log('this.value1[0]',this.value1[0])
-      // console.log('this.value1[1]',this.value1[1])
-      // let subTimestemp = 0
-      // if(this.value1[1]===0){
-      //   subTimestemp = 0
-      // }else{
-      //   subTimestemp = parseFloat(this.getNowTimeNum())*1000-parseFloat(this.value1[1])
-      // }
-      // console.log('subTimestemp',subTimestemp)
       for (let i = 0; i < this.xNum; i++) {
         const oldTime = new Date(
           // Date.now() - i * this.interval * 24 * 3600 * 1000
@@ -246,29 +238,34 @@ export default {
           (date.month >= 10 ? date.month : '0' + date.month) +
           '-' +
           (date.day >= 10 ? date.day : '0' + date.day)
-        // console.log('好奇怪')
-        // console.log(systemDate)
         this.xData1.push(systemDate)
       }
       this.xData1.reverse()
-      // 设置纵坐标
+
       const series = []
       getGivenTimeOrders(this.body).then((res) => {
         const dataArray = res.data.data
-        console.log('dataArray', dataArray)
         let totalPrice = 0
         const seriesArray = []
         const keyArray = []
         // 设置纵坐标，通过横坐标的个数和interval
+        // 设置纵坐标
+        // 如果时间是今日之内，就置为当前时间点
+        if (this.getTimeNum(0) === this.endTime) {
+          this.endTime = this.getNowTimeNum()
+        } else {
+          this.endTime = this.getTimeNum(-1) // 上一天的0点
+        }
         let tempTime = 0
-        let fromTime = this.getNowTimeNum()
+        let fromTime = this.endTime
         let toTime = 0
         keyArray.push('营业额')
         for (let i = 0; i < this.xNum; i++) {
           tempTime = fromTime
           toTime = tempTime
           // fromTime = this.getTimeNum(i * this.interval);
-          fromTime = this.getTimeNum(i) // 倘若没有时间间隔，就一天一天来
+          fromTime = this.getTimeNum(i + days) // 倘若没有时间间隔，就一天一天来
+          // fromTime = this.endTime - 24 * 3600 * i // 倘若没有时间间隔，就一天一天来
           for (let j = 0; j < dataArray.length; j++) {
             if (
               dataArray[j].createTime >= fromTime &&
@@ -284,11 +281,10 @@ export default {
             }
           }
           // console.log('waliwa')
-          // console.log('fromTime',fromTime)
-          // console.log('toTime',toTime)
-          // console.log('totalPrice',totalPrice)
+          // console.log('fromTime', fromTime)
+          // console.log('toTime', toTime)
+          // console.log('totalPrice', totalPrice)
           seriesArray.push(totalPrice)
-          // console.log('seriesArray',seriesArray)
           totalPrice = 0
         }
         seriesArray.reverse()
@@ -297,7 +293,6 @@ export default {
           data: seriesArray, // 这就是一个7长度的数组，里面存数字
           type: 'line'
         })
-        // console.log('this.interval',this.interval)
         const option = {
           xAxis: {
             // 横坐标？
@@ -327,6 +322,8 @@ export default {
       // var toTime = this.getTimeNum(0);
       // this.body.from = fromTime;
       // this.body.to = toTime;
+
+      // 重置为0
       getGivenTimeOrders(this.body).then((res) => {
         res.data.data.forEach((item) => {
           item.orderItems.forEach((element) => {
@@ -338,9 +335,7 @@ export default {
             // if(element.dishId)
           })
         })
-        // 遍历
-        console.log('res.data.data', res.data.data)
-        console.log('this.allFoodData', this.allFoodData)
+        // 设置amount
         res.data.data.forEach((item) => {
           item.orderItems.forEach((element) => {
             this.allFoodData.forEach((i) => {
@@ -351,12 +346,10 @@ export default {
             // if(element.dishId)
           })
         })
-        console.log('this.allFoodData', this.allFoodData)
-        this.xData2.length = 0
+        this.xData2 = []
         this.allFoodData.forEach((item) => {
           this.xData2.push(item.amount)
         })
-        console.log('this.xData2', this.xData2)
 
         /// 创建柱状图！！！
         const foodNum = {
@@ -410,7 +403,6 @@ export default {
     },
     /// 选项点击事件,调用设置表格方法
     chooseDays(value) {
-      // console.log('value',value)
       // 如果是快捷选项
       switch (value) {
         case '最近一周':
@@ -435,8 +427,6 @@ export default {
       const toTime = this.getNowTimeNum()
       this.body.from = fromTime
       this.body.to = toTime
-      console.log(this.value1)
-      console.log('this.body', this.body)
 
       this.setLineChart()
       this.setColumnChart()
