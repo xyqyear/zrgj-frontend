@@ -249,6 +249,24 @@ export const getUncompletedOrderItems = () => {
     }
   })
 }
+//添加新的订单项
+// Body:
+// {
+//   "orderId": 92,
+//   "dishId": 2,
+//   "amount": 1,
+//   "note": "可恶妈的"
+// }
+export const addNewOrderItem = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/order_item/add`,
+    method: 'POST',
+    data:param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
 //更新订单项
 /*
 Body:
