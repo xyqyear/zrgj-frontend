@@ -147,6 +147,63 @@
               </el-card>
               <el-button type="primary" @click="addSet()">增加属性</el-button>
             </el-form-item>
+            <el-form-item>
+              <div style="justify-content: left">个性化设置</div>
+              <el-card v-for="item in perSet" :key="item.id">
+                <el-row justify="end">
+                  <el-col :span="5">
+                    <el-input v-model="item.key" placeholder="属性名">
+                    </el-input>
+                  </el-col>
+                  <el-col :span="19">
+                    <el-row>
+                      <el-input
+                        v-model="item.value1"
+                        placeholder="属性值1"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value2"
+                        placeholder="属性值2"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value3"
+                        placeholder="属性值3"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                    <el-row>
+                      <el-input
+                        v-model="item.value4"
+                        placeholder="属性值4"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value5"
+                        placeholder="属性值5"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                      <el-input
+                        v-model="item.value6"
+                        placeholder="属性值6"
+                        style="width: 30%"
+                      >
+                      </el-input>
+                    </el-row>
+                  </el-col>
+                  <el-col>
+                    <i class="el-icon-delete" @click="delSet()"></i>
+                  </el-col>
+                </el-row>
+              </el-card>
+              <el-button type="primary" @click="addSet()">增加属性</el-button>
+            </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="handleAdd()">确定添加</el-button>
