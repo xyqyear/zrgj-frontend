@@ -12,20 +12,9 @@
           >上架菜品</el-button
         >
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
-          <el-form :model="form">
-            <el-form-item label="菜品名称">
-              <el-input
-                v-model="form.name"
-                autocomplete="off"
-                @blur="blur"
-              ></el-input>
-              <el-alert
-                v-show="alertVisible"
-                title="菜名不能为空！"
-                type="error"
-                show-icon
-                :closable="false"
-              ></el-alert>
+          <el-form :model="form" :rules="addRules">
+            <el-form-item label="菜品名称" prop="name">
+              <el-input v-model="form.name" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="价格">
               <el-input v-model="form.price" autocomplete="off"></el-input>
@@ -287,7 +276,25 @@ import { deleteFood } from "../../../api/data.js";
 export default {
   name: "home",
   data() {
+    var checkNum = (rule, value, callback) => {
+      if(!/^[\u4e00-\u9fa5]/.test(value) &&!/^[a-zA-Z]/.test(value)){
+        callback(new Error('输入内容不满足格式，必须包含汉字、英文字母中至少一种！'))
+      } else {
+        this.tableData.forEach(element => {
+          if(element.name === value){
+            callback(new Error('与已有菜名重复，请更改！'))
+          }
+        })
+        callback();
+      }
+    };
     return {
+      addRules: {
+        name: [
+          { required: true, message: "菜品名不能为空！", trigger: "blur" },
+          { validator: checkNum, trigger: "blur" },
+        ],
+      },
       perChange: [],
       perSet: [],
       selectVal: this.value || "",
@@ -295,7 +302,9 @@ export default {
       find: "",
       dialogFormVisible: false,
       dialogChangeVisible: false,
-      alertVisible: false,
+      alertBlankVisible: false,
+      alertAgainVisible: false,
+      alertContentVisible: false,
       form: {
         name: "",
         price: "",
@@ -365,14 +374,6 @@ export default {
     this.getFoodData();
   },
   methods: {
-    blur() {
-      if (this.form.name === "") {
-        this.alertVisible = true;
-        console.log("触发了");
-      } else {
-        this.alertVisible = false;
-      }
-    },
     delChange() {
       this.perChange.splice(this.perChange.length - 1, 1);
     },

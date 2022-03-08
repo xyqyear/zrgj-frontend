@@ -7,8 +7,8 @@
         :name="category"
         :key="index"
       >
-        <div style="flex-wrap:wrap; justify-content:flex-start;">
-          <el-row :gutter="10" >
+        <div>
+          <el-row :gutter="10">
             <el-col
               :span="4"
               v-for="item in dishList"
@@ -16,7 +16,6 @@
               style="
                  {
                   margin: 0;
-                  flex:auto;
                 }
               "
             >
@@ -26,11 +25,9 @@
                   item.deleted === false
                 "
                 :body-style="{ padding: '0px' }"
-                style="width:100%; padding: 0px; margin: 20px; "
+                style="width: 200px; padding: 0px; margin: 20px"
               >
-                <div
-                  style="position: relative; text-align: center; "
-                >
+                <div style="position: relative; text-align: center">
                   <img
                     :src="item.imageUrl"
                     class="image"
@@ -91,7 +88,7 @@
                   <el-col :span="10" style="font-weight: bold; color: #f95a68">
                     {{ item.price }}元/份
                   </el-col>
-                  <el-col :span="10">
+                  <el-col :span="14">
                     <el-button type="warning" plain @click="chooseMenu(item)"
                       >选规格</el-button
                     >
@@ -116,103 +113,116 @@
       :title="foodName"
       :visible.sync="dialogFormVisible"
       center
-      width="30%"
+      width="40%"
     >
       <el-form class="specificationMenu">
         <div class="choices" v-for="(value, inedx) in dishFlavour" :key="inedx">
-          <div style="font-size: 20px; color: #8CA2AA;font-weight:400">{{ value.key }}</div>
+          <div style="font-size: 20px; color: #8ca2aa; font-weight: 400">
+            {{ value.key }}
+          </div>
           <div class="radioGroup">
             <el-radio-group
               v-for="(item, i) in value.value"
               :key="i"
               v-model="radio1"
               fill="#FD3E3E"
-              @change="addNote(value.key,item)"
+              @change="addNote(value.key, item)"
             >
               <el-radio-button :label="item"></el-radio-button>
             </el-radio-group>
           </div>
         </div>
-        <div style="font-size: 20px; color: #8CA2AA;font-weight:400">备注</div>
+        <div style="font-size: 20px; color: #8ca2aa; font-weight: 400">
+          备注
+        </div>
         <el-input
           type="textarea"
           :rows="2"
           placeholder="请输入内容"
           v-model="textarea"
-          style="margin-top:10px"
+          style="margin-top: 10px"
           fill="#FD3E3E"
         >
         </el-input>
-        <div class="alreadyChoose">已选规格：{{note}} {{textarea}}</div>
-        
+        <div class="alreadyChoose">已选规格：{{ note }} {{ textarea }}</div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <div class="foodMoney">{{foodMoney}}元/份</div>
+        <div class="foodMoney">{{ foodMoney }}元/份</div>
+        <div>
+          <el-popover
+            placement="top"
+            v-model="selectingTableId"
+            width="290"
+            class="selectingTableBox"
+            trigger="click"
+          >
+            <div
+              v-for="(table, index) in occupied"
+              :key="index"
+              class="tableItem"
+            >
+              <el-button
+                :type="table ? 'primary' : ''"
+                :disabled="table"
+                style="width: 60px"
+                @click="selectTable(index)"
+              >
+                {{ index + 1 }}
+              </el-button>
+            </div>
+            <el-button slot="reference" size="mini">
+              {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
+            </el-button>
+          </el-popover>
+        </div>
         <div class="right">
           <!-- 这里的条件有所改变 -->
-        <div v-if="!addable">
-        <el-button type="primary" @click="confirmMenu" >加入购物车</el-button>
-        </div>
+          <div v-if="!addable">
+            <el-button type="primary" @click="confirmMenu"
+              >加入购物车</el-button
+            >
+          </div>
 
-        <div v-else>
-          <el-input-number
-                      v-model="amount"
-                      @change="handleChange($event, 0)"
-                      size="mini"
-                      :min="1"
-                      :max="20"
-                      style="width: 100px"
-                    ></el-input-number>
-        <el-button type="primary" @click="commitOrderItem" style="margin-left:10px">确认</el-button>
-        </div>
+          <div v-else>
+            <el-input-number
+              v-model="amount"
+              @change="handleChange($event, 0)"
+              size="mini"
+              :min="1"
+              :max="20"
+              style="width: 100px"
+            ></el-input-number>
+            <el-button
+              type="primary"
+              @click="commitOrderItem"
+              style="margin-left: 10px"
+              >确认</el-button
+            >
+          </div>
 
-        <el-button @click="dialogFormVisible = false" style="margin-left:10px">取 消</el-button>
+          <el-button
+            @click="dialogFormVisible = false"
+            style="margin-left: 10px"
+            >取 消</el-button
+          >
         </div>
         <!-- <el-button type="primary" @click="dialogFormVisible = false"
           >确 定</el-button
         > -->
-        
       </div>
     </el-dialog>
 
     <!-- ----------------------------Dialog表单--------------------------------------- -->
-    <el-popover
-      placement="top"
-      v-model="selectingTableId"
-      width="290"
-      class="selectingTableBox"
-      trigger="click">
-      <div v-for="(table, index) in occupied" :key="index" class="tableItem">
-        <el-button :type="table?'primary':''" :disabled="table" style="width: 60px;"
-                   @click="selectTable(index)">
-      trigger="click"
-    ></el-button>
-      <div v-for="(table, index) in occupied" :key="index" class="tableItem">
-        <el-button
-          :type="table ? 'primary' : ''"
-          :disabled="table"
-          style="width: 60px"
-          @click="selectTable(index)"
-        >
-          {{ index + 1 }}
-        </el-button>
-      </div>
+    <el-badge :value="foodNum" class="item" style="position: absolute; right: 10px; top: 5px">
       <el-button
-        slot="reference"
-        style="position: absolute; right: 100px; top: 5px"
+        @click="createNewOrder"
+        type="primary"
         size="mini"
-      >
-        {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
+        style="position: absolute; right: 10px; top: 5px"
+        icon="el-icon-shopping-cart-2"
+        >购物车
       </el-button>
-    </el-popover>
-
-    <el-button
-      @click="createNewOrder"
-      type="primary"
-      size="mini"
-      style="position: absolute; right: 10px; top: 5px"
-      >创建订单
-    </el-button>
+    </el-badge>
     <el-drawer
       title="订单总览"
       :visible.sync="drawer"
@@ -283,6 +293,7 @@ export default {
   name: "perCen",
   data() {
     return {
+      foodNum:0,
       activeName: "全部菜品",
       accountId: localStorage.getItem("accountId"),
       num: 1,
@@ -299,22 +310,22 @@ export default {
       drawer: false,
       selectingTableId: false,
       centerDialogVisible: false,
-      note:'',
+      note: "",
       /////////////////////////点餐dialog/////////////////////
       foodName: "",
-      foodMoney:'',
+      foodMoney: "",
       dishFlavour: [],
       radio1: "",
       formLabelWidth: "120px",
       dialogFormVisible: false,
       textarea: "",
-      choiceClass:[],
-      addable:false,
-      amount:0,
+      choiceClass: [],
+      addable: false,
+      amount: 0,
       /////////////////////////点餐dialog/////////////////////
       direction: "rtl",
       totalPrice: 0,
-      orderItems: [],//存放！就用你啦！
+      orderItems: [], //存放！就用你啦！
       tableId: 0,
       tableNum: 10,
       occupied: [],
@@ -333,67 +344,69 @@ export default {
   },
   methods: {
     //////////////////////////选规格////////////////////////////
-    commitOrderItem(){
-      var flag = false
-      if(this.currItem!=null && this.amount!=0){
-
-        this.orderItems.forEach(element => {
+    commitOrderItem() {
+      var flag = false;
+      if (this.currItem != null && this.amount != 0) {
+        this.orderItems.forEach((element) => {
           // console.log('哇哩哇')
           // console.log(this.currItem.dishId == element.dishId)
           // console.log(this.currItem)
           // console.log(this.currItem.note)
           // console.log((this.note+';'+this.textarea))
           // console.log(this.currItem.note===(this.note+';'+this.textarea))
-          if(this.currItem.dishId == element.dishId && this.currItem.note===(this.note+';'+this.textarea)){
+          if (
+            this.currItem.dishId == element.dishId &&
+            this.currItem.note === this.note + ";" + this.textarea
+          ) {
             //console.log('>>>'+this.currItem.note+' '+this.textarea+'>>>>'+(this.note+';'+this.textarea))
-            flag = true
-            element.amount += this.amount//合并为一个item
+            flag = true;
+            element.amount += this.amount; //合并为一个item
           }
-
         });
         //如果没有相同的项就，覆盖amount,这咋全覆盖了啊
-        if(!flag){
+        if (!flag) {
           //console.log('????')
           //因为这里是引用而非值拷贝
           // tempItem.amount = this.amount
           // tempItem.note = this.note+';'+this.textarea
           // console.log('tempItem',tempItem)
           // console.log('this.currItem',this.currItem)
-          this.currItem.amount = this.amount
+          this.currItem.amount = this.amount;
           //存放note
-          this.currItem.note = this.note+';'+this.textarea
-          let tempItem = JSON.parse(JSON.stringify(this.currItem) )
-          this.orderItems.push(tempItem)
+          this.currItem.note = this.note + ";" + this.textarea;
+          let tempItem = JSON.parse(JSON.stringify(this.currItem));
+          this.orderItems.push(tempItem);
         }
       }
       //console.log('this.orderItems',this.orderItems)
       this.dialogFormVisible = false;
     },
-    confirmMenu(){
-      this.addable = true
+    confirmMenu() {
+      this.addable = true;
     },
     //点开dialog的函数
     chooseMenu(item) {
-      this.currItem = item
+      this.currItem = item;
       //如果名字一样，就不用改那些样式
-      if(this.foodName!=item.name){
-        this.radio1 = ''
-        this.note=''
-        this.textarea = ''
-        this.addable = false
+      if (this.foodName != item.name) {
+        this.radio1 = "";
+        this.note = "";
+        this.textarea = "";
+        this.addable = false;
       }
-        this.foodName = item.name;
-          this.foodMoney = item.price;
-          this.dishFlavour = item.flavour;
+      this.foodName = item.name;
+      this.foodMoney = item.price;
+      this.dishFlavour = item.flavour;
       this.dialogFormVisible = true;
     },
     //这里的note有问题嗷
-    addNote(keyname,value){
-      this.addable = false
-        this.choiceClass[keyname] = value
-        this.note=''
-      for(var key in this.choiceClass){ // 输出字典元素，如果字典的key是数字，输出时会自动按序输出
-        this.note += this.choiceClass[key]
+    addNote(keyname, value) {
+      this.addable = false;
+      this.choiceClass[keyname] = value;
+      this.note = "";
+      for (var key in this.choiceClass) {
+        // 输出字典元素，如果字典的key是数字，输出时会自动按序输出
+        this.note += this.choiceClass[key];
       }
     },
     // textFinish(){
@@ -412,7 +425,7 @@ export default {
           this.totalPrice += dish.amount * dish.price;
         }
       }
-      console.log('this.totalPrice',this.totalPrice)
+      console.log("this.totalPrice", this.totalPrice);
       if (this.orderItems.length === 0 || this.tableId === 0) {
         this.centerDialogVisible = true;
         return;
@@ -440,9 +453,9 @@ export default {
           console.log(error);
           this.$message.error("网络异常，生成订单失败");
         });
-        //对当前订单清空
-        this.orderItems = []
-        this.totalPrice = 0
+      //对当前订单清空
+      this.orderItems = [];
+      this.totalPrice = 0;
     },
     refreshDishList() {
       getAllFood().then((res) => {
@@ -493,33 +506,33 @@ export default {
   .radioGroup {
     margin-left: 30px;
   }
-  .alreadyChoose{
-    margin-top:10px;
-    font-size:14px;
-    color:#8CA2AA;
+  .alreadyChoose {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #8ca2aa;
   }
 }
-.dialog-footer{
+.dialog-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-align: center;
   line-height: 100%;
-  .right{
+  .right {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
-  .foodMoney{
-    display: inline-block;
-    line-height: 1;
-    text-align: center;
-    margin-right: 10px;
-    font-size: 24px;
-    font-weight: 400;
-    color:#FF2525;
-  }
+.foodMoney {
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  margin-right: 10px;
+  font-size: 24px;
+  font-weight: 400;
+  color: #ff2525;
+}
 .tableItem {
   display: inline-block;
   margin: 3px;
