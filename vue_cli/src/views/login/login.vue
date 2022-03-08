@@ -55,8 +55,10 @@ export default {
         callback(new Error('请输入数字'))
       }else{
         if(numReg.test(value)){//如果是数字
+          sessionStorage.setItem('isNum',true)
           callback();
         }else{
+          sessionStorage.setItem('isNum',false)
           callback(new Error('请输入数字'))
         }
       }
@@ -65,7 +67,7 @@ export default {
       form: {},
       rules: {
         username: [
-          { required: true, message: "请输入员工号", trigger: "blur" },
+          { required: true, message: "员工号不能为空", trigger: "blur" },
           {
             max: 8,
             message: "员工号长度不能多于8位",
@@ -75,7 +77,7 @@ export default {
           { validator: checkNum, trigger: 'blur' },
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
+          { required: true, message: "密码不能为空", trigger: "blur" },
           // 必须是数字
           { validator: checkNum, trigger: 'blur' },
           ],
@@ -84,6 +86,9 @@ export default {
   },
   methods: {
     login() {
+      console.log('sessionStorage.getItem',sessionStorage.getItem('isNum'))
+      let numReg = /^\d+$/;
+      if(numReg.test(this.form.username) && numReg.test(this.form.password)){
       //数字则返回true
       //if(/^\d+$/.test(this.form.username)){
       localStorage.setItem('accountId', this.form.username);
@@ -103,7 +108,9 @@ export default {
         .catch((error) => {
           this.$message.error(error.response.data.reason);
         });
-    },
+       }
+   },
+  
   },
 };
 </script>
