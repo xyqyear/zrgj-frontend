@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="right">
-      <el-button type="text" @click="dialogVisible1 = true">
+    
+      <el-button type="text" @click="dialogVisible1 = true" style="float:right">
         <el-row>
           <el-button type="primary" class="head">发布公告</el-button>
         </el-row>
       </el-button>
-    </div>
+    
 
     <el-dialog
       :visible.sync="dialogVisible1"
@@ -35,7 +35,7 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="设为顶置">
+        <el-form-item label="设为置顶">
           <el-switch
             v-model="value"
             active-color="#13ce66"
@@ -55,34 +55,38 @@
       class="box-card"
       v-for="(item, index) in notificationList"
       :key="index"
+      body-style="padding: 0px"
     >
       <div slot="header" class="clearfix">
         <div v-if="item.sticked" class="left">
           <el-button type="primary" @click="stickNotification">置顶</el-button>
         </div>
 
-        <div class="head">{{ item.title }}</div>
+        <div class="nothead">{{ item.title }}</div>
       </div>
       <div class="text item">
         {{ item.content }}
       </div>
-      <div class="right">
-        <el-row>
-          <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
-
-          <span style="float: left; margin-top: 17px">
+      <el-row>
+  <el-col :span="24"><div class="grid-content bg-purple-dark">
+      <el-row>
+        <span style="float: left; margin-top: 16px; margin-left:10px">
           {{ getCreatedTime(item.createTime) }}
         </span>
+      <div class="right"> 
+          <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
           <el-button @click="dialogVisible2 = true" class="mybt"
           >编辑
           </el-button
           >
-
           <el-button class="mybt" @click="changeStickSituation(item, index)">{{ item.sticked ? "取消置顶" : "置顶" }}</el-button>
           <el-button class="mybt">撤 销</el-button>
           <!-- @click="handleDelete(item.id)" -->
-        </el-row>
       </div>
+ </el-row>
+  </div></el-col>
+</el-row>
+
     </el-card>
     <el-dialog
       :visible.sync="dialogVisible2"
@@ -208,6 +212,7 @@ export default {
 
 .item {
   margin-bottom: 18px;
+  margin-top: 18px;
 }
 
 .clearfix:before,
@@ -221,7 +226,7 @@ export default {
 }
 
 .box-card {
-  width: 98%;
+  width: 100%;
   height: 100%;
   margin: 10px;
   padding: 5px;
@@ -235,10 +240,10 @@ export default {
 
 .mybt {
   margin-left: 10px;
-  margin-right: 10px;
-  padding: 10px 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-right: 20px;
+  padding: 5px 10px;
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 
 .right {
@@ -250,4 +255,20 @@ export default {
   float: left;
   margin-left: 0px;
 }
+
+.nothead {
+  font-weight: bolder;
+  font-size: 140%;
+  margin-left: 100px;
+  margin-top: 8px;
+}
+
+.grid-content {
+    border-radius: 4px;
+    min-height: 47px; 
+  }
+
+  .bg-purple-dark {
+    background: #99a9bf;
+  }
 </style>
