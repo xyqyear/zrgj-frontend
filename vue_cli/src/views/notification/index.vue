@@ -6,21 +6,27 @@
              :key="index">
       <div slot="header" class="clearfix">
         <div v-if="notification.sticked" class="left">
-          <el-button type="primary">顶置</el-button>
+          <el-button type="primary">置顶</el-button>
         </div>
         <div class="head">{{ notification.title }}</div>
       </div>
       <div class="text item">
         {{ notification.content }}
       </div>
-      <div  >
-        <span style="float: left">
+      <el-row>
+        <el-col :span="24">
+          <div class="grid-content bg-purple-dark">
+            <el-row>
+        <span style="float: left; margin-top: 16px; margin-left:10px">
           {{ getCreatedTime(notification.createTime) }}
         </span>
-        <el-row v-if="!notification.confirmed" class="right">
-          <el-button class="mybt" @click="handleConfirm(notification, index)">确认</el-button>
-        </el-row>
-      </div>
+              <div class="right">
+                <el-button class="mybt" @click="handleConfirm(notification, index)">确认</el-button>
+              </div>
+            </el-row>
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
   </div>
 
@@ -64,7 +70,8 @@ export default {
 }
 
 .item {
-  margin-bottom: 10px;
+  margin-bottom: 18px;
+  margin-top: 18px;
 }
 
 .clearfix:before,
@@ -78,7 +85,7 @@ export default {
 }
 
 .box-card {
-  width: 98%;
+  width: 100%;
   height: 100%;
   margin: 10px;
   padding: 5px;
@@ -86,18 +93,16 @@ export default {
 }
 
 .head {
-  margin-top: 10px;
-  margin-left: 90px;
   font-weight: bolder;
   font-size: 140%;
 }
 
 .mybt {
   margin-left: 10px;
-  margin-right: 10px;
-  padding: 10px 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-right: 20px;
+  padding: 5px 10px;
+  margin-top: 10px;
+  margin-bottom: 4px;
 }
 
 .right {
@@ -108,5 +113,20 @@ export default {
 .left {
   float: left;
   margin-left: 0px;
+}
+
+.nothead {
+  font-weight: bolder;
+  font-size: 140%;
+  margin-left: 100px;
+  margin-top: 8px;
+}
+.grid-content {
+  border-radius: 4px;
+  min-height: 47px;
+}
+
+.bg-purple-dark {
+  background: #99a9bf;
 }
 </style>

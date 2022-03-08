@@ -19,23 +19,38 @@ const state = {
   notificationList: []
 }
 
+function cmp(a, b) {
+  if ((a.sticked && b.sticked) || (!a.sticked && !b.sticked)) {
+    return b.createTime - a.createTime;
+  } else {
+    return a.sticked ? -1 : 1;
+  }
+}
+
 export default {
   //存储状态
   state: state,
   //显示的更改state
   mutations: {
+    deleteNotification(state, index){
+      this.state.notificationList.splice(index, 1);
+      this.state.notificationNum = this.state.notificationList.length;
+    },
+    updateNotification(state, notification, index){
+      this.state.notificationList.splice(index, 1, notification);
+    },
     addNotification(state, notification) {
-      this.state.notificationList.push(notification);
+      let i = 0;
+      while (i < this.state.notificationList.length && cmp(notification, this.state.notificationList[i]) > 0) {
+        i++;
+      }
+      console.log(i);
+      this.state.notificationList.splice(i, 0, notification);
+      // this.state.notificationList.push(notification);
       this.state.notificationNum = this.state.notificationList.length;
     },
     refreshNotificationList(state, notificationList) {
-      this.state.notificationList = notificationList.sort((a, b) => {
-        if ((a.sticked && b.sticked) || (!a.sticked && !b.sticked)) {
-          return b.createTime - a.createTime;
-        } else {
-          return a.sticked ? -1 : 1;
-        }
-      });
+      this.state.notificationList = notificationList.sort(cmp);
       this.state.notificationNum = this.state.notificationList.length;
     },
   },

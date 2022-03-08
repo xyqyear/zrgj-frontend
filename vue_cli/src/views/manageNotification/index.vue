@@ -1,11 +1,11 @@
 <template>
   <div>
 
-      <el-button type="text" @click="dialogVisible1 = true" style="float:right">
-        <el-row>
-          <el-button type="primary" class="head">发布公告</el-button>
-        </el-row>
-      </el-button>
+    <el-button type="text" @click="dialogVisible1 = true" style="float:right">
+      <el-row>
+        <el-button type="primary" class="head">发布公告</el-button>
+      </el-row>
+    </el-button>
 
 
     <el-dialog
@@ -59,33 +59,36 @@
     >
       <div slot="header" class="clearfix">
         <div v-if="item.sticked" class="left">
-          <el-button type="primary" @click="changeStickSituation(item, index)">置顶</el-button>
+          <el-button type="primary">置顶</el-button>
         </div>
-
-        <div class="nothead">{{ item.title }}</div>
+        <div class="head">{{ item.title }}</div>
       </div>
       <div class="text item">
         {{ item.content }}
       </div>
       <el-row>
-  <el-col :span="24"><div class="grid-content bg-purple-dark">
-      <el-row>
+        <el-col :span="24">
+          <div class="grid-content bg-purple-dark">
+            <el-row>
         <span style="float: left; margin-top: 16px; margin-left:10px">
           {{ getCreatedTime(item.createTime) }}
         </span>
-      <div class="right">
-          <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
-          <el-button @click="dialogVisible2 = true" class="mybt"
-          >编辑
-          </el-button
-          >
-          <el-button class="mybt" @click="changeStickSituation(item, index)">{{ item.sticked ? "取消置顶" : "置顶" }}</el-button>
-          <el-button class="mybt">撤 销</el-button>
-          <!-- @click="handleDelete(item.id)" -->
-      </div>
- </el-row>
-  </div></el-col>
-</el-row>
+              <div class="right">
+                <!-- <el-button @click="handleEdit(item)">编 辑</el-button> -->
+                <el-button @click="dialogVisible2 = true" class="mybt"
+                >编辑
+                </el-button
+                >
+                <el-button class="mybt" @click="changeStickSituation(item, index)">
+                  {{ item.sticked ? "取消置顶" : "置顶" }}
+                </el-button>
+                <el-button class="mybt" @click="handleDelete(item, index)">撤 销</el-button>
+                <!-- @click="handleDelete(item.id)" -->
+              </div>
+            </el-row>
+          </div>
+        </el-col>
+      </el-row>
 
     </el-card>
     <el-dialog
@@ -142,7 +145,7 @@
 
 <script>
 import {addNotificationList, deleteNotification, updateNotification} from "../../../api/data";
-import {getReadableTime} from "../../store/notification";
+import notification, {getReadableTime} from "../../store/notification";
 
 export default {
   name: "manageNotification",
@@ -186,29 +189,27 @@ export default {
           console.log(error.response.data.reason);
         });
     },
-    handleDelete(id) {
+    handleDelete(notification, index) {
       this.$confirm("此操作将撤销该公告, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          var body = {
-            id: "",
-          };
-          body.id = id;
-          console.log(body.id);
-          deleteNotification(body).then((res) => {
-            console.log(res);
-            if (res.status == 200) {
+          deleteNotification({id: notification.id,})
+            .then((res) => {
               this.$message({
                 type: "success",
                 message: "删除成功!",
               });
-
-              this.$store.dispatch("getNotificationListFromServer");
-            }
-          });
+              this.$store.commit("deleteNotification", index);
+            })
+            .catch(err => {
+              this.$message({
+                type: "warning",
+                message: "网络故障，删除失败",
+              });
+            });
         })
         .catch(() => {
           this.$message({
@@ -319,11 +320,11 @@ export default {
 }
 
 .grid-content {
-    border-radius: 4px;
-    min-height: 47px;
-  }
+  border-radius: 4px;
+  min-height: 47px;
+}
 
-  .bg-purple-dark {
-    background: #99a9bf;
-  }
+.bg-purple-dark {
+  background: #99a9bf;
+}
 </style>
