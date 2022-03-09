@@ -177,20 +177,20 @@
               trigger="click"
             >
               <div
-                v-for="(table, index) in occupied"
+                v-for="(tableState, index) in occupied"
                 :key="index"
                 class="tableItem"
               >
                 <el-button
-                  :type="table ? 'primary' : ''"
-                  :disabled="table"
+                  :type="['', 'success', 'primary'][tableState]"
+                  :disabled="tableState === 2"
                   style="width: 60px"
                   @click="selectTable(index)"
                 >
                   {{ index + 1 }}
                 </el-button>
               </div>
-              <el-button slot="reference" size="mini">
+              <el-button slot="reference" size="mini" :disabled="disabled">
                 {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
               </el-button>
             </el-popover>
@@ -318,7 +318,6 @@
 import {
   addOrder,
   getAllFood,
-  getCurrOrders,
   getRestaurant,
   addNewOrderItem
 } from '../../../api/data'
@@ -365,11 +364,29 @@ export default {
       orderItems: [], // 存放！就用你啦！
       tableId: 0,
       tableNum: 10,
-      occupied: [],
       /// /////////////////////////查询//////////////////////////
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
-      curOrderId: ''
+      curOrderId: null,
+      disabled: false
+    }
+  },
+
+  computed: {
+    orderList() {
+      return this.$store.state.orderList
+    },
+    // 0: 空桌子  1: 空订单  2: 占用中
+    occupied() {
+      const occupied = new Array(this.tableNum).fill(0)
+      for (let i = 0; i < this.orderList.length; i++) {
+        if (this.orderList[i].orderItems.length === 0) {
+          occupied[this.orderList[i].tableId - 1] = 1
+        } else {
+          occupied[this.orderList[i].tableId - 1] = 2
+        }
+      }
+      return occupied
     }
   },
 
@@ -377,11 +394,9 @@ export default {
     this.getAddMeal()
     this.refreshDishList()
     // 获取餐厅最大桌号
-    this.occupied = new Array(this.tableNum)
     getRestaurant().then((res) => {
       localStorage.setItem('tableNum', res.data.data.tableNum)
       this.tableNum = res.data.data.tableNum
-      this.refreshTableSituation()
     })
   },
   methods: {
@@ -391,6 +406,7 @@ export default {
         const curOrder = JSON.parse(sessionStorage.getItem('curOrder'))
         this.tableId = curOrder.tableId
         this.curOrderId = curOrder.id
+        this.disabled = true
         sessionStorage.removeItem('curOrder')
       }
     },
@@ -483,8 +499,26 @@ export default {
     },
     uploadOrder() {
       console.log('this.orderItems', this.orderItems)
+      // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
+      this.curOrderId = this.orderList
+        .filter((order) => {
+          // 过滤出当前桌号的订单
+          return order.tableId === this.tableId
+        })
+        .map((order) => {
+          // map到id
+          return order.id
+        })
+        .reduce((acc, cur) => {
+          // 如果有id，就返回id，如果没有就返回null
+          if (acc === null) {
+            return cur
+          } else {
+            return acc
+          }
+        }, null)
       // 如果当前的订单号不为空
-      if (this.curOrderId !== '') {
+      if (this.curOrderId !== null) {
         this.orderItems.forEach((element) => {
           const addOrder = {
             orderId: this.curOrderId,
@@ -498,6 +532,9 @@ export default {
                 message: '添加菜品成功',
                 type: 'success'
               })
+              this.occupied[this.tableId - 1] = 2
+              this.tableId = 0
+              this.drawer = false
             })
             .catch((error) => {
               console.log(error)
@@ -505,19 +542,27 @@ export default {
         })
         console.log('this.curOrderId', this.curOrderId)
       } else {
+        const temporderItems = []
+        this.orderItems.forEach((element) => {
+          const item = {
+            dishId: element.id,
+            amount: element.amount,
+            note: element.note
+          }
+          temporderItems.push(item)
+        })
         const newOrder = {
           tableId: this.tableId,
-          orderItems: this.orderItems
+          orderItems: temporderItems
         }
+        console.log('newOrder', newOrder)
         addOrder(newOrder)
           .then((res) => {
             this.$message({
               message: '创建订单成功',
               type: 'success'
             })
-            this.refreshDishList()
-            this.refreshTableSituation()
-            this.occupied[this.tableId - 1] = true
+            this.occupied[this.tableId - 1] = 2
             this.tableId = 0
             this.drawer = false
           })
@@ -556,17 +601,6 @@ export default {
         this.foodNum += element.amount
       })
       this.createNewOrder()
-    },
-    refreshTableSituation() {
-      for (let i = 0; i < this.tableNum; i++) {
-        this.occupied[i] = false
-      }
-      getCurrOrders().then((res) => {
-        this.orderList = res.data.data
-        for (let i = 0; i < this.orderList.length; i++) {
-          this.occupied[this.orderList[i].tableId - 1] = true
-        }
-      })
     },
     handleClose(done) {
       this.$confirm('确认关闭？')

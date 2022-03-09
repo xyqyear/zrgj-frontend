@@ -87,10 +87,32 @@ export default {
 <script>
 import CommonAside from '../components/CommonAside.vue'
 import CommonHeader from '../components/CommonHeader.vue'
+
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
+import { apiPrefix } from '../../api/data'
+
 export default {
   name: 'Main',
-  created() {
-    this.$store.dispatch('getNecessaryDataAfterLogin')
+  async created() {
+    await this.$store.dispatch('getNotificationListFromServer')
+    await this.$store.dispatch('getOrderListFromServer')
+
+    console.log('start to init websocket connection')
+    const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
+    console.log(serverInterface)
+    const socket = new SockJS(serverInterface)
+    const stompClient = Stomp.over(socket)
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/notification/' + localStorage.getItem('restaurantId') + '/' + localStorage.getItem('position'), (message) => {
+        const notification = JSON.parse(message.body)
+        this.$store.dispatch('handleNewNotification', notification)
+      })
+      stompClient.subscribe('/orders/' + localStorage.getItem('restaurantId'), (message) => {
+        const orderList = JSON.parse(message.body)
+        this.$store.commit('refreshOrderList', orderList)
+      })
+    })
   },
   components: { CommonAside, CommonHeader }
 }
