@@ -89,8 +89,11 @@
                     {{ item.price }}元/份
                   </el-col>
                   <el-col :span="14">
-                    <el-button type="warning" plain @click="chooseMenu(item)"
-                      >选规格
+                    <el-button type="warning" plain @click="chooseMenu(item)" v-if="!item.soldout"
+                    >选规格
+                    </el-button>
+                    <el-button type="info" plain v-if="item.soldout" disabled
+                    >售罄
                     </el-button>
                     <!-- <el-input-number
                       v-model="dishList[dishIndex].amount"
@@ -168,39 +171,12 @@
       <div slot="footer" class="dialog-footer">
         <div class="left">
           <div class="foodMoney">{{ foodMoney }}元/份</div>
-          <div>
-            <el-popover
-              placement="top"
-              v-model="selectingTableId"
-              width="290"
-              class="selectingTableBox"
-              trigger="click"
-            >
-              <div
-                v-for="(tableState, index) in occupied"
-                :key="index"
-                class="tableItem"
-              >
-                <el-button
-                  :type="['', 'success', 'primary'][tableState]"
-                  :disabled="tableState === 2"
-                  style="width: 60px"
-                  @click="selectTable(index)"
-                >
-                  {{ index + 1 }}
-                </el-button>
-              </div>
-              <el-button slot="reference" size="mini" :disabled="disabled">
-                {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
-              </el-button>
-            </el-popover>
-          </div>
         </div>
         <div class="right">
           <!-- 这里的条件有所改变 -->
           <div v-if="!addable">
             <el-button type="primary" @click="confirmMenu"
-              >加入购物车
+            >加入购物车
             </el-button>
           </div>
 
@@ -217,14 +193,14 @@
               type="primary"
               @click="commitOrderItem"
               style="margin-left: 10px"
-              >确认
+            >确认
             </el-button>
           </div>
 
           <el-button
             @click="dialogFormVisible = false"
             style="margin-left: 10px"
-            >取 消
+          >取 消
           </el-button>
         </div>
       </div>
@@ -242,7 +218,7 @@
         size="mini"
         style="position: absolute; right: 10px; top: 5px"
         icon="el-icon-shopping-cart-2"
-        >购物车
+      >购物车
       </el-button>
     </el-badge>
     <el-drawer
@@ -281,12 +257,12 @@
         </el-table>
       </template>
       <el-descriptions>
-        <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>
+        <!--        <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>-->
         <el-descriptions-item label="总金额"
-          >{{ totalPrice }}
+        >{{ totalPrice }}
         </el-descriptions-item>
         <el-descriptions-item label="下单账号"
-          >{{ accountId }}
+        >{{ accountId }}
         </el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
@@ -295,26 +271,37 @@
             orderItems = [];
             drawer = false;
           "
-          >清空购物车</el-button
+        >清空购物车
+        </el-button>
+        <el-popover
+          placement="top"
+          v-model="selectingTableId"
+          width="290"
+          class="selectingTableBox"
+          trigger="click"
         >
+          <div
+            v-for="(tableState, index) in occupied"
+            :key="index"
+            class="tableItem"
+          >
+            <el-button
+              :type="['', 'success', 'primary'][tableState]"
+              :disabled="tableState === 2"
+              style="width: 60px"
+              @click="selectTable(index)"
+            >
+              {{ index + 1 }}
+            </el-button>
+          </div>
+          <el-button slot="reference" size="mini" :disabled="disabled">
+            {{ tableId === 0 ? '选择餐桌' : tableId + '号桌' }}
+          </el-button>
+        </el-popover>
         <el-button @click="drawer = false">取 消</el-button>
         <el-button type="primary" @click="uploadOrder">确认</el-button>
       </div>
     </el-drawer>
-
-    <el-dialog
-      title="提示"
-      :visible.sync="centerDialogVisible"
-      width="30%"
-      center
-    >
-      <span>当前订单为空或还未选择桌号</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="centerDialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -348,7 +335,6 @@ export default {
       ],
       drawer: false,
       selectingTableId: false,
-      centerDialogVisible: false,
       note: '',
       /// //////////////////////点餐dialog/////////////////////
       foodName: '',
@@ -495,13 +481,21 @@ export default {
           this.totalPrice += dish.amount * dish.price
         }
       }
-      if (this.orderItems.length === 0 || this.tableId === 0) {
-        this.centerDialogVisible = true
+      if (this.orderItems.length === 0) {
+        this.$alert('当前订单为空，请选择所需菜品', '提示', {
+          confirmButtonText: '确定'
+        })
         return
       }
       this.drawer = true
     },
     uploadOrder() {
+      if (this.tableId === 0) {
+        this.$alert('下单前请选择餐桌', '提示', {
+          confirmButtonText: '确定'
+        })
+        return
+      }
       console.log('this.orderItems', this.orderItems)
       // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
       this.curOrderId = this.orderList
@@ -606,7 +600,8 @@ export default {
         .then((_) => {
           done()
         })
-        .catch((_) => {})
+        .catch((_) => {
+        })
     },
     onSearchInput(value) {
       if (value === '') {
