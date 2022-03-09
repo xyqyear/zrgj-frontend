@@ -489,13 +489,16 @@ export default {
       console.log('this.orderItems', this.orderItems)
       // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
       this.curOrderId = this.orderList
-        .filter((order) => { // 过滤出当前桌号的订单
+        .filter((order) => {
+          // 过滤出当前桌号的订单
           return order.tableId === this.tableId
         })
-        .map((order) => { // map到id
+        .map((order) => {
+          // map到id
           return order.id
         })
-        .reduce((acc, cur) => { // 如果有id，就返回id，如果没有就返回null
+        .reduce((acc, cur) => {
+          // 如果有id，就返回id，如果没有就返回null
           if (acc === null) {
             return cur
           } else {
@@ -517,6 +520,11 @@ export default {
                 message: '添加菜品成功',
                 type: 'success'
               })
+              this.refreshDishList()
+              this.refreshTableSituation()
+              this.occupied[this.tableId - 1] = 2
+              this.tableId = 0
+              this.drawer = false
             })
             .catch((error) => {
               console.log(error)
