@@ -507,10 +507,20 @@ export default {
         })
         console.log('this.curOrderId', this.curOrderId)
       } else {
+        const temporderItems = []
+        this.orderItems.forEach((element) => {
+          const item = {
+            dishId: element.id,
+            amount: element.amount,
+            note: element.note
+          }
+          temporderItems.push(item)
+        })
         const newOrder = {
           tableId: this.tableId,
-          orderItems: this.orderItems
+          orderItems: temporderItems
         }
+        console.log('newOrder', newOrder)
         addOrder(newOrder)
           .then((res) => {
             this.$message({
