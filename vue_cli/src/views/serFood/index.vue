@@ -90,9 +90,8 @@
                   </el-col>
                   <el-col :span="14">
                     <el-button type="warning" plain @click="chooseMenu(item)"
-                    >选规格
-                    </el-button
-                    >
+                      >选规格
+                    </el-button>
                     <!-- <el-input-number
                       v-model="dishList[dishIndex].amount"
                       @change="handleChange($event, dishIndex)"
@@ -192,7 +191,7 @@
                 </el-button>
               </div>
               <el-button slot="reference" size="mini" :disabled="disabled">
-                {{ tableId === 0 ? '选择餐桌' : tableId + '号桌' }}
+                {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
               </el-button>
             </el-popover>
           </div>
@@ -201,9 +200,8 @@
           <!-- 这里的条件有所改变 -->
           <div v-if="!addable">
             <el-button type="primary" @click="confirmMenu"
-            >加入购物车
-            </el-button
-            >
+              >加入购物车
+            </el-button>
           </div>
 
           <div v-else>
@@ -219,17 +217,15 @@
               type="primary"
               @click="commitOrderItem"
               style="margin-left: 10px"
-            >确认
-            </el-button
-            >
+              >确认
+            </el-button>
           </div>
 
           <el-button
             @click="dialogFormVisible = false"
             style="margin-left: 10px"
-          >取 消
-          </el-button
-          >
+            >取 消
+          </el-button>
         </div>
       </div>
     </el-dialog>
@@ -246,7 +242,7 @@
         size="mini"
         style="position: absolute; right: 10px; top: 5px"
         icon="el-icon-shopping-cart-2"
-      >购物车
+        >购物车
       </el-button>
     </el-badge>
     <el-drawer
@@ -287,15 +283,20 @@
       <el-descriptions>
         <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>
         <el-descriptions-item label="总金额"
-        >{{ totalPrice }}
+          >{{ totalPrice }}
         </el-descriptions-item>
-        <el-descriptions-item label="下单账号">{{
-            accountId
-          }}
+        <el-descriptions-item label="下单账号"
+          >{{ accountId }}
         </el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
-        <el-button @click="orderItems=[]; drawer = false">清空购物车</el-button>
+        <el-button
+          @click="
+            orderItems = [];
+            drawer = false;
+          "
+          >清空购物车</el-button
+        >
         <el-button @click="drawer = false">取 消</el-button>
         <el-button type="primary" @click="uploadOrder">确认</el-button>
       </div>
@@ -310,7 +311,7 @@
       <span>当前订单为空或还未选择桌号</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="centerDialogVisible = false"
-        >确 定</el-button
+          >确 定</el-button
         >
       </span>
     </el-dialog>
@@ -331,7 +332,6 @@ export default {
   name: 'serFood',
   data() {
     return {
-      foodNum: 0,
       activeName: '全部菜品',
       accountId: localStorage.getItem('accountId'),
       num: 1,
@@ -390,6 +390,11 @@ export default {
         }
       }
       return occupied
+    },
+    foodNum() {
+      return this.orderItems.reduce((acc, cur) => {
+        return acc + cur.amount
+      }, 0)
     }
   },
 
@@ -442,11 +447,6 @@ export default {
           this.orderItems.push(tempItem)
         }
       }
-      // 设置购物车上的数字
-      this.foodNum = 0
-      this.orderItems.forEach((element) => {
-        this.foodNum += element.amount
-      })
       // console.log('this.orderItems',this.orderItems)
       this.amount = 0
       this.dialogFormVisible = false
@@ -599,11 +599,6 @@ export default {
           }
         }
       })
-      // 设置购物车上的数字
-      this.foodNum = 0
-      this.orderItems.forEach((element) => {
-        this.foodNum += element.amount
-      })
       this.createNewOrder()
     },
     handleClose(done) {
@@ -611,8 +606,7 @@ export default {
         .then((_) => {
           done()
         })
-        .catch((_) => {
-        })
+        .catch((_) => {})
     },
     onSearchInput(value) {
       if (value === '') {
