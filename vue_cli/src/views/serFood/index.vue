@@ -318,7 +318,6 @@
 import {
   addOrder,
   getAllFood,
-  getCurrOrders,
   getRestaurant,
   addNewOrderItem
 } from '../../../api/data'
@@ -365,9 +364,6 @@ export default {
       orderItems: [], // 存放！就用你啦！
       tableId: 0,
       tableNum: 10,
-      // 0: 空桌子  1: 空订单  2: 占用中
-      occupied: [],
-      orderList: [],
       /// /////////////////////////查询//////////////////////////
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
@@ -376,15 +372,31 @@ export default {
     }
   },
 
+  computed: {
+    orderList() {
+      return this.$store.state.orderList
+    },
+    // 0: 空桌子  1: 空订单  2: 占用中
+    occupied() {
+      const occupied = new Array(this.tableNum).fill(0)
+      for (let i = 0; i < this.orderList.length; i++) {
+        if (this.orderList[i].orderItems.length === 0) {
+          occupied[this.orderList[i].tableId - 1] = 1
+        } else {
+          occupied[this.orderList[i].tableId - 1] = 2
+        }
+      }
+      return occupied
+    }
+  },
+
   mounted() {
     this.getAddMeal()
     this.refreshDishList()
     // 获取餐厅最大桌号
-    this.occupied = new Array(this.tableNum)
     getRestaurant().then((res) => {
       localStorage.setItem('tableNum', res.data.data.tableNum)
       this.tableNum = res.data.data.tableNum
-      this.refreshTableSituation()
     })
   },
   methods: {
@@ -520,8 +532,6 @@ export default {
                 message: '添加菜品成功',
                 type: 'success'
               })
-              this.refreshDishList()
-              this.refreshTableSituation()
               this.occupied[this.tableId - 1] = 2
               this.tableId = 0
               this.drawer = false
@@ -552,8 +562,6 @@ export default {
               message: '创建订单成功',
               type: 'success'
             })
-            this.refreshDishList()
-            this.refreshTableSituation()
             this.occupied[this.tableId - 1] = 2
             this.tableId = 0
             this.drawer = false
@@ -593,21 +601,6 @@ export default {
         this.foodNum += element.amount
       })
       this.createNewOrder()
-    },
-    refreshTableSituation() {
-      for (let i = 0; i < this.tableNum; i++) {
-        this.occupied[i] = 0
-      }
-      getCurrOrders().then((res) => {
-        this.orderList = res.data.data
-        for (let i = 0; i < this.orderList.length; i++) {
-          if (this.orderList[i].orderItems.length === 0) {
-            this.occupied[this.orderList[i].tableId - 1] = 1
-          } else {
-            this.occupied[this.orderList[i].tableId - 1] = 2
-          }
-        }
-      })
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
