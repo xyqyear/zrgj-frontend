@@ -177,13 +177,13 @@
               trigger="click"
             >
               <div
-                v-for="(table, index) in occupied"
+                v-for="(tableState, index) in occupied"
                 :key="index"
                 class="tableItem"
               >
                 <el-button
-                  :type="table ? 'primary' : ''"
-                  :disabled="table"
+                  :type="['', 'success', 'primary'][tableState]"
+                  :disabled="tableState === 2"
                   style="width: 60px"
                   @click="selectTable(index)"
                 >
@@ -365,11 +365,13 @@ export default {
       orderItems: [], // 存放！就用你啦！
       tableId: 0,
       tableNum: 10,
+      // 0: 空桌子  1: 空订单  2: 占用中
       occupied: [],
+      orderList: [],
       /// /////////////////////////查询//////////////////////////
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
-      curOrderId: '',
+      curOrderId: null,
       disabled: false
     }
   },
@@ -485,8 +487,23 @@ export default {
     },
     uploadOrder() {
       console.log('this.orderItems', this.orderItems)
+      // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
+      this.curOrderId = this.orderList
+        .filter((order) => { // 过滤出当前桌号的订单
+          return order.tableId === this.tableId
+        })
+        .map((order) => { // map到id
+          return order.id
+        })
+        .reduce((acc, cur) => { // 如果有id，就返回id，如果没有就返回null
+          if (acc === null) {
+            return cur
+          } else {
+            return acc
+          }
+        }, null)
       // 如果当前的订单号不为空
-      if (this.curOrderId !== '') {
+      if (this.curOrderId !== null) {
         this.orderItems.forEach((element) => {
           const addOrder = {
             orderId: this.curOrderId,
@@ -529,7 +546,7 @@ export default {
             })
             this.refreshDishList()
             this.refreshTableSituation()
-            this.occupied[this.tableId - 1] = true
+            this.occupied[this.tableId - 1] = 2
             this.tableId = 0
             this.drawer = false
           })
@@ -571,12 +588,16 @@ export default {
     },
     refreshTableSituation() {
       for (let i = 0; i < this.tableNum; i++) {
-        this.occupied[i] = false
+        this.occupied[i] = 0
       }
       getCurrOrders().then((res) => {
         this.orderList = res.data.data
         for (let i = 0; i < this.orderList.length; i++) {
-          this.occupied[this.orderList[i].tableId - 1] = true
+          if (this.orderList[i].orderItems.length === 0) {
+            this.occupied[this.orderList[i].tableId - 1] = 1
+          } else {
+            this.occupied[this.orderList[i].tableId - 1] = 2
+          }
         }
       })
     },
