@@ -242,7 +242,7 @@ import {
 } from '../../../api/data'
 
 export default {
-  name: 'serFood',
+  name: 'serOrder',
   data() {
     return {
       tableData: [],
