@@ -5,65 +5,90 @@
         <div class="inline_title">天天点餐电子排队系统</div>
       </el-card>
       <div class="level2">
-        <el-button type="primary" plain>排 号</el-button>
+        <el-button @click="addintoLine" type="primary" plain>排 号</el-button>
       </div>
     </el-col>
-    <el-col :span="6">
+
+    <el-col
+      v-for="item in queueTable"
+      :key="item.runningCount"
+      class="inline_body"
+      :span="6"
+    >
       <div class="inline_tableType" width="45">
-        <span class="firstfront">小桌</span>
-        <span class="secondfront">(1-4人)</span>
+        <span class="firstfront">
+          {{ { A: "小桌", B: "中桌", C: "大桌", D: "包厢" }[item.size] }}
+        </span>
+        <span class="secondfront">{{
+          { A: "(1-4人)", B: "(5-8人)", C: "(9-12人)", D: "(9-12人)" }[
+            item.size
+          ]
+        }}</span>
         <span class="thirdfront">剩</span>
-        <span class="forthfront">{{ smallAvailable }}</span>
+        <span class="forthfront">{{ item.currentLine.length }}</span>
       </div>
       <div class="inline_info">
-        <div v-for="item in smallTable" :key="item.number" class="infoDetail">
-          <div class="firstrow">
-            <span class="firstfront">排队号：</span>
-            <span class="secondfront">{{ item.number }}</span>
-          </div>
-          <div class="secondrow">
-            <span>时间：{{ item.time }}</span>
-          </div>
-          <div class="thirdrow">
-            <span>人数：{{ item.count }}</span>
-          </div>
-        </div>
-      </div>
-      <div class="tables">
+        <!-- miniTable的地方 -->
         <div
-          v-for="table in tableData"
-          :key="table.tableName"
-          class="tableInfo"
+          v-for="element in item.currentLine"
+          :key="element.id"
+          class="infoDetail_top"
         >
-          <div
-            :style="{ background: table.occupied ? '#82AAFF' : '#FFFFFF' }"
-            class="cardTop"
-            style="
-              display: flex;
-              flex-direction: row;
-              justify-content: center;
-              align-items: center;
-            "
-          >
-            <div style="font-size: large; color: #371722">
-              {{ table.tableName }} 号桌
+          <div class="infoDetail">
+            <div class="firstrow">
+              <span class="firstfront">排队号：</span>
+              <span class="secondfront">{{ item.size }}{{ element.id }}</span>
+            </div>
+            <div class="secondrow">
+              <span>时间：{{ element.createTime | formatDate }}</span>
+            </div>
+            <div class="thirdrow">
+              <span>人数：{{ element.people }}</span>
             </div>
           </div>
-          <el-button
-            @click="displayOderDetail(tableMap[table.tableName])"
-            :disabled="!table.occupied"
-            class="cardBottom"
-          >
-            {{ getTableStatus(table.tableName) }}
-          </el-button>
+          <div class="infoDetail_footer">
+            <div
+              style="
+                color: gray;
+                font-size: 14px;
+                margin-left: 10px;
+                margin-top: 10px;
+              "
+            >
+              已等待：’实时刷新‘分钟
+            </div>
+            <div class="operations" style="margin-top: 10px">
+              <el-button size="medium">取消</el-button>
+              <el-button type="primary">叫号</el-button>
+              <el-button type="primary">完成</el-button>
+            </div>
+          </div>
         </div>
-        <!-- ------------------------------------- -->
-        <!-- ------------------------------------- -->
       </div>
     </el-col>
-    <el-col :span="6"></el-col>
-    <el-col :span="6"></el-col>
-    <el-col :span="6"></el-col>
+
+    <el-dialog class="addtoline" :visible.sync="addLineVisible" width="30%">
+      <div slot="title" class="dialog-title">
+        <div>取号</div>
+      </div>
+      <el-form :model="form">
+        <el-form-item label="就餐人数：">
+          <el-input v-model="form.people" style="width:70%"></el-input>
+        </el-form-item>
+        <el-form-item label="选择餐桌：">
+          <el-select v-model="form.table" placeholder="餐桌规模" style="width:70%" >
+            <el-option label="小桌（1-4人）" value="A"></el-option>
+            <el-option label="中桌（5-8人）" value="B"></el-option>
+            <el-option label="大桌（9-12人）" value="C"></el-option>
+            <el-option label="包间（9-12人）" value="D"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+    <el-button type="primary" @click="onSubmit">确认</el-button>
+    <el-button>取消</el-button>
+  </el-form-item>
+      </el-form>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -81,19 +106,60 @@ export default {
   data() {
     return {
       tableData: [],
-      smallTable: [
+      queueTable: [
         {
-          number: 'A01',
-          time: '2022/3/9 14：40',
-          count: '4',
-          waittime: '10分钟'
+          size: 'A',
+          runningCount: 49,
+          currentLine: [
+            {
+              id: 48,
+              createTime: 1696482734,
+              people: 3
+            },
+            {
+              id: 49,
+              createTime: 169648273,
+              people: 2
+            }
+          ]
+        },
+        {
+          size: 'B',
+          runningCount: 49,
+          currentLine: [
+            {
+              id: 48,
+              createTime: 1696482734,
+              people: 5
+            },
+            {
+              id: 49,
+              createTime: 169648273,
+              people: 6
+            }
+          ]
+        },
+        {
+          size: 'C',
+          runningCount: 49,
+          currentLine: []
+        },
+        {
+          size: 'D',
+          runningCount: 49,
+          currentLine: [
+            {
+              id: 48,
+              createTime: 1696482734,
+              people: 10
+            },
+            {
+              id: 49,
+              createTime: 169648273,
+              people: 12
+            }
+          ]
         }
-        // {
-        //   number: 'A02',
-        //   time: '2022/3/9 14：40',
-        //   count: '4',
-        //   waittime: '10分钟'
-        // }
       ],
       smallAvailable: '10',
       tableMap: {},
@@ -101,7 +167,13 @@ export default {
       curOrder: {},
       totalTableNum: 10,
       dishMap: {},
-      orderDetailVisible: false
+      orderDetailVisible: false,
+      /// ////排号
+      addLineVisible: false,
+      form: {
+        name: '',
+        table: ''
+      }
     }
   },
   mounted() {
@@ -119,7 +191,28 @@ export default {
         console.log(err)
       })
   },
+  filters: {
+    formatDate: function(value) {
+      const date = new Date(value * 1000) // 这个是纳秒的，想要毫秒的可以不用除以1000000
+      const y = date.getFullYear()
+      let MM = date.getMonth() + 1
+      MM = MM < 10 ? '0' + MM : MM
+      let d = date.getDate()
+      d = d < 10 ? '0' + d : d
+      let h = date.getHours()
+      h = h < 10 ? '0' + h : h
+      let m = date.getMinutes()
+      m = m < 10 ? '0' + m : m
+      let s = date.getSeconds()
+      s = s < 10 ? '0' + s : s
+      return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
+    }
+  },
   methods: {
+    /// ////////////////////排号表单/////////
+    addintoLine() {
+      this.addLineVisible = true
+    },
     refreshOrderData() {
       getCurrOrders().then((res) => {
         this.orderList = res.data.data
@@ -217,11 +310,52 @@ export default {
 
 <style lang="less" scoped>
 //////////////排队//////////////////
+div /deep/ .el-dialog__header {
+  background-color: #2682B7;
+}
+
+.addtoline {
+  .dialog-title {
+    height: 50px;
+    div {
+      padding-top: 5px;
+      height: 100%;
+      line-height: 100%;
+      font-size: 36px;
+      font-weight: normal;
+      color: #606266;
+    }
+  }
+}
+.infoDetail_top {
+  background: #fff;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border: 2px solid #2682B7;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.infoDetail_footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: flex-start;
+  .operations {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+  div /deep/ .el-button--primary {
+  background-color: #2682B7;
+  border: 0;
+}
+}
 .inline_header {
   background: #fff;
 }
 .inline_header_card {
-  background: #59dbff;
+  background: #2682B7;
   .inline_title {
     color: #fff;
     font-size: 30px;
@@ -231,13 +365,14 @@ export default {
   }
 }
 .inline_tableType {
-  background: #59dbff;
+  background: #2682B7;
   height: 60px;
   position: relative;
   margin-top: 20px;
   width: 100%;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  /////小桌
   .firstfront {
     font-size: 28px;
     color: white;
@@ -245,24 +380,27 @@ export default {
     bottom: 10px;
     left: 15px;
   }
+  /////(1-4人)
   .secondfront {
     color: white;
     position: absolute;
     bottom: 10px;
     left: 75px;
   }
+  /////剩
   .thirdfront {
     color: white;
     position: absolute;
     bottom: 10px;
-    right: 50px;
+    right: 55px;
   }
+  /////10
   .forthfront {
     font-size: 36px;
     color: white;
     position: absolute;
     bottom: 5px;
-    left: 200px;
+    right: 10px;
   }
 }
 .level2 {
@@ -303,27 +441,22 @@ export default {
   height: 100%;
   display: flex;
   flex-wrap: wrap;
-  background-color: #fff;
   .infoDetail {
-    color: #59dbff;
-    margin-left: 5px;
+    width: 100%;
+    color: #303133;
+    padding-left: 10px;
     font-weight: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     line-height: 22px;
     float: left;
-    border-bottom: 1px dashed rgb(#BBBBBB);
+    border-bottom: 1px dashed rgb(#bbbbbb);
     .firstrow {
-      float: left;
       margin-top: 15px;
       .secondfront {
         font-size: 30px;
       }
-    }
-    .secondrow {
-      float: left;
-    }
-    .thirdrow {
-      clear: both;
-      float: left;
     }
   }
 }
