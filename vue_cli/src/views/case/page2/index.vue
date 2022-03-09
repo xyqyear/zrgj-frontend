@@ -29,10 +29,54 @@
         >添加订单</el-button
       >
     </div>
+    <!-- ----------------------详细订单信息---------------------------- -->
+    <el-dialog :visible.sync="detailVisible" width="50%">
+      <div slot="title" class="dialog-title">
+        <!-- <i class="el-icon-edit-outline"></i> -->
+        <div class="left">
+          <span class="title-text">订单号{{ curOrder.createTime }}</span>
+          <div class="button-right">
+            <span class="title-close"></span>
+          </div>
+        </div>
+        <div class="right">
+          <span class="title-text">桌号: {{ curOrder.tableId }}</span>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        height:300
+        style="width: 100%"
+        :default-sort="{ prop: 'id', order: 'descending' }"
+      >
+        <el-table-column prop="id" label="订单号"> </el-table-column>
+        <el-table-column prop="date" label="日期"> </el-table-column>
+        <el-table-column prop="money" label="金额"> </el-table-column>
+        <el-table-column prop="name" label="负责人"> </el-table-column>
+        <el-table-column prop="state" label="状态">
+          <template slot-scope="scope">
+            {{ ["已完成", "进行中"][scope.row.state] }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="detail" label="详细">
+          <template slot-scope="scope">
+            <el-button type="text" @click="viewDetail(scope.row)"
+              >查看详细</el-button
+            >
+            <!-- {{ ["已完成", "进行中"][scope.row.state] }} -->
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
 
     <el-col :span="24">
       <el-card style="margin-top: 20px">
-        <el-table :data="tableData" height:300 style="width: 100%">
+        <el-table
+          :data="tableData"
+          height:300
+          style="width: 100%"
+          :default-sort="{ prop: 'id', order: 'descending' }"
+        >
           <el-table-column prop="id" label="订单号"> </el-table-column>
           <el-table-column prop="date" label="日期"> </el-table-column>
           <el-table-column prop="money" label="金额"> </el-table-column>
@@ -40,6 +84,14 @@
           <el-table-column prop="state" label="状态">
             <template slot-scope="scope">
               {{ ["已完成", "进行中"][scope.row.state] }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="detail" label="详细">
+            <template slot-scope="scope">
+              <el-button type="text" @click="viewDetail(scope.row)"
+                >查看详细</el-button
+              >
+              <!-- {{ ["已完成", "进行中"][scope.row.state] }} -->
             </template>
           </el-table-column>
         </el-table>
@@ -94,7 +146,10 @@ export default {
             }
           }
         ]
-      }
+      },
+      /// /////查看详细///////////
+      detailVisible: false,
+      curOrder: {}
     }
   },
   async mounted() {
@@ -103,6 +158,11 @@ export default {
     await this.populateData(0, Math.round(new Date().getTime() / 1000))
   },
   methods: {
+    /// ////////////查看详细////////
+    viewDetail(order) {
+      this.currOrder = order
+      console.log(this.currOrder)
+    },
     async populateData(start, end) {
       const rangeOrderResponse = await getGivenTimeOrders({
         from: start,

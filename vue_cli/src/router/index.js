@@ -25,6 +25,11 @@ const routes = [
         component: () => import('../views/manageNotification')
       },
       {
+        path: '/inline',
+        name: 'inline',
+        component: () => import('../views/inline')
+      },
+      {
         path: '/home',
         name: 'home',
         component: () => import(/* webpackChunkName: "about" */ '../views/home')

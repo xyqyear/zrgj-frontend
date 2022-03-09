@@ -20,6 +20,13 @@ export default {
           url: 'table/index.vue'// ?
         },
         {
+          path: '/inline',
+          name: 'inline',
+          label: '排队系统',
+          icon: 's-grid', // 自己记得改icon
+          url: 'inline/index.vue'// ?
+        },
+        {
           path: '/page1',
           name: 'page1',
           label: '订单管理',

@@ -190,7 +190,7 @@
                   {{ index + 1 }}
                 </el-button>
               </div>
-              <el-button slot="reference" size="mini">
+              <el-button slot="reference" size="mini" :disabled="disabled">
                 {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
               </el-button>
             </el-popover>
@@ -369,7 +369,8 @@ export default {
       /// /////////////////////////查询//////////////////////////
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
-      curOrderId: ''
+      curOrderId: '',
+      disabled: false
     }
   },
 
@@ -391,6 +392,7 @@ export default {
         const curOrder = JSON.parse(sessionStorage.getItem('curOrder'))
         this.tableId = curOrder.tableId
         this.curOrderId = curOrder.id
+        this.disabled = true
         sessionStorage.removeItem('curOrder')
       }
     },
@@ -505,10 +507,20 @@ export default {
         })
         console.log('this.curOrderId', this.curOrderId)
       } else {
+        const temporderItems = []
+        this.orderItems.forEach((element) => {
+          const item = {
+            dishId: element.id,
+            amount: element.amount,
+            note: element.note
+          }
+          temporderItems.push(item)
+        })
         const newOrder = {
           tableId: this.tableId,
-          orderItems: this.orderItems
+          orderItems: temporderItems
         }
+        console.log('newOrder', newOrder)
         addOrder(newOrder)
           .then((res) => {
             this.$message({
