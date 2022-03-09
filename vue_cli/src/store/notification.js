@@ -83,9 +83,7 @@ export default {
     },
     // 建立接受实时通知的连接
     initConnection({ dispatch, commit }) {
-      console.log('start to init websocket connection')
       const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
-      console.log(serverInterface)
       const socket = new SockJS(serverInterface)
       const stompClient = Stomp.over(socket)
       stompClient.connect({}, function(frame) {
