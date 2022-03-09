@@ -1,7 +1,5 @@
-import { apiPrefix, getNotificationList } from '../../api/data'
+import { getNotificationList } from '../../api/data'
 import { Notification } from 'element-ui'
-import SockJS from 'sockjs-client'
-import Stomp from 'stompjs'
 
 export const getReadableTime = (ts) => {
   const date = new Date(ts * 1000)
@@ -58,13 +56,6 @@ export default {
   getters: {},
   // 异步操作
   actions: {
-    getNecessaryDataAfterLogin({ dispatch, commit }) {
-      console.log('start to get necessary data [notificationList, initConnection]')
-      // 获取推送信息
-      dispatch('getNotificationListFromServer')
-      // 建立sockjs连接
-      dispatch('initConnection')
-    },
     // 获取通知列表
     getNotificationListFromServer({ dispatch, commit }) {
       getNotificationList()
@@ -80,21 +71,6 @@ export default {
         .catch(err => {
           console.log(err)
         })
-    },
-    // 建立接受实时通知的连接
-    initConnection({ dispatch, commit }) {
-      console.log('start to init websocket connection')
-      const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
-      console.log(serverInterface)
-      const socket = new SockJS(serverInterface)
-      const stompClient = Stomp.over(socket)
-      stompClient.connect({}, function(frame) {
-        const subscribeChannel = '/notification/' + localStorage.getItem('restaurantId') + '/' + localStorage.getItem('position')
-        stompClient.subscribe(subscribeChannel, function(message) {
-          const notification = JSON.parse(message.body)
-          dispatch('handleNewNotification', notification)
-        })
-      })
     },
     // 处理新收到的通知
     handleNewNotification({ dispatch, commit }, notification) {

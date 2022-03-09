@@ -367,6 +367,17 @@ export const updateFood = (param) => {
   })
 }
 
+export const changeSoldoutStatus = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/dish/soldout/change`,
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
 // 获取当前帐号所属餐厅的所有菜品
 /*
 Body:none
