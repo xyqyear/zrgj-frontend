@@ -58,7 +58,7 @@
     </el-col>
     <!-- ------------表格哇------------------- -->
     <el-col :span="24" style="margin-top: 20px">
-      <el-card shadow="hover" style="height: 350px">
+      <el-card shadow="hover" style="height: 380px">
         <div class="timebar">
           <el-radio-group v-model="radio1" @change="chooseDays(radio1)">
             <el-radio-button label="近一周"></el-radio-button>
@@ -69,6 +69,9 @@
         </div>
         <div style="height: 280px" ref="echarts">
           <!-- ------------------------------------------------ -->
+        </div>
+        <div>
+          <el-link type="primary" href="page3">查看更多</el-link>
         </div>
         <!-- <div class="login-info">
           <p>上次登录时间：<span>2022.02.06</span></p>
