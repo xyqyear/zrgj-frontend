@@ -1,14 +1,34 @@
 <template>
   <el-row :gutter="30">
     <el-col class="inline_header" span="24">
-      <el-card class="inline_header_card" shadow="never" width=200>
+      <el-card class="inline_header_card" shadow="never" width="200">
         <div class="inline_title">天天点餐电子排队系统</div>
       </el-card>
       <div class="level2">
         <el-button type="primary" plain>排 号</el-button>
-        </div>
+      </div>
     </el-col>
-    <el-col :span="24">
+    <el-col :span="6">
+      <div class="inline_tableType" width="45">
+        <span class="firstfront">小桌</span>
+        <span class="secondfront">(1-4人)</span>
+        <span class="thirdfront">剩</span>
+        <span class="forthfront">{{ smallAvailable }}</span>
+      </div>
+      <div class="inline_info">
+        <div v-for="item in smallTable" :key="item.number" class="infoDetail">
+          <div class="firstrow">
+            <span class="firstfront">排队号：</span>
+            <span class="secondfront">{{ item.number }}</span>
+          </div>
+          <div class="secondrow">
+            <span>时间：{{ item.time }}</span>
+          </div>
+          <div class="thirdrow">
+            <span>人数：{{ item.count }}</span>
+          </div>
+        </div>
+      </div>
       <div class="tables">
         <div
           v-for="table in tableData"
@@ -38,75 +58,12 @@
           </el-button>
         </div>
         <!-- ------------------------------------- -->
-        <el-dialog
-          title="订单详情"
-          :visible.sync="orderDetailVisible"
-          width="50%"
-        >
-          <!-- ---------------------------------------------- -->
-          <el-table :data="curOrder.orderItems" height="500">
-            <el-table-column type="index" width="30"></el-table-column>
-            <el-table-column
-              prop="name"
-              label="菜名"
-              width="150"
-            ></el-table-column>
-            <el-table-column
-              prop="amount"
-              label="数量"
-              width="100"
-            ></el-table-column>
-            <el-table-column
-              prop="price"
-              label="金额"
-              width="100"
-            ></el-table-column>
-            <el-table-column prop="note" label="备注"></el-table-column>
-            <el-table-column prop="state" label="订单状态" width="150">
-              <template slot-scope="scope">
-                <el-tag
-                  :type="
-                    {
-                      '-1': 'info',
-                      '0': 'success',
-                      '1': 'warning',
-                      '2': 'danger',
-                    }[scope.row.state]
-                  "
-                  effect="dark"
-                >
-                  {{
-                    {
-                      "-1": "已取消",
-                      "0": "已完成",
-                      "1": "排队中",
-                      "2": "烹饪中",
-                    }[scope.row.state]
-                  }}
-                </el-tag>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-descriptions column="4">
-            <el-descriptions-item label="桌号">{{
-              curOrder.tableId
-            }}</el-descriptions-item>
-            <el-descriptions-item label="总金额">{{
-              curOrder.actualSum
-            }}</el-descriptions-item>
-            <el-descriptions-item label="下单账号">
-              {{ curOrder.waiterId }}</el-descriptions-item
-            >
-          </el-descriptions>
-          <!-- ------------------------------------------------ -->
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="orderDetailVisible = false">取 消</el-button>
-            <el-button type="primary" @click="checkout">结 算</el-button>
-          </span>
-        </el-dialog>
         <!-- ------------------------------------- -->
       </div>
     </el-col>
+    <el-col :span="6"></el-col>
+    <el-col :span="6"></el-col>
+    <el-col :span="6"></el-col>
   </el-row>
 </template>
 
@@ -124,6 +81,21 @@ export default {
   data() {
     return {
       tableData: [],
+      smallTable: [
+        {
+          number: 'A01',
+          time: '2022/3/9 14：40',
+          count: '4',
+          waittime: '10分钟'
+        }
+        // {
+        //   number: 'A02',
+        //   time: '2022/3/9 14：40',
+        //   count: '4',
+        //   waittime: '10分钟'
+        // }
+      ],
+      smallAvailable: '10',
       tableMap: {},
       orderList: [],
       curOrder: {},
@@ -245,29 +217,62 @@ export default {
 
 <style lang="less" scoped>
 //////////////排队//////////////////
-.inline_header{
+.inline_header {
   background: #fff;
 }
-.inline_header_card{
-  background:#59DBFF ;
-  .inline_title{
+.inline_header_card {
+  background: #59dbff;
+  .inline_title {
     color: #fff;
     font-size: 30px;
-    word-spacing:10px;
-    letter-spacing:5px;
+    word-spacing: 10px;
+    letter-spacing: 5px;
     font-weight: normal;
   }
-
 }
-  .level2{
-    width:100%;
-    display: flex;
-    justify-content: right;
-    margin-top: 10px;
-    margin-bottom: 20px;
-    padding-right: 20px;
-
+.inline_tableType {
+  background: #59dbff;
+  height: 60px;
+  position: relative;
+  margin-top: 20px;
+  width: 100%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  .firstfront {
+    font-size: 28px;
+    color: white;
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
   }
+  .secondfront {
+    color: white;
+    position: absolute;
+    bottom: 10px;
+    left: 75px;
+  }
+  .thirdfront {
+    color: white;
+    position: absolute;
+    bottom: 10px;
+    right: 50px;
+  }
+  .forthfront {
+    font-size: 36px;
+    color: white;
+    position: absolute;
+    bottom: 5px;
+    left: 200px;
+  }
+}
+.level2 {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding-right: 20px;
+}
 .tableInfo {
   height: 200px;
   width: 250px;
@@ -292,5 +297,34 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+.inline_info {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #fff;
+  .infoDetail {
+    color: #59dbff;
+    margin-left: 5px;
+    font-weight: normal;
+    line-height: 22px;
+    float: left;
+    border-bottom: 1px dashed rgb(#BBBBBB);
+    .firstrow {
+      float: left;
+      margin-top: 15px;
+      .secondfront {
+        font-size: 30px;
+      }
+    }
+    .secondrow {
+      float: left;
+    }
+    .thirdrow {
+      clear: both;
+      float: left;
+    }
+  }
 }
 </style>
