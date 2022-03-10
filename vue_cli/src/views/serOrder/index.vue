@@ -37,9 +37,7 @@
             </div>
           </div>
           <el-button
-            @click="
-              displayOderDetail(tableMap[table.tableName], table.tableName)
-            "
+            @click="displayOderDetail(table.tableName)"
             :disabled="!table.occupied"
             class="cardBottom"
           >
@@ -114,7 +112,7 @@
               curOrder.tableId
             }}</el-descriptions-item>
             <el-descriptions-item label="订单总金额">{{
-              curOrder.totalPrice
+              curOrder.actualSum
             }}</el-descriptions-item>
             <el-descriptions-item label="下单账号">
               {{ curOrder.waiterId }}</el-descriptions-item
@@ -233,47 +231,97 @@
   </el-row>
 </template>
 <script>
-import {
-  getRestaurant,
-  getCurrOrders,
-  getAllFood,
-  getObjectMap,
-  updateOrderItem
-} from '../../../api/data'
+import { updateOrderItem } from '../../../api/data'
 
 export default {
-  name: 'serFood',
+  name: 'serOrder',
   data() {
     return {
-      tableData: [],
-      tableMap: {},
-      orderList: [],
-      curOrder: {},
-      totalTableNum: 10,
-      dishMap: {},
       orderDetailVisible: false,
       /// ////////////////退菜/////////////
       deleteItemVisible: false,
-      waitingItems: [],
-      tableNum: ''
+      tableNum: null
     }
   },
-  mounted() {
-    // 获取餐厅最大桌号
-    getRestaurant()
-      .then((res) => {
-        this.totalTableNum = res.data.data.tableNum
-        getAllFood().then((res) => {
-          const dishList = res.data.data
-          this.dishMap = getObjectMap(dishList)
-          this.refreshOrderData() // 更新orderList
-          this.generateTableList() // 更新tableMap
+  computed: {
+    totalTableNum() {
+      return this.$store.getters.restaurantInfo.tableNum
+    },
+    dishMap() {
+      return this.$store.getters.dishMap
+    },
+    rawOrderList() {
+      return this.$store.getters.orderList
+    },
+    orderList() {
+      if (Object.keys(this.dishMap).length === 0) {
+        return []
+      }
+      const orderList = JSON.parse(JSON.stringify(this.rawOrderList))
+      for (let i = 0; i < this.rawOrderList.length; i++) {
+        for (let j = 0; j < this.rawOrderList[i].orderItems.length; j++) {
+          const dish = this.dishMap[this.rawOrderList[i].orderItems[j].dishId]
+          orderList[i].orderItems[j].name = dish.name
+          orderList[i].orderItems[j].price = dish.price
+          orderList[i].orderItems[j].imageUrl = dish.imageUrl
+          orderList[i].orderItems[j].category = dish.category
+        }
+      }
+      return orderList
+    },
+    tableData() {
+      const tableData = []
+      for (let i = 1; i <= this.totalTableNum; i++) {
+        tableData.push({
+          occupied: false,
+          tableName: i
         })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+      }
+      // 桌号与订单对应
+      for (let i = 0; i < this.orderList.length; i++) {
+        const tableName = this.orderList[i].tableId
+        tableData[tableName - 1].occupied = true
+      }
+      return tableData
+    },
+    tableMap() {
+      const tableMap = {}
+      for (let i = 0; i < this.orderList.length; i++) {
+        const tableName = this.orderList[i].tableId
+        tableMap[tableName] = this.orderList[i]
+      }
+      return tableMap
+    },
+    curOrder() {
+      if (this.tableNum) {
+        const curOrder = this.tableMap[this.tableNum]
+        let sum = 0
+        for (let i = 0; i < curOrder.orderItems.length; i++) {
+          if (curOrder.orderItems[i].state === 0) {
+            sum += curOrder.orderItems[i].amount * curOrder.orderItems[i].price
+          }
+        }
+        curOrder.actualSum = sum
+        return curOrder
+      } else {
+        return {}
+      }
+    },
+    waitingItems() {
+      if (Object.keys(this.curOrder).length !== 0) {
+        const waitingItems = []
+        this.curOrder.orderItems.forEach((element) => {
+          if (element.state === 1) {
+            waitingItems.push(element)
+          }
+        })
+        return waitingItems
+      } else {
+        return []
+      }
+    }
   },
+  mounted() {},
   methods: {
     /// ///////////////////////退菜/////////////////////
     updateCurrItem(currItem) {
@@ -292,88 +340,24 @@ export default {
             message: '取消菜品成功',
             type: 'success'
           })
-          // console.log(this.waitingItems)
-          this.refreshOrderData().then(() => {
-            // 更新orderList
-            // 更新currOrder
-            console.log('this.tableNum', this.tableNum)
-            this.curOrder = this.tableMap[this.tableNum]
-            console.log('this.curOrder', this.curOrder)
-            // 更新this.waitingItems
-            this.waitingItems = []
-            this.curOrder.orderItems.forEach((element) => {
-              if (element.state === 1) {
-                this.waitingItems.push(element)
-              }
-            })
-            console.log('this.waitingItems', this.waitingItems)
-          })
-
-          /// ///////////////////
         })
         .catch((_) => {
           this.$message({
             message: '取消菜品失败',
             type: 'error'
           })
-          this.refreshOrderData() // 更新orderList
-          this.generateTableList() // 更新tableMap
         })
     },
     deleteItem() {
-      this.waitingItems.length = 0
-      this.curOrder.orderItems.forEach((element) => {
-        if (element.state === 1) {
-          this.waitingItems.push(element)
-        }
-      })
       this.deleteItemVisible = true
     },
     /// //////////////////////添加新菜//////////////////
     addNewMeal() {
       sessionStorage.setItem('curOrder', JSON.stringify(this.curOrder))
-      console.log('this.curOrder', this.curOrder)
       this.$router.push({ name: 'serFood' })
     },
-    refreshOrderData() {
-      return getCurrOrders().then((res) => {
-        this.orderList = res.data.data
-        this.generateTableList()
-      })
-    },
-    generateTableList() {
-      this.tableData = []
-      for (let i = 1; i <= this.totalTableNum; i++) {
-        this.tableData.push({
-          occupied: false,
-          tableName: i
-        })
-      }
-      // orderItems 添加上菜品信息
-      for (let i = 0; i < this.orderList.length; i++) {
-        for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
-          const dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
-          this.orderList[i].orderItems[j].name = dish.name
-          this.orderList[i].orderItems[j].price = dish.price
-          this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
-          this.orderList[i].orderItems[j].category = dish.category
-        }
-      }
-
-      // 桌号与订单对应
-      for (let i = 0; i < this.orderList.length; i++) {
-        const tableName = this.orderList[i].tableId
-        this.tableData[tableName - 1].occupied = true
-        this.tableMap[tableName] = this.orderList[i]
-      }
-      console.log('this.tableData', this.tableData)
-      // console.log('this.tableData[tableName - 1].occupied',this.tableData[tableName - 1].occupied)
-      // console.log(this.tableData)
-    },
-    displayOderDetail(order, tableNum) {
+    displayOderDetail(tableNum) {
       this.tableNum = tableNum
-      this.curOrder = order
-      console.log('this.tableNum', tableNum)
       this.orderDetailVisible = true
     }
   }

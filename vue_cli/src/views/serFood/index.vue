@@ -89,9 +89,16 @@
                     {{ item.price }}元/份
                   </el-col>
                   <el-col :span="14">
-                    <el-button type="warning" plain @click="chooseMenu(item)"
-                      >选规格</el-button
-                    >
+                    <el-button
+                      type="warning"
+                      plain
+                      @click="chooseMenu(item)"
+                      v-if="!item.soldout"
+                      >选规格
+                    </el-button>
+                    <el-button type="info" plain v-if="item.soldout" disabled
+                      >售罄
+                    </el-button>
                     <!-- <el-input-number
                       v-model="dishList[dishIndex].amount"
                       @change="handleChange($event, dishIndex)"
@@ -116,7 +123,6 @@
       <el-input
         placeholder="请输入内容"
         v-model="searchInput"
-        @input="onSearchInput"
         clearable
       >
         <el-button
@@ -168,40 +174,13 @@
       <div slot="footer" class="dialog-footer">
         <div class="left">
           <div class="foodMoney">{{ foodMoney }}元/份</div>
-          <div>
-            <el-popover
-              placement="top"
-              v-model="selectingTableId"
-              width="290"
-              class="selectingTableBox"
-              trigger="click"
-            >
-              <div
-                v-for="(table, index) in occupied"
-                :key="index"
-                class="tableItem"
-              >
-                <el-button
-                  :type="table ? 'primary' : ''"
-                  :disabled="table"
-                  style="width: 60px"
-                  @click="selectTable(index)"
-                >
-                  {{ index + 1 }}
-                </el-button>
-              </div>
-              <el-button slot="reference" size="mini">
-                {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
-              </el-button>
-            </el-popover>
-          </div>
         </div>
         <div class="right">
           <!-- 这里的条件有所改变 -->
           <div v-if="!addable">
             <el-button type="primary" @click="confirmMenu"
-              >加入购物车</el-button
-            >
+              >加入购物车
+            </el-button>
           </div>
 
           <div v-else>
@@ -217,19 +196,16 @@
               type="primary"
               @click="commitOrderItem"
               style="margin-left: 10px"
-              >确认</el-button
-            >
+              >确认
+            </el-button>
           </div>
 
           <el-button
             @click="dialogFormVisible = false"
             style="margin-left: 10px"
-            >取 消</el-button
-          >
+            >取 消
+          </el-button>
         </div>
-        <!-- <el-button type="primary" @click="dialogFormVisible = false"
-          >确 定</el-button
-        > -->
       </div>
     </el-dialog>
 
@@ -260,9 +236,9 @@
           <el-table-column
             prop="name"
             label="菜名"
-            width="150"
+            width="120"
           ></el-table-column>
-          <el-table-column prop="amount" label="数量" width="100">
+          <el-table-column prop="amount" label="数量" width="130">
             <template slot-scope="scope">
               <!-- //这里放啥啊 -->
               <el-input-number
@@ -284,57 +260,69 @@
         </el-table>
       </template>
       <el-descriptions>
-        <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>
+        <!--        <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>-->
         <el-descriptions-item label="总金额"
           >{{ totalPrice }}
         </el-descriptions-item>
-        <el-descriptions-item label="下单账号">{{
-          accountId
-        }}</el-descriptions-item>
+        <el-descriptions-item label="下单账号"
+          >{{ accountId }}
+        </el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
+        <el-button
+          @click="
+            orderItems = [];
+            drawer = false;
+          "
+          >清空购物车
+        </el-button>
+        <el-popover
+          placement="top"
+          v-model="selectingTableId"
+          width="290"
+          class="selectingTableBox"
+          trigger="click"
+        >
+          <div
+            v-for="(tableState, index) in occupied"
+            :key="index"
+            class="tableItem"
+          >
+            <el-button
+              :type="['', 'success', 'primary'][tableState]"
+              :disabled="tableState === 2"
+              style="width: 60px"
+              @click="selectTable(index)"
+            >
+              {{ index + 1 }}
+            </el-button>
+          </div>
+          <el-button slot="reference" size="mini" :disabled="disabled">
+            {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
+          </el-button>
+        </el-popover>
         <el-button @click="drawer = false">取 消</el-button>
         <el-button type="primary" @click="uploadOrder">确认</el-button>
       </div>
     </el-drawer>
-
-    <el-dialog
-      title="提示"
-      :visible.sync="centerDialogVisible"
-      width="30%"
-      center
-    >
-      <span>当前订单为空或还未选择桌号</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="centerDialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
   addOrder,
-  getAllFood,
-  getCurrOrders,
-  getRestaurant,
   addNewOrderItem
 } from '../../../api/data'
 
 import pinyin from 'pinyin'
 
 export default {
-  name: 'perCen',
+  name: 'serFood',
   data() {
     return {
-      foodNum: 0,
       activeName: '全部菜品',
       accountId: localStorage.getItem('accountId'),
       num: 1,
-      dishList: [],
-      fullDishList: [],
       dishCategories: [
         '全部菜品',
         '荤菜',
@@ -346,7 +334,6 @@ export default {
       ],
       drawer: false,
       selectingTableId: false,
-      centerDialogVisible: false,
       note: '',
       /// //////////////////////点餐dialog/////////////////////
       foodName: '',
@@ -364,25 +351,73 @@ export default {
       totalPrice: 0,
       orderItems: [], // 存放！就用你啦！
       tableId: 0,
-      tableNum: 10,
-      occupied: [],
       /// /////////////////////////查询//////////////////////////
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
-      curOrderId: ''
+      curOrderId: null,
+      disabled: false
+    }
+  },
+
+  computed: {
+    orderList() {
+      return this.$store.getters.orderList
+    },
+    // 0: 空桌子  1: 空订单  2: 占用中
+    occupied() {
+      const occupied = new Array(this.tableNum).fill(0)
+      for (let i = 0; i < this.orderList.length; i++) {
+        if (this.orderList[i].orderItems.length === 0) {
+          occupied[this.orderList[i].tableId - 1] = 1
+        } else {
+          occupied[this.orderList[i].tableId - 1] = 2
+        }
+      }
+      return occupied
+    },
+    foodNum() {
+      return this.orderItems.reduce((acc, cur) => {
+        return acc + cur.amount
+      }, 0)
+    },
+    dishList() {
+      if (this.searchInput === '') {
+        return this.fullDishList
+      } else if (/^[\u4e00-\u9fa5]+$/.test(this.searchInput)) {
+        return this.fullDishList.filter((item) => {
+          return item.name.includes(this.searchInput)
+        })
+      } else if (/^[a-zA-Z]+$/.test(this.searchInput)) {
+        return this.fullDishList
+          .filter((item) => {
+            return pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER
+            })
+              .reduce((acc, cur) => acc + cur[0], '')
+              .startsWith(this.searchInput)
+          })
+          .concat(
+            this.fullDishList.filter((item) => {
+              const py = pinyin(item.name, {
+                style: pinyin.STYLE_FIRST_LETTER
+              }).reduce((acc, cur) => acc + cur[0], '')
+              return !py.startsWith(this.searchInput) && py.includes(this.searchInput)
+            })
+          )
+      } else {
+        return []
+      }
+    },
+    fullDishList() {
+      return this.$store.getters.dishList
+    },
+    tableNum() {
+      return this.$store.getters.restaurantInfo.tableNum
     }
   },
 
   mounted() {
     this.getAddMeal()
-    this.refreshDishList()
-    // 获取餐厅最大桌号
-    this.occupied = new Array(this.tableNum)
-    getRestaurant().then((res) => {
-      localStorage.setItem('tableNum', res.data.data.tableNum)
-      this.tableNum = res.data.data.tableNum
-      this.refreshTableSituation()
-    })
   },
   methods: {
     /// ///////////////////////获取加菜信息///////////////
@@ -391,12 +426,9 @@ export default {
         const curOrder = JSON.parse(sessionStorage.getItem('curOrder'))
         this.tableId = curOrder.tableId
         this.curOrderId = curOrder.id
+        this.disabled = true
         sessionStorage.removeItem('curOrder')
       }
-    },
-    /// /////////////////////////查询/////////////////////////////
-    searchFood() {
-      // input
     },
     /// ///////////////////////选规格////////////////////////////
     commitOrderItem() {
@@ -423,12 +455,8 @@ export default {
           this.orderItems.push(tempItem)
         }
       }
-      // 设置购物车上的数字
-      this.foodNum = 0
-      this.orderItems.forEach((element) => {
-        this.foodNum += element.amount
-      })
       // console.log('this.orderItems',this.orderItems)
+      this.amount = 0
       this.dialogFormVisible = false
     },
     confirmMenu() {
@@ -475,16 +503,42 @@ export default {
           this.totalPrice += dish.amount * dish.price
         }
       }
-      if (this.orderItems.length === 0 || this.tableId === 0) {
-        this.centerDialogVisible = true
+      if (this.orderItems.length === 0) {
+        this.$alert('当前订单为空，请选择所需菜品', '提示', {
+          confirmButtonText: '确定'
+        })
         return
       }
       this.drawer = true
     },
     uploadOrder() {
+      if (this.tableId === 0) {
+        this.$alert('下单前请选择餐桌', '提示', {
+          confirmButtonText: '确定'
+        })
+        return
+      }
       console.log('this.orderItems', this.orderItems)
+      // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
+      this.curOrderId = this.orderList
+        .filter((order) => {
+          // 过滤出当前桌号的订单
+          return order.tableId === this.tableId
+        })
+        .map((order) => {
+          // map到id
+          return order.id
+        })
+        .reduce((acc, cur) => {
+          // 如果有id，就返回id，如果没有就返回null
+          if (acc === null) {
+            return cur
+          } else {
+            return acc
+          }
+        }, null)
       // 如果当前的订单号不为空
-      if (this.curOrderId !== '') {
+      if (this.curOrderId !== null) {
         this.orderItems.forEach((element) => {
           const addOrder = {
             orderId: this.curOrderId,
@@ -498,6 +552,9 @@ export default {
                 message: '添加菜品成功',
                 type: 'success'
               })
+              this.occupied[this.tableId - 1] = 2
+              this.tableId = 0
+              this.drawer = false
             })
             .catch((error) => {
               console.log(error)
@@ -505,19 +562,27 @@ export default {
         })
         console.log('this.curOrderId', this.curOrderId)
       } else {
+        const temporderItems = []
+        this.orderItems.forEach((element) => {
+          const item = {
+            dishId: element.id,
+            amount: element.amount,
+            note: element.note
+          }
+          temporderItems.push(item)
+        })
         const newOrder = {
           tableId: this.tableId,
-          orderItems: this.orderItems
+          orderItems: temporderItems
         }
+        console.log('newOrder', newOrder)
         addOrder(newOrder)
           .then((res) => {
             this.$message({
               message: '创建订单成功',
               type: 'success'
             })
-            this.refreshDishList()
-            this.refreshTableSituation()
-            this.occupied[this.tableId - 1] = true
+            this.occupied[this.tableId - 1] = 2
             this.tableId = 0
             this.drawer = false
           })
@@ -528,12 +593,6 @@ export default {
       }
       this.orderItems = []
       this.totalPrice = 0
-    },
-    refreshDishList() {
-      getAllFood().then((res) => {
-        this.dishList = res.data.data
-        this.fullDishList = this.dishList
-      })
     },
     handleChange(dishIndex) {
       this.$forceUpdate()
@@ -550,23 +609,7 @@ export default {
           }
         }
       })
-      // 设置购物车上的数字
-      this.foodNum = 0
-      this.orderItems.forEach((element) => {
-        this.foodNum += element.amount
-      })
       this.createNewOrder()
-    },
-    refreshTableSituation() {
-      for (let i = 0; i < this.tableNum; i++) {
-        this.occupied[i] = false
-      }
-      getCurrOrders().then((res) => {
-        this.orderList = res.data.data
-        for (let i = 0; i < this.orderList.length; i++) {
-          this.occupied[this.orderList[i].tableId - 1] = true
-        }
-      })
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -574,34 +617,6 @@ export default {
           done()
         })
         .catch((_) => {})
-    },
-    onSearchInput(value) {
-      if (value === '') {
-        this.dishList = this.fullDishList
-      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
-        this.dishList = this.fullDishList.filter((item) => {
-          return item.name.includes(value)
-        })
-      } else if (/^[a-zA-Z]+$/.test(value)) {
-        this.dishList = this.fullDishList
-          .filter((item) => {
-            return pinyin(item.name, {
-              style: pinyin.STYLE_FIRST_LETTER
-            })
-              .reduce((acc, cur) => acc + cur[0], '')
-              .startsWith(value)
-          })
-          .concat(
-            this.fullDishList.filter((item) => {
-              const py = pinyin(item.name, {
-                style: pinyin.STYLE_FIRST_LETTER
-              }).reduce((acc, cur) => acc + cur[0], '')
-              return !py.startsWith(value) && py.includes(value)
-            })
-          )
-      } else {
-        this.dishList = []
-      }
     }
   }
 }
@@ -616,32 +631,38 @@ export default {
     line-height: 100%;
     margin-bottom: 10px;
   }
+
   .radioGroup {
     margin-left: 30px;
   }
+
   .alreadyChoose {
     margin-top: 10px;
     font-size: 14px;
     color: #8ca2aa;
   }
 }
+
 .dialog-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-align: center;
   line-height: 100%;
+
   .right {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   .left {
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
+
 .foodMoney {
   display: inline-block;
   line-height: 1;
@@ -651,11 +672,13 @@ export default {
   font-weight: 400;
   color: #ff2525;
 }
+
 .tableItem {
   display: inline-block;
   margin: 3px;
   width: 60px;
 }
+
 .card-title {
   display: flex;
   align-items: center;

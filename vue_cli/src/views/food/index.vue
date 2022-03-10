@@ -14,33 +14,12 @@
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
-          >上架菜品</el-button
-        >
+          >上架菜品
+        </el-button>
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
           <el-form :model="form" :rules="addRules">
             <el-form-item label="菜品名称" prop="name">
               <el-input v-model="form.name" autocomplete="off"></el-input>
-              <!-- <el-alert
-                v-show="alertBlankVisible"
-                title="菜名不能为空！"
-                type="error"
-                show-icon
-                :closable="false"
-              ></el-alert>
-              <el-alert
-                v-show="alertAgainVisible"
-                title="与已有菜名重复，请更改！"
-                type="error"
-                show-icon
-                :closable="false"
-              ></el-alert>
-              <el-alert
-                v-show="alertContentVisible"
-                title="输入内容不满足格式，必须包含汉字、英文字母中至少一种！"
-                type="error"
-                show-icon
-                :closable="false"
-              ></el-alert> -->
             </el-form-item>
             <el-form-item label="价格" prop="price">
               <el-input v-model="form.price" autocomplete="off"></el-input>
@@ -221,10 +200,8 @@
     <el-col :span="24">
       <el-card style="margin-top: 20px">
         <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="id" label="序号" width="100">
-          </el-table-column>
-          <el-table-column prop="name" label="菜品名称" width="150">
-          </el-table-column>
+          <el-table-column type="index" width="100" />
+          <el-table-column prop="name" label="菜品名称" width="150" />
           <el-table-column label="菜品图片" width="150">
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
@@ -241,136 +218,138 @@
           </el-table-column>
           <el-table-column prop="flavour" label="菜品描述" width="200">
           </el-table-column>
-          <el-table-column label="操作" width="100">
+          <el-table-column label="菜品状态" width="100">
+            <template slot-scope="scope">
+              <el-tag type="success" v-if="!scope.row.soldout">在售</el-tag>
+              <el-tag type="info" v-if="scope.row.soldout">售罄</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <el-button
                 size="mini"
                 type="text"
                 @click="handleEdit(scope.$index, scope.row)"
-                >修改</el-button
               >
-              <el-dialog title="更新菜品" :visible.sync="dialogChangeVisible">
-                <el-form :model="form">
-                  <el-form-item label="菜品名称">
-                    <el-input
-                      v-model="formChange.name"
-                      autocomplete="off"
-                    ></el-input>
-                  </el-form-item>
-                  <el-form-item label="价格">
-                    <el-input
-                      v-model="formChange.price"
-                      autocomplete="off"
-                    ></el-input>
-                  </el-form-item>
-                  <el-form-item label="类别">
-                    <el-select
-                      @change="handleChange"
-                      v-model="selectVal"
-                      placeholder="请选择"
-                    >
-                      <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item"
-                      >
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item label="图片">
-                    <el-upload
-                      class="avatar-uploader"
-                      action=" "
-                      :show-file-list="false"
-                      :auto-upload="false"
-                      :on-change="uploadFiles"
-                      :on-success="handle_success"
-                    >
-                      <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                  </el-form-item>
-                  <el-form-item>
-                    <div style="justify-content: left">个性化设置</div>
-                    <el-card v-for="item in perChange" :key="item.id">
-                      <el-row justify="end">
-                        <el-col :span="5">
-                          <el-input v-model="item.key" placeholder="属性名">
-                          </el-input>
-                        </el-col>
-                        <el-col :span="19">
-                          <el-row>
-                            <el-input
-                              v-model="item.value1"
-                              placeholder="属性值1"
-                              style="width: 30%"
-                            >
-                            </el-input>
-                            <el-input
-                              v-model="item.value2"
-                              placeholder="属性值2"
-                              style="width: 30%"
-                            >
-                            </el-input>
-                            <el-input
-                              v-model="item.value3"
-                              placeholder="属性值3"
-                              style="width: 30%"
-                            >
-                            </el-input>
-                          </el-row>
-                          <el-row>
-                            <el-input
-                              v-model="item.value4"
-                              placeholder="属性值4"
-                              style="width: 30%"
-                            >
-                            </el-input>
-                            <el-input
-                              v-model="item.value5"
-                              placeholder="属性值5"
-                              style="width: 30%"
-                            >
-                            </el-input>
-                            <el-input
-                              v-model="item.value6"
-                              placeholder="属性值6"
-                              style="width: 30%"
-                            >
-                            </el-input>
-                          </el-row>
-                        </el-col>
-                        <el-col>
-                          <i class="el-icon-delete" @click="delChange()"></i>
-                        </el-col>
-                      </el-row>
-                    </el-card>
-                    <el-button type="primary" @click="addChange()"
-                      >增加属性</el-button
-                    >
-                  </el-form-item>
-                </el-form>
-                <div slot="footer" class="dialog-footer">
-                  <el-button @click="dialogChangeVisible = false"
-                    >取 消</el-button
-                  >
-                  <el-button type="primary" @click="handleEditSure()"
-                    >确 定</el-button
-                  >
-                </div>
-              </el-dialog>
+                修改
+              </el-button>
+              <el-button
+                size="mini"
+                type="text"
+                @click="changeSoldoutStatus(scope.$index, scope.row)"
+              >
+                {{ scope.row.soldout ? "设为在售" : "设为售罄" }}
+              </el-button>
               <el-button
                 size="mini"
                 type="text"
                 @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
               >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-card>
     </el-col>
+    <el-dialog title="更新菜品" :visible.sync="dialogChangeVisible">
+      <el-form :model="form">
+        <el-form-item label="菜品名称">
+          <el-input v-model="formChange.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="价格">
+          <el-input v-model="formChange.price" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="类别">
+          <el-select
+            @change="handleChange"
+            v-model="selectVal"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="图片">
+          <el-upload
+            class="avatar-uploader"
+            action=" "
+            :show-file-list="false"
+            :auto-upload="false"
+            :on-change="uploadFiles"
+            :on-success="handle_success"
+          >
+            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item>
+          <div style="justify-content: left">个性化设置</div>
+          <el-card v-for="item in perChange" :key="item.id">
+            <el-row justify="end">
+              <el-col :span="5">
+                <el-input v-model="item.key" placeholder="属性名"> </el-input>
+              </el-col>
+              <el-col :span="19">
+                <el-row>
+                  <el-input
+                    v-model="item.value1"
+                    placeholder="属性值1"
+                    style="width: 30%"
+                  >
+                  </el-input>
+                  <el-input
+                    v-model="item.value2"
+                    placeholder="属性值2"
+                    style="width: 30%"
+                  >
+                  </el-input>
+                  <el-input
+                    v-model="item.value3"
+                    placeholder="属性值3"
+                    style="width: 30%"
+                  >
+                  </el-input>
+                </el-row>
+                <el-row>
+                  <el-input
+                    v-model="item.value4"
+                    placeholder="属性值4"
+                    style="width: 30%"
+                  >
+                  </el-input>
+                  <el-input
+                    v-model="item.value5"
+                    placeholder="属性值5"
+                    style="width: 30%"
+                  >
+                  </el-input>
+                  <el-input
+                    v-model="item.value6"
+                    placeholder="属性值6"
+                    style="width: 30%"
+                  >
+                  </el-input>
+                </el-row>
+              </el-col>
+              <el-col>
+                <i class="el-icon-delete" @click="delChange()"></i>
+              </el-col>
+            </el-row>
+          </el-card>
+          <el-button type="primary" @click="addChange()">增加属性 </el-button>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogChangeVisible = false">取 消 </el-button>
+        <el-button type="primary" @click="handleEditSure()">确 定 </el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 <script>
@@ -379,7 +358,8 @@ import {
   addFood,
   upload,
   updateFood,
-  deleteFood
+  deleteFood,
+  changeSoldoutStatus
 } from '../../../api/data.js'
 
 import pinyin from 'pinyin'
@@ -435,16 +415,37 @@ export default {
     return {
       addRules: {
         name: [
-          { required: true, message: '该内容不能为空！', trigger: 'blur' },
-          { validator: checkName, trigger: 'blur' }
+          {
+            required: true,
+            message: '该内容不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkName,
+            trigger: 'blur'
+          }
         ],
         price: [
-          { required: true, message: '该内容不能为空！', trigger: 'blur' },
-          { validator: checkNum, trigger: 'blur' }
+          {
+            required: true,
+            message: '该内容不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkNum,
+            trigger: 'blur'
+          }
         ],
         image: [
-          { required: true, message: '该内容不能为空！', trigger: 'blur' },
-          { validator: checkImage, trigger: 'blur' }
+          {
+            required: true,
+            message: '该内容不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkImage,
+            trigger: 'blur'
+          }
         ]
       },
       perChange: [],
@@ -469,26 +470,7 @@ export default {
       },
       searchInput: '',
       imageUrl: '',
-      tableData: [
-        // {
-        //   index: "1",
-        //   name: "麻婆豆腐",
-        //   img: require("../../assets/images/logo.png"),
-        //   type: "素菜",
-        //   price: "12",
-        //   describe: "好吃！",
-        //   operation: "哇哩哇",
-        // },
-        // {
-        //   index: "0",
-        //   name: "麻婆豆腐",
-        //   img: require("../../assets/images/logo.png"),
-        //   type: "素菜",
-        //   price: "12",
-        //   describe: "好吃！",
-        //   operation: "哇哩哇",
-        // },
-      ],
+      tableData: [],
       fullTableData: [],
       options: [
         {
@@ -519,7 +501,6 @@ export default {
       value: '',
       fileList: [],
       flavour: [],
-      /// //////////////////////allfood///////////
       allFood: []
     }
   },
@@ -535,29 +516,6 @@ export default {
       this.selectVal = ''
       this.dialogFormVisible = false
     },
-    // blur() {
-    //   if (this.form.name === "") {
-    //     this.alertBlankVisible = true;
-    //   } else {
-    //     this.alertBlankVisible = false;
-    //   }
-    //   for (let i = 0; i < this.tableData.length; i++) {
-    //     if (this.form.name === this.tableData[i].name) {
-    //       this.alertAgainVisible = true;
-    //       break;
-    //     } else {
-    //       this.alertAgainVisible = false;
-    //     }
-    //   }
-    //   if (
-    //     !/^[\u4e00-\u9fa5]/.test(this.form.name) &&
-    //     !/^[a-zA-Z]/.test(this.form.name)
-    //   ) {
-    //     this.alertContentVisible = true;
-    //   } else {
-    //     this.alertContentVisible = false;
-    //   }
-    // },
     delChange() {
       this.perChange.splice(this.perChange.length - 1, 1)
     },
@@ -584,6 +542,29 @@ export default {
         id: a + 1
       }
       this.perSet.push(body)
+    },
+    changeSoldoutStatus(index, row) {
+      const confirmMsg = row.soldout
+        ? `将要上架${row.name}`
+        : `${row.name}已经售罄，将要下架`
+      const successMsg = row.soldout ? '上架成功' : '下架成功'
+      this.$confirm(confirmMsg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const body = {
+          id: row.id
+        }
+        changeSoldoutStatus(body).then((res) => {
+          this.$message({
+            type: 'success',
+            message: successMsg
+          })
+          this.tableData.length = 0
+          this.getFoodData()
+        })
+      })
     },
     handleDelete(index, row) {
       this.$confirm('此操作将删除该菜品, 是否继续?', '提示', {
@@ -624,7 +605,6 @@ export default {
       this.formChange.id = row.id
       this.selectVal = row.type
       const id = row.id
-      console.log(id)
       this.perChange.length = 0
       if (this.allFood[id - 1].flavour != null) {
         for (let i = 0; i < this.allFood[id - 1].flavour.length; i++) {
@@ -705,24 +685,13 @@ export default {
       })
     },
     uploadFiles(file, _) {
-      console.log('???')
-      console.log('file', file)
-      const fileTest = file.name.substring(file.name.lastIndexOf('.') + 1)
-      console.log('fileTest', fileTest)
-      const allowFile = ['png', 'jpg', 'jpeg', 'js', 'css', 'html']
-      console.log('fileTest', fileTest)
-      if (allowFile.indexOf(fileTest) === -1) {
-        this.$message.error('文件格式不符合要求，请重新上传。')
-        return false
-      } else {
-        const fd = new FormData()
-        fd.append('file', file.raw)
-        upload(fd).then((res) => {
-          console.log(res)
-          this.imageUrl = res.data.data.fileUrl
-          console.log('this.imageUrl', this.imageUrl)
-        })
-      }
+      const fd = new FormData()
+      fd.append('file', file.raw)
+      upload(fd).then((res) => {
+        console.log(res)
+        this.imageUrl = res.data.data.fileUrl
+        console.log('this.imageUrl', this.imageUrl)
+      })
     },
     handle_success(res) {
       console.log(res)
@@ -804,8 +773,6 @@ export default {
             return !i.deleted
           })
 
-          console.log(this.allFood)
-
           this.find = res.data.data.length
 
           for (let i = 0; i < res.data.data.length; i++) {
@@ -828,17 +795,16 @@ export default {
                 }
               }
             }
-            if (res.data.data[i].deleted === false) {
-              const item = {
-                id: res.data.data[i].id,
-                name: res.data.data[i].name,
-                type: res.data.data[i].category,
-                price: res.data.data[i].price,
-                img: res.data.data[i].imageUrl,
-                flavour: flavour
-              }
-              this.tableData.push(item)
+            const item = {
+              id: res.data.data[i].id,
+              name: res.data.data[i].name,
+              type: res.data.data[i].category,
+              price: res.data.data[i].price,
+              img: res.data.data[i].imageUrl,
+              soldout: res.data.data[i].soldout,
+              flavour: flavour
             }
+            this.tableData.push(item)
           }
           this.fullTableData = this.tableData
         })
@@ -889,6 +855,7 @@ export default {
   justify-content: left;
   justify-items: left;
 }
+
 .operation {
   display: flex;
   flex-direction: row;
@@ -896,6 +863,7 @@ export default {
   align-items: center;
   text-align: center;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -903,9 +871,11 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409eff;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -914,6 +884,7 @@ export default {
   line-height: 178px;
   text-align: center;
 }
+
 .avatar {
   width: 178px;
   height: 178px;

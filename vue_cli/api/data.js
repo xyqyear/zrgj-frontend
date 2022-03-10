@@ -367,6 +367,17 @@ export const updateFood = (param) => {
   })
 }
 
+export const changeSoldoutStatus = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/dish/soldout/change`,
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
 // 获取当前帐号所属餐厅的所有菜品
 /*
 Body:none
@@ -425,6 +436,28 @@ Body:见文档
 export const updateRestaurant = (param) => {
   return axios.request({
     url: `${apiPrefix}/api/v1/restaurant/update`,
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+export const getQueueStatus = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/restaurant/queue_status/get`,
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+export const updateQueueStatus = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/restaurant/queue_status/update`,
     method: 'POST',
     data: param,
     headers: {

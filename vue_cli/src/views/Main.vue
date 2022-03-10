@@ -87,10 +87,42 @@ export default {
 <script>
 import CommonAside from '../components/CommonAside.vue'
 import CommonHeader from '../components/CommonHeader.vue'
+
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
+import { apiPrefix } from '../../api/data'
+
 export default {
   name: 'Main',
   created() {
-    this.$store.dispatch('getNecessaryDataAfterLogin')
+    this.$store.dispatch('getNotificationListFromServer')
+    this.$store.dispatch('getOrderListFromServer')
+    this.$store.dispatch('getRestaurantInfoFromServer')
+    this.$store.dispatch('getQueueFromServer')
+    this.$store.dispatch('getDishFromServer')
+
+    const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
+    console.log(serverInterface)
+    const socket = new SockJS(serverInterface)
+    const stompClient = Stomp.over(socket)
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/notification/' + localStorage.getItem('restaurantId') + '/' + localStorage.getItem('position'), (message) => {
+        const notification = JSON.parse(message.body)
+        this.$store.dispatch('handleNewNotification', notification)
+      })
+      stompClient.subscribe('/orders/' + localStorage.getItem('restaurantId'), (message) => {
+        const orderList = JSON.parse(message.body)
+        this.$store.commit('refreshOrderList', orderList)
+      })
+      stompClient.subscribe('/queue/' + localStorage.getItem('restaurantId'), (message) => {
+        const queue = JSON.parse(message.body)
+        this.$store.commit('refreshQueue', queue)
+      })
+      stompClient.subscribe('/dish/' + localStorage.getItem('restaurantId'), (message) => {
+        const dish = JSON.parse(message.body)
+        this.$store.commit('refreshDish', dish)
+      })
+    })
   },
   components: { CommonAside, CommonHeader }
 }

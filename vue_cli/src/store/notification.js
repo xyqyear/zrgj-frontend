@@ -1,7 +1,5 @@
-import { apiPrefix, getNotificationList } from '../../api/data'
+import { getNotificationList } from '../../api/data'
 import { Notification } from 'element-ui'
-import SockJS from 'sockjs-client'
-import Stomp from 'stompjs'
 
 export const getReadableTime = (ts) => {
   const date = new Date(ts * 1000)
@@ -33,38 +31,35 @@ export default {
   // 显示的更改state
   mutations: {
     deleteNotification(state, index) {
-      this.state.notificationList.splice(index, 1)
-      this.state.notificationNum = this.state.notificationList.length
+      state.notificationList.splice(index, 1)
+      state.notificationNum = state.notificationList.length
     },
-    updateNotification(state, notification, index) {
-      this.state.notificationList.splice(index, 1, notification)
+    stickNotification(state, obj) {
+      state.notificationList[obj.index].sticked = obj.sticked
+      state.notificationList = state.notificationList.sort(cmp)
     },
     addNotification(state, notification) {
       let i = 0
-      while (i < this.state.notificationList.length && cmp(notification, this.state.notificationList[i]) > 0) {
+      while (i < state.notificationList.length && cmp(notification, state.notificationList[i]) > 0) {
         i++
       }
       console.log(i)
-      this.state.notificationList.splice(i, 0, notification)
+      state.notificationList.splice(i, 0, notification)
       // this.state.notificationList.push(notification);
-      this.state.notificationNum = this.state.notificationList.length
+      state.notificationNum = state.notificationList.length
     },
     refreshNotificationList(state, notificationList) {
-      this.state.notificationList = notificationList.sort(cmp)
-      this.state.notificationNum = this.state.notificationList.length
+      state.notificationList = notificationList.sort(cmp)
+      state.notificationNum = state.notificationList.length
     }
   },
   // 过滤state中的数据
-  getters: {},
+  getters: {
+    notificationList: state => state.notificationList,
+    notificationNum: state => state.notificationNum
+  },
   // 异步操作
   actions: {
-    getNecessaryDataAfterLogin({ dispatch, commit }) {
-      console.log('start to get necessary data [notificationList, initConnection]')
-      // 获取推送信息
-      dispatch('getNotificationListFromServer')
-      // 建立sockjs连接
-      dispatch('initConnection')
-    },
     // 获取通知列表
     getNotificationListFromServer({ dispatch, commit }) {
       getNotificationList()
@@ -80,21 +75,6 @@ export default {
         .catch(err => {
           console.log(err)
         })
-    },
-    // 建立接受实时通知的连接
-    initConnection({ dispatch, commit }) {
-      console.log('start to init websocket connection')
-      const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
-      console.log(serverInterface)
-      const socket = new SockJS(serverInterface)
-      const stompClient = Stomp.over(socket)
-      stompClient.connect({}, function(frame) {
-        const subscribeChannel = '/notification/' + localStorage.getItem('restaurantId') + '/' + localStorage.getItem('position')
-        stompClient.subscribe(subscribeChannel, function(message) {
-          const notification = JSON.parse(message.body)
-          dispatch('handleNewNotification', notification)
-        })
-      })
     },
     // 处理新收到的通知
     handleNewNotification({ dispatch, commit }, notification) {
