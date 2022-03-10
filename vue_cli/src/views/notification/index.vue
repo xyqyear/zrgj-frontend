@@ -54,7 +54,7 @@ export default {
   mounted() {},
   computed: {
     notificationList() {
-      return this.$store.state.notificationList
+      return this.$store.getters.notificationList
     }
   },
   methods: {

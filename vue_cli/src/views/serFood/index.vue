@@ -89,11 +89,15 @@
                     {{ item.price }}元/份
                   </el-col>
                   <el-col :span="14">
-                    <el-button type="warning" plain @click="chooseMenu(item)" v-if="!item.soldout"
-                    >选规格
+                    <el-button
+                      type="warning"
+                      plain
+                      @click="chooseMenu(item)"
+                      v-if="!item.soldout"
+                      >选规格
                     </el-button>
                     <el-button type="info" plain v-if="item.soldout" disabled
-                    >售罄
+                      >售罄
                     </el-button>
                     <!-- <el-input-number
                       v-model="dishList[dishIndex].amount"
@@ -176,7 +180,7 @@
           <!-- 这里的条件有所改变 -->
           <div v-if="!addable">
             <el-button type="primary" @click="confirmMenu"
-            >加入购物车
+              >加入购物车
             </el-button>
           </div>
 
@@ -193,14 +197,14 @@
               type="primary"
               @click="commitOrderItem"
               style="margin-left: 10px"
-            >确认
+              >确认
             </el-button>
           </div>
 
           <el-button
             @click="dialogFormVisible = false"
             style="margin-left: 10px"
-          >取 消
+            >取 消
           </el-button>
         </div>
       </div>
@@ -218,7 +222,7 @@
         size="mini"
         style="position: absolute; right: 10px; top: 5px"
         icon="el-icon-shopping-cart-2"
-      >购物车
+        >购物车
       </el-button>
     </el-badge>
     <el-drawer
@@ -259,10 +263,10 @@
       <el-descriptions>
         <!--        <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>-->
         <el-descriptions-item label="总金额"
-        >{{ totalPrice }}
+          >{{ totalPrice }}
         </el-descriptions-item>
         <el-descriptions-item label="下单账号"
-        >{{ accountId }}
+          >{{ accountId }}
         </el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
@@ -271,7 +275,7 @@
             orderItems = [];
             drawer = false;
           "
-        >清空购物车
+          >清空购物车
         </el-button>
         <el-popover
           placement="top"
@@ -295,7 +299,7 @@
             </el-button>
           </div>
           <el-button slot="reference" size="mini" :disabled="disabled">
-            {{ tableId === 0 ? '选择餐桌' : tableId + '号桌' }}
+            {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
           </el-button>
         </el-popover>
         <el-button @click="drawer = false">取 消</el-button>
@@ -363,7 +367,7 @@ export default {
 
   computed: {
     orderList() {
-      return this.$store.state.orderList
+      return this.$store.getters.orderList
     },
     // 0: 空桌子  1: 空订单  2: 占用中
     occupied() {
@@ -600,8 +604,7 @@ export default {
         .then((_) => {
           done()
         })
-        .catch((_) => {
-        })
+        .catch((_) => {})
     },
     onSearchInput(value) {
       if (value === '') {
