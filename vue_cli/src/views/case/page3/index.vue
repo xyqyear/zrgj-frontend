@@ -19,24 +19,9 @@
           >
           </el-date-picker>
         </div>
-        <!-- <div class="demo-input-suffix">
-          起始时间：
-          <el-input
-            placeholder="请选择日期"
-            suffix-icon="el-icon-date"
-            v-model="input1"
-          >
-          </el-input>
-          截止时间：
-          <el-input
-            placeholder="请选择日期"
-            suffix-icon="el-icon-date"
-            v-model="input1"
-          >
-          </el-input>
-        </div> -->
       </el-col>
     </el-row>
+    <!--  -->
     <el-col :span="24" style="margin-top: 20px">
       <el-card shadow="hover" style="height: 350px">
         <div class="timebar"></div>
@@ -48,10 +33,38 @@
           <p>上次登录地点：<span>四川广安</span></p>
         </div> -->
       </el-card>
+      <el-card style="height: 450px">
+        <div class="leftChoices">
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              排序<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="ascendingFood"
+                >升序</el-dropdown-item
+              >
+              <el-dropdown-item @click.native="descendingFood"
+                >降序</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-dropdown style="margin-left: 30px">
+            <span class="el-dropdown-link">
+              数据类型<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="swithSaleMoney"
+                >销售额</el-dropdown-item
+              >
+              <el-dropdown-item @click.native="swithSaleAmount"
+                >销售量</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div style="height: 400px" ref="moneyEcharts"></div>
+      </el-card>
     </el-col>
-    <el-card style="height: 450px">
-      <div style="height: 400px" ref="moneyEcharts"></div>
-    </el-card>
   </div>
 </template>
 <script>
@@ -107,7 +120,9 @@ export default {
         ]
       },
       value1: '',
-      value2: ''
+      value2: '',
+      /// ////////////直方图///////////
+      choice: '销售量'
     }
   },
   computed: {
@@ -120,24 +135,61 @@ export default {
     getAllFood().then((res) => {
       const foodData = res.data.data
       this.dishMap = getObjectMap(foodData)
-      this.foodName.length = 0
-      this.allFoodData.length = 0
+      this.allFoodDat = []
       foodData.forEach((item) => {
         if (item.deleted === false) {
-          this.foodName.push(item.name)
           const element = {
+            name: item.name,
             id: item.id,
-            amount: 0
+            amount: 0,
+            price: item.price,
+            totalPrice: 0
           }
           this.allFoodData.push(element) // 成功！
         }
       })
-
+      console.log('this.allFoodData', this.allFoodData)
       this.chooseDays(this.radio1) // 首先setbody数据
     })
     // this.setFoodData();
   },
   methods: {
+    /// /////////////////////////////直方图统计表/////////
+    // 销售量
+    swithSaleAmount() {
+      this.choice = '销售量'
+      this.setColumnChart()
+    },
+    /// 销售额
+    swithSaleMoney() {
+      this.choice = '销售额'
+      this.setColumnChart()
+    },
+    // 定义一个比较器
+    compare(propertyName, modelInt) {
+      return function(object1, object2) {
+        const value1 = object1[propertyName]
+        const value2 = object2[propertyName]
+        if (value2 < value1) {
+          return 1 * modelInt
+        } else if (value2 > value1) {
+          return -1 * modelInt
+        } else {
+          return 0
+        }
+      }
+    },
+    // 升序
+    ascendingFood() {
+      this.allFoodData.sort(this.compare('amount', 1))
+      console.log('allFoodData', this.allFoodData)
+      this.setColumnChart()
+    },
+    descendingFood() {
+      this.allFoodData.sort(this.compare('amount', -1))
+      console.log('allFoodData', this.allFoodData)
+      this.setColumnChart()
+    },
     // 根据日期选择确定时
     onChange() {
       if (this.value1[0] != null && this.value1[1] != null) {
@@ -328,6 +380,7 @@ export default {
       /// 确定纵坐标！！！
       // 重置为0
       getGivenTimeOrders(this.body).then((res) => {
+        console.log('res.data.data', res.data.data) // 可以根据amount排序
         res.data.data.forEach((item) => {
           item.orderItems.forEach((element) => {
             this.allFoodData.forEach((i) => {
@@ -343,16 +396,32 @@ export default {
           item.orderItems.forEach((element) => {
             this.allFoodData.forEach((i) => {
               if (i.id === element.dishId) {
-                i.amount++
+                i.amount += element.amount
               }
             })
             // if(element.dishId)
           })
         })
-        this.xData2 = []
-        this.allFoodData.forEach((item) => {
-          this.xData2.push(item.amount)
+        // 设置price
+        this.allFoodData.forEach((i) => {
+          i.totalPrice = i.amount * i.price
         })
+        /// 设置横坐标
+        const foodName = []
+        this.allFoodData.forEach((element) => {
+          foodName.push(element.name)
+        })
+        /// 设置纵坐标
+        this.xData2 = []
+        if (this.choice === '销售额') {
+          this.allFoodData.forEach((item) => {
+            this.xData2.push(item.totalPrice)
+          })
+        } else {
+          this.allFoodData.forEach((item) => {
+            this.xData2.push(item.amount)
+          })
+        }
 
         /// 创建柱状图！！！
         const foodNum = {
@@ -369,7 +438,7 @@ export default {
           },
           xAxis: {
             // type: "category",
-            data: this.foodName, /// !!!
+            data: foodName, /// !!!
             axisLine: {
               lineStyle: {
                 color: '#17b3a3'
@@ -394,7 +463,7 @@ export default {
           color: ['#2ec7c9', 'b6a2de'],
           series: [
             {
-              name: '销售量',
+              name: this.choice,
               data: this.xData2,
               type: 'bar'
             }
@@ -438,6 +507,18 @@ export default {
 }
 </script>
 <style lang="scss" scopedSlots>
+.leftChoices {
+  width: 90%;
+  display: flex;
+  justify-content: right;
+}
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409eff;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
+}
 .header {
   width: 100%;
   height: 80px;
