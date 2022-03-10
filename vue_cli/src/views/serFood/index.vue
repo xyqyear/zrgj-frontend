@@ -123,7 +123,6 @@
       <el-input
         placeholder="请输入内容"
         v-model="searchInput"
-        @input="onSearchInput"
         clearable
       >
         <el-button
@@ -312,8 +311,6 @@
 <script>
 import {
   addOrder,
-  getAllFood,
-  getRestaurant,
   addNewOrderItem
 } from '../../../api/data'
 
@@ -326,8 +323,6 @@ export default {
       activeName: '全部菜品',
       accountId: localStorage.getItem('accountId'),
       num: 1,
-      dishList: [],
-      fullDishList: [],
       dishCategories: [
         '全部菜品',
         '荤菜',
@@ -356,7 +351,6 @@ export default {
       totalPrice: 0,
       orderItems: [], // 存放！就用你啦！
       tableId: 0,
-      tableNum: 10,
       /// /////////////////////////查询//////////////////////////
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
@@ -385,17 +379,45 @@ export default {
       return this.orderItems.reduce((acc, cur) => {
         return acc + cur.amount
       }, 0)
+    },
+    dishList() {
+      if (this.searchInput === '') {
+        return this.fullDishList
+      } else if (/^[\u4e00-\u9fa5]+$/.test(this.searchInput)) {
+        return this.fullDishList.filter((item) => {
+          return item.name.includes(this.searchInput)
+        })
+      } else if (/^[a-zA-Z]+$/.test(this.searchInput)) {
+        return this.fullDishList
+          .filter((item) => {
+            return pinyin(item.name, {
+              style: pinyin.STYLE_FIRST_LETTER
+            })
+              .reduce((acc, cur) => acc + cur[0], '')
+              .startsWith(this.searchInput)
+          })
+          .concat(
+            this.fullDishList.filter((item) => {
+              const py = pinyin(item.name, {
+                style: pinyin.STYLE_FIRST_LETTER
+              }).reduce((acc, cur) => acc + cur[0], '')
+              return !py.startsWith(this.searchInput) && py.includes(this.searchInput)
+            })
+          )
+      } else {
+        return []
+      }
+    },
+    fullDishList() {
+      return this.$store.getters.dishList
+    },
+    tableNum() {
+      return this.$store.getters.restaurantInfo.tableNum
     }
   },
 
   mounted() {
     this.getAddMeal()
-    this.refreshDishList()
-    // 获取餐厅最大桌号
-    getRestaurant().then((res) => {
-      localStorage.setItem('tableNum', res.data.data.tableNum)
-      this.tableNum = res.data.data.tableNum
-    })
   },
   methods: {
     /// ///////////////////////获取加菜信息///////////////
@@ -407,10 +429,6 @@ export default {
         this.disabled = true
         sessionStorage.removeItem('curOrder')
       }
-    },
-    /// /////////////////////////查询/////////////////////////////
-    searchFood() {
-      // input
     },
     /// ///////////////////////选规格////////////////////////////
     commitOrderItem() {
@@ -576,12 +594,6 @@ export default {
       this.orderItems = []
       this.totalPrice = 0
     },
-    refreshDishList() {
-      getAllFood().then((res) => {
-        this.dishList = res.data.data
-        this.fullDishList = this.dishList
-      })
-    },
     handleChange(dishIndex) {
       this.$forceUpdate()
       this.dialogFormVisible = true
@@ -605,34 +617,6 @@ export default {
           done()
         })
         .catch((_) => {})
-    },
-    onSearchInput(value) {
-      if (value === '') {
-        this.dishList = this.fullDishList
-      } else if (/^[\u4e00-\u9fa5]+$/.test(value)) {
-        this.dishList = this.fullDishList.filter((item) => {
-          return item.name.includes(value)
-        })
-      } else if (/^[a-zA-Z]+$/.test(value)) {
-        this.dishList = this.fullDishList
-          .filter((item) => {
-            return pinyin(item.name, {
-              style: pinyin.STYLE_FIRST_LETTER
-            })
-              .reduce((acc, cur) => acc + cur[0], '')
-              .startsWith(value)
-          })
-          .concat(
-            this.fullDishList.filter((item) => {
-              const py = pinyin(item.name, {
-                style: pinyin.STYLE_FIRST_LETTER
-              }).reduce((acc, cur) => acc + cur[0], '')
-              return !py.startsWith(value) && py.includes(value)
-            })
-          )
-      } else {
-        this.dishList = []
-      }
     }
   }
 }
