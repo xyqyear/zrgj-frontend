@@ -103,11 +103,15 @@ export default {
       })
     }
   },
-  async mounted() {
-    await this.$store.dispatch('getNotificationListFromServer')
-    await this.$store.dispatch('getOrderListFromServer')
+  mounted() {
+    this.$store.dispatch('getNotificationListFromServer')
+    this.$store.dispatch('getOrderListFromServer')
+    this.$store.dispatch('getNotificationListFromServer')
+    this.$store.dispatch('getOrderListFromServer')
+    this.$store.dispatch('getRestaurantInfoFromServer')
+    this.$store.dispatch('getQueueFromServer')
+    this.$store.dispatch('getDishFromServer')
 
-    console.log('start to init websocket connection')
     const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
     console.log(serverInterface)
     const socket = new SockJS(serverInterface)
@@ -120,6 +124,14 @@ export default {
       stompClient.subscribe('/orders/' + localStorage.getItem('restaurantId'), (message) => {
         const orderList = JSON.parse(message.body)
         this.$store.commit('refreshOrderList', orderList)
+      })
+      stompClient.subscribe('/queue/' + localStorage.getItem('restaurantId'), (message) => {
+        const queue = JSON.parse(message.body)
+        this.$store.commit('refreshQueue', queue)
+      })
+      stompClient.subscribe('/dish/' + localStorage.getItem('restaurantId'), (message) => {
+        const dish = JSON.parse(message.body)
+        this.$store.commit('refreshDish', dish)
       })
     })
   },

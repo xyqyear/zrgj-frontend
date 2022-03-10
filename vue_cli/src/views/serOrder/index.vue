@@ -112,7 +112,7 @@
               curOrder.tableId
             }}</el-descriptions-item>
             <el-descriptions-item label="订单总金额">{{
-              curOrder.totalPrice
+              curOrder.actualSum
             }}</el-descriptions-item>
             <el-descriptions-item label="下单账号">
               {{ curOrder.waiterId }}</el-descriptions-item
@@ -231,26 +231,25 @@
   </el-row>
 </template>
 <script>
-import {
-  getRestaurant,
-  getAllFood,
-  getObjectMap,
-  updateOrderItem
-} from '../../../api/data'
+import { updateOrderItem } from '../../../api/data'
 
 export default {
   name: 'serOrder',
   data() {
     return {
-      totalTableNum: 10,
-      dishMap: {},
       orderDetailVisible: false,
       /// ////////////////退菜/////////////
       deleteItemVisible: false,
-      tableNum: ''
+      tableNum: null
     }
   },
   computed: {
+    totalTableNum() {
+      return this.$store.getters.restaurantInfo.tableNum
+    },
+    dishMap() {
+      return this.$store.getters.dishMap
+    },
     rawOrderList() {
       return this.$store.getters.orderList
     },
@@ -295,7 +294,15 @@ export default {
     },
     curOrder() {
       if (this.tableNum) {
-        return this.tableMap[this.tableNum]
+        const curOrder = this.tableMap[this.tableNum]
+        let sum = 0
+        for (let i = 0; i < curOrder.orderItems.length; i++) {
+          if (curOrder.orderItems[i].state === 0) {
+            sum += curOrder.orderItems[i].amount * curOrder.orderItems[i].price
+          }
+        }
+        curOrder.actualSum = sum
+        return curOrder
       } else {
         return {}
       }
@@ -314,20 +321,7 @@ export default {
       }
     }
   },
-  mounted() {
-    // 获取餐厅最大桌号
-    getRestaurant()
-      .then((res) => {
-        this.totalTableNum = res.data.data.tableNum
-        getAllFood().then((res) => {
-          const dishList = res.data.data
-          this.dishMap = getObjectMap(dishList)
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  },
+  mounted() {},
   methods: {
     /// ///////////////////////退菜/////////////////////
     updateCurrItem(currItem) {

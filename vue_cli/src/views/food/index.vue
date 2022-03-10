@@ -14,7 +14,7 @@
           <el-button slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <el-button plain style="margin-left: 20px" @click="activeAddFoodDialog"
-        >上架菜品
+          >上架菜品
         </el-button>
         <el-dialog title="上架菜品" :visible.sync="dialogFormVisible">
           <el-form :model="form" :rules="addRules">
@@ -51,7 +51,7 @@
                 :on-exceed="handleExceed"
                 :file-list="fileList"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar"/>
+                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
 
                 <div slot="tip" class="el-upload__tip">
@@ -200,12 +200,12 @@
     <el-col :span="24">
       <el-card style="margin-top: 20px">
         <el-table :data="tableData" style="width: 100%">
-          <el-table-column type="index" width="100"/>
-          <el-table-column prop="name" label="菜品名称" width="150"/>
+          <el-table-column type="index" width="100" />
+          <el-table-column prop="name" label="菜品名称" width="150" />
           <el-table-column label="菜品图片" width="150">
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
-                <img :src="scope.row.img" style="width: 150px; height: 150px"/>
+                <img :src="scope.row.img" style="width: 150px; height: 150px" />
                 <div slot="reference" class="name-wrapper">
                   <el-tag size="medium" style="color: #3a96ff">查看图片</el-tag>
                 </div>
@@ -229,19 +229,22 @@
               <el-button
                 size="mini"
                 type="text"
-                @click="handleEdit(scope.$index, scope.row)">
+                @click="handleEdit(scope.$index, scope.row)"
+              >
                 修改
               </el-button>
               <el-button
                 size="mini"
                 type="text"
-                @click="changeSoldoutStatus(scope.$index, scope.row)">
-                {{ scope.row.soldout ? '设为在售' : '设为售罄' }}
+                @click="changeSoldoutStatus(scope.$index, scope.row)"
+              >
+                {{ scope.row.soldout ? "设为在售" : "设为售罄" }}
               </el-button>
               <el-button
                 size="mini"
                 type="text"
-                @click="handleDelete(scope.$index, scope.row)">
+                @click="handleDelete(scope.$index, scope.row)"
+              >
                 删除
               </el-button>
             </template>
@@ -252,16 +255,10 @@
     <el-dialog title="更新菜品" :visible.sync="dialogChangeVisible">
       <el-form :model="form">
         <el-form-item label="菜品名称">
-          <el-input
-            v-model="formChange.name"
-            autocomplete="off"
-          ></el-input>
+          <el-input v-model="formChange.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="价格">
-          <el-input
-            v-model="formChange.price"
-            autocomplete="off"
-          ></el-input>
+          <el-input v-model="formChange.price" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="类别">
           <el-select
@@ -287,7 +284,7 @@
             :on-change="uploadFiles"
             :on-success="handle_success"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar"/>
+            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
@@ -296,8 +293,7 @@
           <el-card v-for="item in perChange" :key="item.id">
             <el-row justify="end">
               <el-col :span="5">
-                <el-input v-model="item.key" placeholder="属性名">
-                </el-input>
+                <el-input v-model="item.key" placeholder="属性名"> </el-input>
               </el-col>
               <el-col :span="19">
                 <el-row>
@@ -346,21 +342,12 @@
               </el-col>
             </el-row>
           </el-card>
-          <el-button type="primary" @click="addChange()"
-          >增加属性
-          </el-button
-          >
+          <el-button type="primary" @click="addChange()">增加属性 </el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogChangeVisible = false"
-        >取 消
-        </el-button
-        >
-        <el-button type="primary" @click="handleEditSure()"
-        >确 定
-        </el-button
-        >
+        <el-button @click="dialogChangeVisible = false">取 消 </el-button>
+        <el-button type="primary" @click="handleEditSure()">确 定 </el-button>
       </div>
     </el-dialog>
   </el-row>
@@ -557,26 +544,27 @@ export default {
       this.perSet.push(body)
     },
     changeSoldoutStatus(index, row) {
-      const confirmMsg = row.soldout ? `将要上架${row.name}` : `${row.name}已经售罄，将要下架`
+      const confirmMsg = row.soldout
+        ? `将要上架${row.name}`
+        : `${row.name}已经售罄，将要下架`
       const successMsg = row.soldout ? '上架成功' : '下架成功'
       this.$confirm(confirmMsg, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      })
-        .then(() => {
-          const body = {
-            id: row.id
-          }
-          changeSoldoutStatus(body).then((res) => {
-            this.$message({
-              type: 'success',
-              message: successMsg
-            })
-            this.tableData.length = 0
-            this.getFoodData()
+      }).then(() => {
+        const body = {
+          id: row.id
+        }
+        changeSoldoutStatus(body).then((res) => {
+          this.$message({
+            type: 'success',
+            message: successMsg
           })
+          this.tableData.length = 0
+          this.getFoodData()
         })
+      })
     },
     handleDelete(index, row) {
       this.$confirm('此操作将删除该菜品, 是否继续?', '提示', {
@@ -697,24 +685,13 @@ export default {
       })
     },
     uploadFiles(file, _) {
-      console.log('???')
-      console.log('file', file)
-      const fileTest = file.name.substring(file.name.lastIndexOf('.') + 1)
-      console.log('fileTest', fileTest)
-      const allowFile = ['png', 'jpg', 'jpeg', 'js', 'css', 'html']
-      console.log('fileTest', fileTest)
-      if (allowFile.indexOf(fileTest) === -1) {
-        this.$message.error('文件格式不符合要求，请重新上传。')
-        return false
-      } else {
-        const fd = new FormData()
-        fd.append('file', file.raw)
-        upload(fd).then((res) => {
-          console.log(res)
-          this.imageUrl = res.data.data.fileUrl
-          console.log('this.imageUrl', this.imageUrl)
-        })
-      }
+      const fd = new FormData()
+      fd.append('file', file.raw)
+      upload(fd).then((res) => {
+        console.log(res)
+        this.imageUrl = res.data.data.fileUrl
+        console.log('this.imageUrl', this.imageUrl)
+      })
     },
     handle_success(res) {
       console.log(res)
@@ -809,9 +786,11 @@ export default {
                   k++
                 ) {
                   if (k === res.data.data[i].flavour[j].value.length - 1) {
-                    flavour = flavour + res.data.data[i].flavour[j].value[k] + '；'
+                    flavour =
+                      flavour + res.data.data[i].flavour[j].value[k] + '；'
                   } else {
-                    flavour = flavour + res.data.data[i].flavour[j].value[k] + '，'
+                    flavour =
+                      flavour + res.data.data[i].flavour[j].value[k] + '，'
                   }
                 }
               }
