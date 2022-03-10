@@ -232,9 +232,6 @@
 </template>
 <script>
 import {
-  getRestaurant,
-  getAllFood,
-  getObjectMap,
   updateOrderItem
 } from '../../../api/data'
 
@@ -242,8 +239,6 @@ export default {
   name: 'serOrder',
   data() {
     return {
-      totalTableNum: 10,
-      dishMap: {},
       orderDetailVisible: false,
       /// ////////////////退菜/////////////
       deleteItemVisible: false,
@@ -251,6 +246,12 @@ export default {
     }
   },
   computed: {
+    totalTableNum() {
+      return this.$store.getters.restaurantInfo.tableNum
+    },
+    dishMap() {
+      return this.$store.getters.dishMap
+    },
     rawOrderList() {
       return this.$store.getters.orderList
     },
@@ -315,18 +316,6 @@ export default {
     }
   },
   mounted() {
-    // 获取餐厅最大桌号
-    getRestaurant()
-      .then((res) => {
-        this.totalTableNum = res.data.data.tableNum
-        getAllFood().then((res) => {
-          const dishList = res.data.data
-          this.dishMap = getObjectMap(dishList)
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
   },
   methods: {
     /// ///////////////////////退菜/////////////////////
