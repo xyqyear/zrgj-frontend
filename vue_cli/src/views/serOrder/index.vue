@@ -252,7 +252,7 @@ export default {
   },
   computed: {
     rawOrderList() {
-      return this.$store.state.orderList
+      return this.$store.getters.orderList
     },
     orderList() {
       if (Object.keys(this.dishMap).length === 0) {

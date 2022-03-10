@@ -31,29 +31,32 @@ export default {
   // 显示的更改state
   mutations: {
     deleteNotification(state, index) {
-      this.state.notificationList.splice(index, 1)
-      this.state.notificationNum = this.state.notificationList.length
+      state.notificationList.splice(index, 1)
+      state.notificationNum = state.notificationList.length
     },
     updateNotification(state, notification, index) {
-      this.state.notificationList.splice(index, 1, notification)
+      state.notificationList.splice(index, 1, notification)
     },
     addNotification(state, notification) {
       let i = 0
-      while (i < this.state.notificationList.length && cmp(notification, this.state.notificationList[i]) > 0) {
+      while (i < state.notificationList.length && cmp(notification, state.notificationList[i]) > 0) {
         i++
       }
       console.log(i)
-      this.state.notificationList.splice(i, 0, notification)
+      state.notificationList.splice(i, 0, notification)
       // this.state.notificationList.push(notification);
-      this.state.notificationNum = this.state.notificationList.length
+      state.notificationNum = state.notificationList.length
     },
     refreshNotificationList(state, notificationList) {
-      this.state.notificationList = notificationList.sort(cmp)
-      this.state.notificationNum = this.state.notificationList.length
+      state.notificationList = notificationList.sort(cmp)
+      state.notificationNum = state.notificationList.length
     }
   },
   // 过滤state中的数据
-  getters: {},
+  getters: {
+    notificationList: state => state.notificationList,
+    notificationNum: state => state.notificationNum
+  },
   // 异步操作
   actions: {
     // 获取通知列表

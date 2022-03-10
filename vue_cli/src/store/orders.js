@@ -12,7 +12,9 @@ export default {
     }
   },
   // 过滤state中的数据
-  getters: {},
+  getters: {
+    orderList: state => state.orderList
+  },
   // 异步操作
   actions: {
     // 获取通知列表
