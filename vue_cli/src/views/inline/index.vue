@@ -296,6 +296,7 @@ div /deep/ .el-dialog__header {
   }
 }
 .infoDetail_top {
+  width:100%;
   background: #fff;
   margin-bottom: 20px;
   padding-bottom: 20px;

@@ -6,6 +6,7 @@
           <el-date-picker
             v-model="value1"
             value-format="timestamp"
+            format="yyyy 年 MM 月 dd 日"
             type="daterange"
             align="right"
             unlink-panels
@@ -105,8 +106,14 @@ export default {
           }
         ]
       },
-      value1: [0, 0],
+      value1: '',
       value2: ''
+    }
+  },
+  computed: {
+    now: function() {
+      const innitialTime = [this.getNowTimeNum(), this.getTimeNum(7)]
+      return innitialTime
     }
   },
   mounted() {
@@ -211,8 +218,9 @@ export default {
     // 设置折线图(value有两个值，一个是字符串一个是数组)
     setLineChart() {
       // 现在和选择的最终时间之间相距几天
+      console.log('value1', this.value1)
       let days = 0
-      if (this.value1[1] !== 0) {
+      if (this.value1 !== '' && this.value1[1] !== 0) {
         const timestamp = this.getNowTimeNum() * 1000
         const date3 = parseFloat(timestamp) - parseFloat(this.value1[1])
         days = Math.floor(date3 / (24 * 3600 * 1000))
@@ -318,11 +326,6 @@ export default {
     // 设置直方图
     setColumnChart() {
       /// 确定纵坐标！！！
-      // var fromTime = this.getTimeNum(this.interval * 7);
-      // var toTime = this.getTimeNum(0);
-      // this.body.from = fromTime;
-      // this.body.to = toTime;
-
       // 重置为0
       getGivenTimeOrders(this.body).then((res) => {
         res.data.data.forEach((item) => {
@@ -427,7 +430,7 @@ export default {
       const toTime = this.getNowTimeNum()
       this.body.from = fromTime
       this.body.to = toTime
-
+      console.log('body', this.body)
       this.setLineChart()
       this.setColumnChart()
     }
