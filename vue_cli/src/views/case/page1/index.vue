@@ -103,27 +103,48 @@
   </el-row>
 </template>
 <script>
-import {
-  getAllFood,
-  getObjectMap,
-  getGivenTimeOrders
-} from '../../../../api/data'
+import { getGivenTimeOrders } from '../../../../api/data'
 
 export default {
   name: 'home',
   data() {
     return {
-      orderList: [],
-      dishMap: {},
+      rawOrderList: [],
       curTime: 0
     }
   },
+  computed: {
+    dishMap() {
+      return this.$store.getters.dishMap
+    },
+    orderList() {
+      const orderList = this.rawOrderList
+      for (let i = 0; i < orderList.length; i++) {
+        let sum = 0
+        let actualSum = 0
+        for (let j = 0; j < orderList[i].orderItems.length; j++) {
+          const dish = this.dishMap[orderList[i].orderItems[j].dishId]
+          orderList[i].orderItems[j].name = dish.name
+          orderList[i].orderItems[j].price = dish.price
+          orderList[i].orderItems[j].imageUrl = dish.imageUrl
+          orderList[i].orderItems[j].category = dish.category
+          const price =
+            orderList[i].orderItems[j].amount * orderList[i].orderItems[j].price
+          if (orderList[i].orderItems[j].state === 0) {
+            actualSum += price
+          }
+          if (orderList[i].orderItems[j].state !== -1) {
+            sum += price
+          }
+        }
+        orderList[i].actualSum = actualSum
+        orderList[i].sum = sum
+      }
+      return orderList
+    }
+  },
   mounted() {
-    getAllFood().then((res) => {
-      const dishList = res.data.data
-      this.dishMap = getObjectMap(dishList)
-      this.refreshOrderData()
-    })
+    this.refreshOrderData()
   },
   methods: {
     refreshOrderData() {
@@ -131,35 +152,11 @@ export default {
       const fromTime = Math.round(
         new Date(new Date().setHours(0, 0, 0, 0)).getTime() / 1000
       )
-
       getGivenTimeOrders({
         from: fromTime,
         to: this.curTime
       }).then((res) => {
-        this.orderList = res.data.data
-        // orderItems 添加上菜品信息
-        for (let i = 0; i < this.orderList.length; i++) {
-          let sum = 0
-          let actualSum = 0
-          for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
-            const dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
-            this.orderList[i].orderItems[j].name = dish.name
-            this.orderList[i].orderItems[j].price = dish.price
-            this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
-            this.orderList[i].orderItems[j].category = dish.category
-            const price =
-              this.orderList[i].orderItems[j].amount *
-              this.orderList[i].orderItems[j].price
-            if (this.orderList[i].orderItems[j].state === 0) {
-              actualSum += price
-            }
-            if (this.orderList[i].orderItems[j].state !== -1) {
-              sum += price
-            }
-          }
-          this.orderList[i].actualSum = actualSum
-          this.orderList[i].sum = sum
-        }
+        this.rawOrderList = res.data.data
       })
     },
     getTimeDistance(createTime) {

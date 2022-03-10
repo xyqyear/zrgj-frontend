@@ -112,7 +112,7 @@
               curOrder.tableId
             }}</el-descriptions-item>
             <el-descriptions-item label="订单总金额">{{
-              curOrder.totalPrice
+              curOrder.actualSum
             }}</el-descriptions-item>
             <el-descriptions-item label="下单账号">
               {{ curOrder.waiterId }}</el-descriptions-item
@@ -231,9 +231,7 @@
   </el-row>
 </template>
 <script>
-import {
-  updateOrderItem
-} from '../../../api/data'
+import { updateOrderItem } from '../../../api/data'
 
 export default {
   name: 'serOrder',
@@ -242,7 +240,7 @@ export default {
       orderDetailVisible: false,
       /// ////////////////退菜/////////////
       deleteItemVisible: false,
-      tableNum: ''
+      tableNum: null
     }
   },
   computed: {
@@ -296,7 +294,15 @@ export default {
     },
     curOrder() {
       if (this.tableNum) {
-        return this.tableMap[this.tableNum]
+        const curOrder = this.tableMap[this.tableNum]
+        let sum = 0
+        for (let i = 0; i < curOrder.orderItems.length; i++) {
+          if (curOrder.orderItems[i].state === 0) {
+            sum += curOrder.orderItems[i].amount * curOrder.orderItems[i].price
+          }
+        }
+        curOrder.actualSum = sum
+        return curOrder
       } else {
         return {}
       }
@@ -315,8 +321,7 @@ export default {
       }
     }
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     /// ///////////////////////退菜/////////////////////
     updateCurrItem(currItem) {
