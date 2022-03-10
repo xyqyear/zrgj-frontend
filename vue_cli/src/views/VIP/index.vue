@@ -19,10 +19,21 @@
         <el-dialog title="注册会员" :visible.sync="dialogFormVisible">
           <el-form :model="form" :rules="addRules">
             <el-form-item label="姓名" prop="name">
-              <el-input v-model="form.name" autocomplete="off" placeholder="请输入您的姓名"></el-input>
+              <el-input
+                v-model="form.name"
+                autocomplete="off"
+                placeholder="请输入您的姓名"
+              ></el-input>
             </el-form-item>
             <el-form-item label="电话号码" prop="telephone">
-              <el-input v-model="form.telephone" autocomplete="off" type="text" maxlength="11" oninput = "value=value.replace(/[^\d]/g,'')"  placeholder="请输入您的手机号"></el-input>
+              <el-input
+                v-model="form.telephone"
+                autocomplete="off"
+                type="text"
+                maxlength="11"
+                oninput="value=value.replace(/[^\d]/g,'')"
+                placeholder="请输入您的手机号"
+              ></el-input>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -52,7 +63,7 @@
                 title="更新会员信息"
                 :visible.sync="dialogChangeVisible"
               >
-                <el-form :model="form" >
+                <el-form :model="form">
                   <el-form-item label="姓名">
                     <el-input
                       v-model="formChange.name"
@@ -61,9 +72,9 @@
                   </el-form-item>
                   <el-form-item label="电话号码">
                     <br />
-                    <el-text autocomplete="off">{{
-                      formChange.telephone
-                    }}</el-text>
+                    <el-text autocomplete="off">
+                      {{ formChange.telephone }}</el-text
+                    >
                   </el-form-item>
                   <el-form-item label="积分">
                     <el-input
@@ -99,7 +110,6 @@ import pinyin from 'pinyin'
 import {
   addVip,
   getVipList,
-  // getVipData,
   deleteVip,
   updateVip
 } from '../../../api/data.js'
@@ -151,13 +161,15 @@ export default {
       selectVal: this.value || '',
       find: '',
       dialogFormVisible: false,
+      dialogFormVisible: this.$route.query.dialogFormVisible,
       dialogChangeVisible: false,
       alertBlankVisible: false,
       alertAgainVisible: false,
       alertContentVisible: false,
       form: {
         name: '',
-        telephone: ''
+        telephone: '',
+        telephone: this.$route.query.telephone
       },
       formChange: {
         telephone: '',
