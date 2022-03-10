@@ -524,3 +524,63 @@ export const confirmNotification = (param) => {
     }
   })
 }
+
+/// ///////////////////VIP///////////////////////////
+// 添加Vip信息
+export const addVip = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/vip/add',
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 获取Vip列表
+export const getVipList = () => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/vip/list',
+    method: 'POST',
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 查询Vip信息
+export const getVipData = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/vip/get',
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 修改Vip信息
+export const updateVip = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/vip/update',
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+// 注销Vip
+export const deleteVip = (param) => {
+  return axios.request({
+    url: 'http://www.muzi.fun:5678/api/v1/vip/delete',
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
