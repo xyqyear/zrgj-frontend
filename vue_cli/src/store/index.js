@@ -5,6 +5,7 @@ import notification from './notification'
 import orders from './orders'
 import restaurant from './restaurant'
 import queue from './queue'
+import dish from './dish'
 
 import createPersistedState from 'vuex-persistedstate'
 Vue.use(Vuex)
@@ -16,7 +17,8 @@ export default new Vuex.Store({
     notification,
     orders,
     restaurant,
-    queue
+    queue,
+    dish
   },
   plugins: [
     createPersistedState({ storage: window.sessionStorage })
