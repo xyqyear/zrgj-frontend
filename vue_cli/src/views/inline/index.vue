@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="30">
-    <el-col class="inline_header" span="24">
+    <el-col class="inline_header" :span="24">
       <el-card class="inline_header_card" shadow="never" width="200">
         <div class="inline_title">天天点餐电子排队系统</div>
       </el-card>
@@ -10,8 +10,8 @@
     </el-col>
 
     <el-col
-      v-for="item in queueTable"
-      :key="item.runningCount"
+      v-for="item in queue"
+      :key="item.size"
       class="inline_body"
       :span="6"
     >
@@ -25,7 +25,7 @@
           ]
         }}</span>
         <span class="thirdfront">剩</span>
-        <span class="forthfront">{{ item.currentLine.length }}</span>
+        <span class="forthfront">{{ remainingTable[item.size] }}</span>
       </div>
       <div class="inline_info">
         <!-- miniTable的地方 -->
@@ -39,11 +39,8 @@
               <span class="firstfront">排队号：</span>
               <span class="secondfront">{{ item.size }}{{ element.id }}</span>
             </div>
-            <div class="secondrow">
-              <span>时间：{{ element.createTime | formatDate }}</span>
-            </div>
             <div class="thirdrow">
-              <span>人数：{{ element.people }}</span>
+              <span>人数：{{ element.headcount }}</span>
             </div>
           </div>
           <div class="infoDetail_footer">
@@ -55,12 +52,46 @@
                 margin-top: 10px;
               "
             >
-              已等待：’实时刷新‘分钟
+              已等待：{{ waitingTime[item.size][element.id] }}
             </div>
             <div class="operations" style="margin-top: 10px">
-              <el-button size="medium">取消</el-button>
+              <el-button
+                size="medium"
+                @click="cancleQueueItem(item.size, element.id)"
+                >取消</el-button
+              >
               <el-button type="primary">叫号</el-button>
-              <el-button type="primary">完成</el-button>
+              <el-popover
+                placement="top"
+                :value="selectingQueueId === `${item.size}${element.id}`"
+                width="290"
+                trigger="manual"
+              >
+                <div
+                  v-for="(tableState, index) in occupied"
+                  :key="index"
+                  class="tableItem"
+                >
+                  <el-button
+                    :type="['', 'success', 'primary'][tableState]"
+                    :disabled="tableState === 2"
+                    style="width: 60px"
+                    @click="completeQueueItem(item.size, element.id, index + 1)"
+                  >
+                    {{ index + 1 }}
+                  </el-button>
+                </div>
+                <el-button
+                  slot="reference"
+                  @click="setPopoverVisible(`${item.size}${element.id}`)"
+                >
+                  {{
+                    selectingQueueId === `${item.size}${element.id}`
+                      ? "关闭"
+                      : "完成"
+                  }}
+                </el-button>
+              </el-popover>
             </div>
           </div>
         </div>
@@ -73,236 +104,173 @@
       </div>
       <el-form :model="form">
         <el-form-item label="就餐人数：">
-          <el-input v-model="form.people" style="width:70%"></el-input>
+          <el-input v-model="form.headcount" style="width: 70%"></el-input>
         </el-form-item>
         <el-form-item label="选择餐桌：">
-          <el-select v-model="form.table" placeholder="餐桌规模" style="width:70%" >
-            <el-option label="小桌（1-4人）" value="A"></el-option>
-            <el-option label="中桌（5-8人）" value="B"></el-option>
-            <el-option label="大桌（9-12人）" value="C"></el-option>
-            <el-option label="包间（9-12人）" value="D"></el-option>
+          <el-select
+            v-model="form.size"
+            placeholder="餐桌规模"
+            style="width: 70%"
+          >
+            <el-option
+              label="小桌（1-4人）"
+              value="A"
+              :disabled="remainingTable['A'] === 0"
+            ></el-option>
+            <el-option
+              label="中桌（5-8人）"
+              value="B"
+              :disabled="remainingTable['B'] === 0"
+            ></el-option>
+            <el-option
+              label="大桌（9-12人）"
+              value="C"
+              :disabled="remainingTable['C'] === 0"
+            ></el-option>
+            <el-option
+              label="包间（9-12人）"
+              value="D"
+              :disabled="remainingTable['D'] === 0"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-    <el-button type="primary" @click="onSubmit">确认</el-button>
-    <el-button>取消</el-button>
-  </el-form-item>
+          <el-button type="primary" @click="addQueueItem">确认</el-button>
+          <el-button @click="onCancle">取消</el-button>
+        </el-form-item>
       </el-form>
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import {
-  getRestaurant,
-  getCurrOrders,
-  getAllFood,
-  getObjectMap,
-  payOrders
-} from '../../../api/data'
-
+import { addOrder, updateQueueStatus } from '../../../api/data'
 export default {
-  name: 'table',
+  name: 'inline',
   data() {
     return {
-      tableData: [],
-      queueTable: [
-        {
-          size: 'A',
-          runningCount: 49,
-          currentLine: [
-            {
-              id: 48,
-              createTime: 1696482734,
-              people: 3
-            },
-            {
-              id: 49,
-              createTime: 169648273,
-              people: 2
-            }
-          ]
-        },
-        {
-          size: 'B',
-          runningCount: 49,
-          currentLine: [
-            {
-              id: 48,
-              createTime: 1696482734,
-              people: 5
-            },
-            {
-              id: 49,
-              createTime: 169648273,
-              people: 6
-            }
-          ]
-        },
-        {
-          size: 'C',
-          runningCount: 49,
-          currentLine: []
-        },
-        {
-          size: 'D',
-          runningCount: 49,
-          currentLine: [
-            {
-              id: 48,
-              createTime: 1696482734,
-              people: 10
-            },
-            {
-              id: 49,
-              createTime: 169648273,
-              people: 12
-            }
-          ]
-        }
-      ],
-      smallAvailable: '10',
-      tableMap: {},
-      orderList: [],
-      curOrder: {},
-      totalTableNum: 10,
-      dishMap: {},
-      orderDetailVisible: false,
-      /// ////排号
       addLineVisible: false,
+      selectingQueueId: null,
+      // this is updated by setInterval in mounted.
+      // {'A': {1: '59秒'}}
+      waitingTime: {},
       form: {
-        name: '',
-        table: ''
+        headcount: '',
+        size: ''
       }
+    }
+  },
+  computed: {
+    orderList() {
+      return this.$store.getters.orderList
+    },
+    restaurantInfo() {
+      return this.$store.getters.restaurantInfo
+    },
+    // 0: 空桌子  1: 空订单  2: 占用中
+    occupied() {
+      const occupied = new Array(this.restaurantInfo.tableNum).fill(0)
+      for (let i = 0; i < this.orderList.length; i++) {
+        if (this.orderList[i].orderItems.length === 0) {
+          occupied[this.orderList[i].tableId - 1] = 1
+        } else {
+          occupied[this.orderList[i].tableId - 1] = 2
+        }
+      }
+      return occupied
+    },
+    // 剩余桌子数量
+    // {'A': 1, 'B': 2, 'C': 1, 'D': 2}
+    remainingTable() {
+      return this.restaurantInfo.tableInfo.reduce(
+        (acc, cur, index) => {
+          if (this.occupied[index] === 0) {
+            acc[cur.size]++
+          }
+          return acc
+        },
+        { A: 0, B: 0, C: 0, D: 0 }
+      )
+    },
+    queue() {
+      return this.$store.getters.queue
     }
   },
   mounted() {
-    // 获取餐厅最大桌号
-    getRestaurant()
-      .then((res) => {
-        this.totalTableNum = res.data.data.tableNum
-        getAllFood().then((res) => {
-          const dishList = res.data.data
-          this.dishMap = getObjectMap(dishList)
-          this.refreshOrderData()
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  },
-  filters: {
-    formatDate: function(value) {
-      const date = new Date(value * 1000) // 这个是纳秒的，想要毫秒的可以不用除以1000000
-      const y = date.getFullYear()
-      let MM = date.getMonth() + 1
-      MM = MM < 10 ? '0' + MM : MM
-      let d = date.getDate()
-      d = d < 10 ? '0' + d : d
-      let h = date.getHours()
-      h = h < 10 ? '0' + h : h
-      let m = date.getMinutes()
-      m = m < 10 ? '0' + m : m
-      let s = date.getSeconds()
-      s = s < 10 ? '0' + s : s
-      return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
-    }
+    this.updateWaitingTime()
+    setInterval(this.updateWaitingTime, 1000)
   },
   methods: {
-    /// ////////////////////排号表单/////////
+    onCancle() {
+      this.addLineVisible = false
+    },
     addintoLine() {
       this.addLineVisible = true
     },
-    refreshOrderData() {
-      getCurrOrders().then((res) => {
-        this.orderList = res.data.data
-        this.generateTableList()
-      })
-    },
-    generateTableList() {
-      this.tableData = []
-      for (let i = 1; i <= this.totalTableNum; i++) {
-        this.tableData.push({
-          occupied: false,
-          tableName: i
-        })
+    // util function to calculate time elapsed
+    elapsedTime(startSeconds) {
+      // get time delta
+      let delta = Math.floor(Date.now() / 1000) - startSeconds
+      const h = Math.floor((delta / 3600) % 24)
+      const m = Math.floor((delta / 60) % 60)
+      const s = Math.floor(delta % 60)
+      delta = s + '秒'
+      if (m > 0) {
+        delta = m + '分' + delta
       }
-      // orderItems 添加上菜品信息
-      for (let i = 0; i < this.orderList.length; i++) {
-        for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
-          const dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
-          this.orderList[i].orderItems[j].name = dish.name
-          this.orderList[i].orderItems[j].price = dish.price
-          this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
-          this.orderList[i].orderItems[j].category = dish.category
-          // this.orderList[i].orderItems[j].stateDescription = this.stateToDescription(this.orderList[i].orderItems[j].state)
-        }
+      if (h > 0) {
+        delta = h + '时' + delta
       }
-
-      // 桌号与订单对应
-      for (let i = 0; i < this.orderList.length; i++) {
-        const tableName = this.orderList[i].tableId
-        this.tableData[tableName - 1].occupied = true
-        this.tableMap[tableName] = this.orderList[i]
-      }
-      console.log(this.tableData)
+      return delta
     },
-    displayOderDetail(order) {
-      this.curOrder = order
-      let sum = 0
-      for (let i = 0; i < this.curOrder.orderItems.length; i++) {
-        if (this.curOrder.orderItems[i].state === 0) {
-          sum +=
-            this.curOrder.orderItems[i].amount *
-            this.curOrder.orderItems[i].price
-        }
-      }
-      this.curOrder.actualSum = sum
-      this.orderDetailVisible = true
-    },
-    checkout() {
-      this.$confirm('已确认订单项状态并完成收款', '确认结账', {
-        confirmButtonText: '结束订单',
-        cancelButtonText: '取消',
-        type: 'info'
-      })
-        .then(() => {
-          // 发送结束订单请求
-          payOrders({ orderId: this.curOrder.id }).then((res) => {
-            this.refreshOrderData()
-            this.$message({
-              type: 'success',
-              message: '已结束该订单'
-            })
-            this.orderDetailVisible = false
-          })
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消结账'
-          })
-        })
-    },
-    getTableStatus(tableName) {
-      console.log(tableName)
-      if (!(tableName in this.tableMap)) {
-        return '空闲'
+    setPopoverVisible(queueId) {
+      if (this.selectingQueueId) {
+        this.selectingQueueId = null
       } else {
-        const orderItems = this.tableMap[tableName].orderItems
-        const finishedCount = orderItems.filter(
-          (item) => item.state === 0
-        ).length
-        if (finishedCount === 0) {
-          return '排队中...'
-        } else if (finishedCount < orderItems.length) {
-          return (
-            '烹饪中...\n(进度' + finishedCount + '/' + orderItems.length + ')'
-          )
-        } else {
-          return '就餐中...'
-        }
+        this.selectingQueueId = queueId
       }
+    },
+    cancleQueueItem(size, id) {
+      const queue = this.queue
+      const sizeIndex = queue.findIndex((item) => item.size === size)
+      queue[sizeIndex].runningCount++
+      queue[sizeIndex].currentLine = queue[sizeIndex].currentLine.filter(
+        (item) => item.id !== id
+      )
+      updateQueueStatus(queue)
+    },
+    completeQueueItem(size, id, tableId) {
+      this.selectingQueueId = null
+      this.cancleQueueItem(size, id)
+      this.addEmptyOrder(tableId)
+    },
+    addQueueItem() {
+      this.addLineVisible = false
+      const queue = this.queue
+      const sizeIndex = queue.findIndex((item) => item.size === this.form.size)
+      queue[sizeIndex].runningCount++
+      queue[sizeIndex].currentLine.push({
+        id: queue[sizeIndex].runningCount,
+        headcount: Number(this.form.headcount),
+        createTime: Math.floor(Date.now() / 1000)
+      })
+      updateQueueStatus(queue)
+    },
+    addEmptyOrder(tableId) {
+      const order = {
+        tableId,
+        orderItems: []
+      }
+      addOrder(order)
+    },
+    updateWaitingTime() {
+      this.waitingTime = this.queue.reduce((acc, cur) => {
+        acc[cur.size] = cur.currentLine.reduce((acc, cur) => {
+          acc[cur.id] = this.elapsedTime(cur.createTime)
+          return acc
+        }, {})
+        return acc
+      }, {})
     }
   }
 }
@@ -311,7 +279,7 @@ export default {
 <style lang="less" scoped>
 //////////////排队//////////////////
 div /deep/ .el-dialog__header {
-  background-color: #2682B7;
+  background-color: #2682b7;
 }
 
 .addtoline {
@@ -323,7 +291,7 @@ div /deep/ .el-dialog__header {
       line-height: 100%;
       font-size: 36px;
       font-weight: normal;
-      color: #606266;
+      color: white;
     }
   }
 }
@@ -331,7 +299,7 @@ div /deep/ .el-dialog__header {
   background: #fff;
   margin-bottom: 20px;
   padding-bottom: 20px;
-  border: 2px solid #2682B7;
+  border: 2px solid #2682b7;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
@@ -347,15 +315,15 @@ div /deep/ .el-dialog__header {
     justify-content: space-around;
   }
   div /deep/ .el-button--primary {
-  background-color: #2682B7;
-  border: 0;
-}
+    background-color: #2682b7;
+    border: 0;
+  }
 }
 .inline_header {
   background: #fff;
 }
 .inline_header_card {
-  background: #2682B7;
+  background: #2682b7;
   .inline_title {
     color: #fff;
     font-size: 30px;
@@ -365,7 +333,7 @@ div /deep/ .el-dialog__header {
   }
 }
 .inline_tableType {
-  background: #2682B7;
+  background: #2682b7;
   height: 60px;
   position: relative;
   margin-top: 20px;
@@ -459,5 +427,11 @@ div /deep/ .el-dialog__header {
       }
     }
   }
+}
+
+.tableItem {
+  display: inline-block;
+  margin: 3px;
+  width: 60px;
 }
 </style>
