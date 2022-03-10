@@ -39,7 +39,7 @@
             </div>
           </div>
           <el-button
-            @click="displayOderDetail(tableMap[table.tableName])"
+            @click="displayOderDetail(table.tableName)"
             :disabled="!table.occupied"
             class="cardBottom"
           >
@@ -96,7 +96,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-descriptions column="4">
+          <el-descriptions :column="4">
             <el-descriptions-item label="桌号">{{
               curOrder.tableId
             }}</el-descriptions-item>
@@ -121,10 +121,6 @@
 
 <script>
 import {
-  getRestaurant,
-  getCurrOrders,
-  getAllFood,
-  getObjectMap,
   payOrders
 } from '../../../api/data'
 
@@ -132,76 +128,80 @@ export default {
   name: 'table',
   data() {
     return {
-      tableData: [],
-      tableMap: {},
-      orderList: [],
-      curOrder: {},
-      totalTableNum: 10,
-      dishMap: {},
+      tableNum: null,
       orderDetailVisible: false
     }
   },
-  mounted() {
-    // 获取餐厅最大桌号
-    getRestaurant()
-      .then((res) => {
-        this.totalTableNum = res.data.data.tableNum
-        getAllFood().then((res) => {
-          const dishList = res.data.data
-          this.dishMap = getObjectMap(dishList)
-          this.refreshOrderData()
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  },
-  methods: {
-    refreshOrderData() {
-      getCurrOrders().then((res) => {
-        this.orderList = res.data.data
-        this.generateTableList()
-      })
+  computed: {
+    totalTableNum() {
+      return this.$store.getters.restaurantInfo.tableNum
     },
-    generateTableList() {
-      this.tableData = []
+    dishMap() {
+      return this.$store.getters.dishMap
+    },
+    rawOrderList() {
+      return this.$store.getters.orderList
+    },
+    orderList() {
+      if (Object.keys(this.dishMap).length === 0) {
+        return []
+      }
+      const orderList = JSON.parse(JSON.stringify(this.rawOrderList))
+      for (let i = 0; i < this.rawOrderList.length; i++) {
+        for (let j = 0; j < this.rawOrderList[i].orderItems.length; j++) {
+          const dish = this.dishMap[this.rawOrderList[i].orderItems[j].dishId]
+          orderList[i].orderItems[j].name = dish.name
+          orderList[i].orderItems[j].price = dish.price
+          orderList[i].orderItems[j].imageUrl = dish.imageUrl
+          orderList[i].orderItems[j].category = dish.category
+        }
+      }
+      return orderList
+    },
+    tableData() {
+      const tableData = []
       for (let i = 1; i <= this.totalTableNum; i++) {
-        this.tableData.push({
+        tableData.push({
           occupied: false,
           tableName: i
         })
       }
-      // orderItems 添加上菜品信息
-      for (let i = 0; i < this.orderList.length; i++) {
-        for (let j = 0; j < this.orderList[i].orderItems.length; j++) {
-          const dish = this.dishMap[this.orderList[i].orderItems[j].dishId]
-          this.orderList[i].orderItems[j].name = dish.name
-          this.orderList[i].orderItems[j].price = dish.price
-          this.orderList[i].orderItems[j].imageUrl = dish.imageUrl
-          this.orderList[i].orderItems[j].category = dish.category
-          // this.orderList[i].orderItems[j].stateDescription = this.stateToDescription(this.orderList[i].orderItems[j].state)
-        }
-      }
-
       // 桌号与订单对应
       for (let i = 0; i < this.orderList.length; i++) {
         const tableName = this.orderList[i].tableId
-        this.tableData[tableName - 1].occupied = true
-        this.tableMap[tableName] = this.orderList[i]
+        tableData[tableName - 1].occupied = true
       }
-      console.log(this.tableData)
+      return tableData
     },
-    displayOderDetail(order) {
-      this.curOrder = order
-      let sum = 0
-      for (let i = 0; i < this.curOrder.orderItems.length; i++) {
-        if (this.curOrder.orderItems[i].state === 0) {
-          sum +=
-            this.curOrder.orderItems[i].amount *
-            this.curOrder.orderItems[i].price
-        }
+    tableMap() {
+      const tableMap = {}
+      for (let i = 0; i < this.orderList.length; i++) {
+        const tableName = this.orderList[i].tableId
+        tableMap[tableName] = this.orderList[i]
       }
-      this.curOrder.actualSum = sum
+      return tableMap
+    },
+    curOrder() {
+      if (this.tableNum) {
+        const curOrder = this.tableMap[this.tableNum]
+        let sum = 0
+        for (let i = 0; i < curOrder.orderItems.length; i++) {
+          if (curOrder.orderItems[i].state === 0) {
+            sum += curOrder.orderItems[i].amount * curOrder.orderItems[i].price
+          }
+        }
+        curOrder.actualSum = sum
+        return curOrder
+      } else {
+        return {}
+      }
+    }
+  },
+  mounted() {
+  },
+  methods: {
+    displayOderDetail(tableNum) {
+      this.tableNum = tableNum
       this.orderDetailVisible = true
     },
     checkout() {
@@ -213,12 +213,12 @@ export default {
         .then(() => {
           // 发送结束订单请求
           payOrders({ orderId: this.curOrder.id }).then((res) => {
-            this.refreshOrderData()
             this.$message({
               type: 'success',
               message: '已结束该订单'
             })
             this.orderDetailVisible = false
+            this.tableNum = null
           })
         })
         .catch(() => {
@@ -229,7 +229,6 @@ export default {
         })
     },
     getTableStatus(tableName) {
-      console.log(tableName)
       if (!(tableName in this.tableMap)) {
         return '空闲'
       } else {
