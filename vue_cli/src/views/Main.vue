@@ -94,7 +94,16 @@ import { apiPrefix } from '../../api/data'
 
 export default {
   name: 'Main',
-  async created() {
+  created() {
+    if (this.$router.currentRoute.name === 'Main'){
+      this.$router.push({
+        name: { 0: 'home', 1: 'serFood', 2: 'chef' }[
+          localStorage.getItem("position")
+          ]
+      })
+    }
+  },
+  async mounted() {
     await this.$store.dispatch('getNotificationListFromServer')
     await this.$store.dispatch('getOrderListFromServer')
 

@@ -16,28 +16,28 @@ export default {
           path: '/table',
           name: 'table',
           label: '账单结账',
-          icon: 's-grid', // 自己记得改icon
+          icon: 'dish', // 自己记得改icon
           url: 'table/index.vue'// ?
         },
         {
           path: '/inline',
           name: 'inline',
           label: '排队系统',
-          icon: 's-grid', // 自己记得改icon
+          icon: 'menu', // 自己记得改icon
           url: 'inline/index.vue'// ?
         },
         {
           path: '/page1',
           name: 'page1',
-          label: '订单管理',
-          icon: 's-order', // 自己记得改icon
+          label: '订单统计',
+          icon: 's-data', // 自己记得改icon
           url: 'case/index.vue'
         },
         {
           path: '/VIP',
           name: 'VIP',
           label: '会员管理',
-          icon: 'user-solid', // 自己记得改icon
+          icon: 's-order', // 自己记得改icon
           url: 'VIP/index.vue'
         },
         {
@@ -54,26 +54,19 @@ export default {
           icon: 'fork-spoon', // 自己记得改icon
           url: 'food/index.vue'
         },
-
         {
-          label: '其他',
-          icon: 'setting',
-          children: [
-            {
-              path: '/worker',
-              name: 'worker',
-              label: '员工管理',
-              icon: 'setting', // 自己记得改icon
-              url: 'worker/index.vue'
-            },
-            {
-              path: '/perCen',
-              name: 'perCen',
-              label: '餐厅名片',
-              icon: 'setting', // 自己记得改icon
-              url: 'perCen/index.vue'
-            }
-          ]
+          path: '/worker',
+          name: 'worker',
+          label: '员工管理',
+          icon: 'user-solid', // 自己记得改icon
+          url: 'worker/index.vue'
+        },
+        {
+          path: '/manageTable',
+          name: 'manageTable',
+          label: '桌台管理',
+          icon: 's-grid', // 自己记得改icon
+          url: 'manageTable/index.vue'
         }
       ], [// 服务员
         {

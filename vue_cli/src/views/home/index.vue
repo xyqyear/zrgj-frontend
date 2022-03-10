@@ -261,6 +261,7 @@ export default {
       },
       dishMap: {},
       // 第四行
+      // TODO: load dynamic dish num
       sale_kinds: '46',
       sale_count: '147',
       worker_count: '28',

@@ -2,7 +2,7 @@
   <!-- default-active="1-4-1"  -->
   <div style="flex: 1">
     <el-menu
-      default-active="1-4-1"
+      default-active="1"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"
@@ -15,7 +15,7 @@
       <el-menu-item
         @click="clickMenu(item.name)"
         v-for="item in noChildren"
-        :index="item.path + ''"
+        :index="item.path"
         :key="item.path"
       >
         <i :class="'el-icon-' + item.icon"></i>
@@ -23,7 +23,7 @@
       </el-menu-item>
       <el-submenu
         v-for="item in hasChildren"
-        :index="item.path + ''"
+        :index="item.path"
         :key="item.path"
       >
         <template slot="title">

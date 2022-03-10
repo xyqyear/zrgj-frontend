@@ -107,11 +107,7 @@ export default {
               res.data.data.account.restaurantId
             )
             this.$store.commit('setMenu', res.data.data.account.position)
-            this.$router.push({
-              name: { 0: 'home', 1: 'serFood', 2: 'chef' }[
-                res.data.data.account.position
-              ]
-            })
+            this.$router.push('/')
           })
           .catch((error) => {
             this.$message.error(error.response.data.reason)
