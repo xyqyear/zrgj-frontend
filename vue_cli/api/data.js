@@ -444,6 +444,28 @@ export const updateRestaurant = (param) => {
   })
 }
 
+export const getQueueStatus = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/restaurant/queue_status/get`,
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
+export const updateQueueStatus = (param) => {
+  return axios.request({
+    url: `${apiPrefix}/api/v1/restaurant/queue_status/update`,
+    method: 'POST',
+    data: param,
+    headers: {
+      Authorization: localStorage.getItem('token')
+    }
+  })
+}
+
 // 获取推送列表
 export const getNotificationList = () => {
   return axios.request({

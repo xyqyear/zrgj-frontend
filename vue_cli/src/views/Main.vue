@@ -94,11 +94,12 @@ import { apiPrefix } from '../../api/data'
 
 export default {
   name: 'Main',
-  async created() {
-    await this.$store.dispatch('getNotificationListFromServer')
-    await this.$store.dispatch('getOrderListFromServer')
+  created() {
+    this.$store.dispatch('getNotificationListFromServer')
+    this.$store.dispatch('getOrderListFromServer')
+    this.$store.dispatch('getRestaurantInfoFromServer')
+    this.$store.dispatch('getQueueFromServer')
 
-    console.log('start to init websocket connection')
     const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
     console.log(serverInterface)
     const socket = new SockJS(serverInterface)
@@ -111,6 +112,10 @@ export default {
       stompClient.subscribe('/orders/' + localStorage.getItem('restaurantId'), (message) => {
         const orderList = JSON.parse(message.body)
         this.$store.commit('refreshOrderList', orderList)
+      })
+      stompClient.subscribe('/queue/' + localStorage.getItem('restaurantId'), (message) => {
+        const queue = JSON.parse(message.body)
+        this.$store.commit('refreshQueue', queue)
       })
     })
   },
