@@ -145,10 +145,10 @@ export default {
       return this.$store.state.tab.menu
     },
     notificationList() {
-      return this.$store.state.notificationList
+      return this.$store.getters.notificationList
     },
     notificationNum() {
-      return this.$store.state.notificationNum
+      return this.$store.getters.notificationNum
     }
   }
 }

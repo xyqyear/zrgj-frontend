@@ -257,7 +257,7 @@ export default {
         this.$set(this.$store.state.notificationList[index], 'sticked', temp)
         this.$store.commit(
           'refreshNotificationList',
-          this.$store.state.notificationList
+          this.$store.getters.notificationList
         )
       })
     },
@@ -271,7 +271,7 @@ export default {
   },
   computed: {
     notificationList() {
-      return this.$store.state.notificationList
+      return this.$store.getters.notificationList
     }
   }
 }
