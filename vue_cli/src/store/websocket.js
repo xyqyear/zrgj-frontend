@@ -6,14 +6,7 @@ let stompClient
 
 export default {
   state: {},
-  mutations: {
-    refreshQueue(state, queue) {
-      state.queue = queue
-    }
-  },
-  getters: {
-    queue: state => state.queue
-  },
+  mutations: {},
   actions: {
     initWebSocketConnections({
       dispatch,
