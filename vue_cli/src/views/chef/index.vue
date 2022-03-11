@@ -38,13 +38,20 @@
             {{ getOrderItemDescription(scope.row.state) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column label="操作" width="160">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.state === 1 || scope.row.state === 2"
               size="mini"
               @click="handle(scope.row.state, item.id, scope.row.id)"
               >{{ [null, "烹饪", "完成"][scope.row.state] }}
+            </el-button>
+            <el-button
+              v-if="scope.row.state === 2"
+              size="mini"
+              type="danger"
+              @click="revoke(item.id, scope.row.id)"
+              >取消
             </el-button>
           </template>
         </el-table-column>
@@ -174,6 +181,14 @@ export default {
           })
           break
       }
+    },
+    revoke(orderId, orderItemId) {
+      this.rawOrderData[orderId].orderItems[orderItemId].state = 1
+      updateOrderItem(this.rawOrderData[orderId].orderItems[orderItemId]).then(
+        () => {
+          this.orderData[orderId].orderItems[orderItemId].state = 1
+        }
+      )
     }
   }
 }
