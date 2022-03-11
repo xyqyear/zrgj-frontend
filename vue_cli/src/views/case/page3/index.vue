@@ -277,7 +277,7 @@ export default {
         days = Math.floor(date3 / (24 * 3600 * 1000))
       }
       // 设置横坐标xData正确！
-      this.xData1.length = 0
+      this.xData1 = []
       for (let i = 0; i < this.xNum; i++) {
         const oldTime = new Date(
           // Date.now() - i * this.interval * 24 * 3600 * 1000
