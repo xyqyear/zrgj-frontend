@@ -155,7 +155,6 @@ export default {
       perSet: [],
       selectVal: this.value || '',
       find: '',
-      dialogFormVisible: false,
       dialogFormVisible: this.$route.query.dialogFormVisible,
       dialogChangeVisible: false,
       alertBlankVisible: false,
@@ -163,7 +162,6 @@ export default {
       alertContentVisible: false,
       form: {
         name: '',
-        telephone: '',
         telephone: this.$route.query.telephone
       },
       formChange: {
@@ -230,7 +228,7 @@ export default {
     /// ////////////////////上架菜品的dialog打开事件
     activeAddFoodDialog() {
       this.dialogFormVisible = true
-      this.perSet.length = 0
+      this.perSet = []
     },
     addSet() {
       const a = this.perSet.length
@@ -258,7 +256,7 @@ export default {
                 type: 'success',
                 message: '删除成功!'
               })
-              this.tableData.length = 0
+              this.tableData = []
               this.getList()
             }
           })
@@ -288,7 +286,7 @@ export default {
       console.log(body)
       updateVip(body).then((res) => {
         console.log(res)
-        this.tableData.length = 0
+        this.tableData = []
         this.getList()
       })
     },
@@ -306,8 +304,8 @@ export default {
       addVip(body).then((res) => {
         console.log(res)
         this.dialogFormVisible = false
-        this.tableData.length = 0
-        this.getlist()
+        this.tableData = []
+        this.getList()
       })
     },
     getList() {

@@ -292,7 +292,7 @@
               {{ index + 1 }}
             </el-button>
           </div>
-          <el-button slot="reference" size="mini" :disabled="disabled">
+          <el-button slot="reference" :disabled="disabled">
             {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
           </el-button>
         </el-popover>
