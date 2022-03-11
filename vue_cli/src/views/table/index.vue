@@ -89,10 +89,10 @@
                 >
                   {{
                     {
-                      "-1": "已取消",
-                      "0": "已完成",
-                      "1": "排队中",
-                      "2": "烹饪中",
+                      '-1': '已取消',
+                      '0': '已完成',
+                      '1': '排队中',
+                      '2': '烹饪中',
                     }[scope.row.state]
                   }}
                 </el-tag>
@@ -114,7 +114,8 @@
             </el-input>
             <div v-if="boxVisible1">
               <el-button type="primary" @click="register()"
-                >无会员信息！注册</el-button
+              >无会员信息！注册
+              </el-button
               >
             </div>
 
@@ -125,20 +126,25 @@
                   dialogVisible = true;
                   judgeDiscounts(curOrder.actualSum, form.score);
                 "
-                ><el-button type="primary">优惠</el-button></el-button
+              >
+                <el-button type="primary">优惠</el-button>
+              </el-button
               >
             </div>
           </div>
 
           <el-descriptions v-if="hasDiscounts">
             <el-descriptions-item label="会员名称">{{
-              form.name
-            }}</el-descriptions-item>
+                form.name
+              }}
+            </el-descriptions-item>
             <el-descriptions-item label="电话号码">{{
-              form.telephone
-            }}</el-descriptions-item>
+                form.telephone
+              }}
+            </el-descriptions-item>
             <el-descriptions-item label="剩余积分">
-              {{ form.tempScore }}</el-descriptions-item
+              {{ form.tempScore }}
+            </el-descriptions-item
             >
           </el-descriptions>
 
@@ -148,24 +154,24 @@
               plain
               class="coupon"
               v-if="coupon[0].finalDiscounts"
-              ><span>￥20</span
-              ><span style="margin-left: 260px">-200积分</span></el-button
+            ><span>￥20</span
+            ><span style="margin-left: 260px">-200积分</span></el-button
             >
             <el-button
               type="warning"
               plain
               class="coupon"
               v-if="coupon[1].finalDiscounts"
-              ><span>￥40</span
-              ><span style="margin-left: 260px">-400积分</span></el-button
+            ><span>￥40</span
+            ><span style="margin-left: 260px">-400积分</span></el-button
             >
             <el-button
               type="warning"
               plain
               class="coupon"
               v-if="coupon[2].finalDiscounts"
-              ><span>￥70</span
-              ><span style="margin-left: 260px">-700积分</span></el-button
+            ><span>￥70</span
+            ><span style="margin-left: 260px">-700积分</span></el-button
             >
             <el-button
               type="text"
@@ -173,10 +179,14 @@
                 dialogVisible = true;
                 judgeDiscounts(curOrder.actualSum, form.score);
               "
-              ><el-button type="primary">更改</el-button></el-button
+            >
+              <el-button type="primary">更改</el-button>
+            </el-button
             >
             <el-button type="text" @click="hasDiscounts = false"
-              ><el-button type="primary">取消</el-button></el-button
+            >
+              <el-button type="primary">取消</el-button>
+            </el-button
             >
           </div>
 
@@ -184,16 +194,16 @@
           <span slot="footer" class="dialog-footer">
             <el-descriptions>
               <el-descriptions-item label="桌号">{{
-                curOrder.tableId
-              }}</el-descriptions-item>
+                  curOrder.tableId
+                }}</el-descriptions-item>
               <el-descriptions-item label="总金额">{{
-                curOrder.actualSum
-              }}</el-descriptions-item>
+                  curOrder.actualSum
+                }}</el-descriptions-item>
               <el-descriptions-item label="下单账号">
                 {{ curOrder.waiterId }}</el-descriptions-item
               ><el-descriptions-item label="惠后">
                 {{ form.tempDiscounts }}</el-descriptions-item
-              >
+            >
             </el-descriptions>
             <el-button @click="orderDetailVisible = false">取 消</el-button>
             <el-button type="primary" @click="checkout">结 算</el-button>
@@ -229,10 +239,10 @@
                     handleDiscounts(20);
                     dialogVisible = false;
                   "
-                  ><span>￥20</span
-                  ><span style="font-size: 12px"
-                    >（需要200积分）</span
-                  ></el-button
+                ><span>￥20</span
+                ><span style="font-size: 12px"
+                >（需要200积分）</span
+                ></el-button
                 >
                 <el-button
                   type="warning"
@@ -244,10 +254,10 @@
                     handleDiscounts(40);
                     dialogVisible = false;
                   "
-                  ><span>￥40</span
-                  ><span style="font-size: 12px"
-                    >（需要400积分）</span
-                  ></el-button
+                ><span>￥40</span
+                ><span style="font-size: 12px"
+                >（需要400积分）</span
+                ></el-button
                 >
                 <el-button
                   type="warning"
@@ -259,29 +269,32 @@
                     handleDiscounts(70);
                     dialogVisible = false;
                   "
-                  ><span>￥70</span
-                  ><span style="font-size: 12px"
-                    >（需要700积分）</span
-                  ></el-button
+                ><span>￥70</span
+                ><span style="font-size: 12px"
+                >（需要700积分）</span
+                ></el-button
                 >
               </el-row>
             </el-form-item>
             <el-descriptions>
               <el-descriptions-item label="桌号">{{
-                curOrder.tableId
-              }}</el-descriptions-item>
+                  curOrder.tableId
+                }}
+              </el-descriptions-item>
               <el-descriptions-item label="总金额">{{
-                curOrder.actualSum
-              }}</el-descriptions-item>
+                  curOrder.actualSum
+                }}
+              </el-descriptions-item>
               <el-descriptions-item label="下单账号">
-                {{ curOrder.waiterId }}</el-descriptions-item
+                {{ curOrder.waiterId }}
+              </el-descriptions-item
               >
             </el-descriptions>
           </el-form>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false"
-              >确 定</el-button
+            >确 定</el-button
             >
           </span>
         </el-dialog>
@@ -306,16 +319,28 @@ export default {
         tempScore: null
       },
       coupon: [
-        { discounts: '', disabled: false, finalDiscounts: false },
-        { discounts: '', disable: false, finalDiscounts: false },
-        { discounts: '', disable: false, finalDiscounts: false }
+        {
+          discounts: '',
+          disabled: false,
+          finalDiscounts: false
+        },
+        {
+          discounts: '',
+          disable: false,
+          finalDiscounts: false
+        },
+        {
+          discounts: '',
+          disable: false,
+          finalDiscounts: false
+        }
       ],
       hasDiscounts: false,
       boxVisible1: false,
       boxVisible2: false,
       dialogVisible: false,
       inputTelephone: '',
-      tableNum: null,
+      tableName: null,
       orderDetailVisible: false
     }
   },
@@ -439,7 +464,10 @@ export default {
     register() {
       this.$router.push({
         name: 'VIP',
-        query: { dialogFormVisible: true, telephone: this.inputTelephone }
+        query: {
+          dialogFormVisible: true,
+          telephone: this.inputTelephone
+        }
       })
     },
     clearInfo() {
@@ -456,7 +484,6 @@ export default {
       getVipData(body)
         .then((res) => {
           console.log(res)
-          this.inputTelephone = '查询成功'
           this.form.id = res.data.data.id
           this.form.name = res.data.data.name
           this.form.telephone = res.data.data.telephone
@@ -475,17 +502,14 @@ export default {
         .then((_) => {
           done()
         })
-        .catch((_) => {})
+        .catch((_) => {
+        })
     },
-    displayOderDetail(tableNum) {
-      this.tableNum = tableNum
+    displayOderDetail(tableName) {
+      this.tableName = tableName
       this.orderDetailVisible = true
     },
     checkout() {
-      const body= {
-          id:this.curOrder.id,
-          actuallyPaid: this.form.tempDiscounts
-        }
       this.$confirm('已确认订单项状态并完成收款', '确认结账', {
         confirmButtonText: '结束订单',
         cancelButtonText: '取消',
@@ -493,15 +517,18 @@ export default {
       })
         .then(() => {
           // 发送结束订单请求
-
+          const body = {
+            id: this.curOrder.id,
+            actuallyPaid: this.form.tempDiscounts
+          }
           payOrders(body).then((res) => {
             this.surePay()
             this.$message({
               type: 'success',
               message: '已结束该订单'
             })
+            // this.$store.dispatch('getOrderListFromServer')
             this.orderDetailVisible = false
-            this.tableNum = null
           })
         })
         .catch(() => {
@@ -510,6 +537,7 @@ export default {
             message: '已取消结账'
           })
         })
+      this.hasDiscounts = false
     },
     getTableStatus(tableName) {
       if (!(tableName in this.tableMap)) {
@@ -581,8 +609,8 @@ export default {
       return tableMap
     },
     curOrder() {
-      if (this.tableNum) {
-        const curOrder = this.tableMap[this.tableNum]
+      if (this.tableName) {
+        const curOrder = this.tableMap[this.tableName]
         let sum = 0
         for (let i = 0; i < curOrder.orderItems.length; i++) {
           if (curOrder.orderItems[i].state === 0) {
@@ -605,23 +633,20 @@ export default {
   flex-direction: row;
   align-items: center;
 }
+
 .coupon {
   position: relative;
   width: 500px;
   height: 80px;
   margin: 5px auto;
-  background-image: radial-gradient(
-      circle at 1px 8px,
-      transparent 6px,
-      #ff9e6d 6px,
-      #ff9e6d 0px
-    ),
-    radial-gradient(
-      circle at 99% 8px,
-      transparent 6px,
-      #ff9e6d 6px,
-      #ff9e6d 0px
-    );
+  background-image: radial-gradient(circle at 1px 8px,
+  transparent 6px,
+  #ff9e6d 6px,
+  #ff9e6d 0px),
+  radial-gradient(circle at 99% 8px,
+  transparent 6px,
+  #ff9e6d 6px,
+  #ff9e6d 0px);
   background-size: 300px 18px;
   background-position: 0 0, 200px 0;
   background-repeat-x: no-repeat;
@@ -633,6 +658,7 @@ export default {
   box-sizing: border-box;
   cursor: pointer;
 }
+
 .coupon::before {
   position: absolute;
   content: "";
@@ -642,6 +668,7 @@ export default {
   width: 0;
   border-left: 1px dashed #fff;
 }
+
 .coupon::after {
   position: absolute;
   content: attr(data-attr);
@@ -654,6 +681,7 @@ export default {
   line-height: 40px;
   letter-spacing: 5px;
 }
+
 .tableInfo {
   height: 200px;
   width: 250px;
@@ -667,6 +695,7 @@ export default {
   height: 40%;
   width: 100%;
 }
+
 .cardBottom {
   width: 100%;
   height: 60%;
