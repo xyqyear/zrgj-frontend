@@ -654,7 +654,7 @@ export default {
             type: 'success',
             message: '修改成功!'
           })
-          this.tableData.length = 0
+          this.tableData = []
           this.getUserData()
         })
       }
@@ -681,7 +681,7 @@ export default {
               type: 'success',
               message: '添加成功!'
             })
-            this.tableData.length = 0
+            this.tableData = []
             this.getUserData()
           }
         })
@@ -722,7 +722,7 @@ export default {
                 type: 'success',
                 message: '删除成功!'
               })
-              this.tableData.length = 0
+              this.tableData = []
               this.getUserData()
             }
           })

@@ -511,7 +511,7 @@ export default {
     clearForm() {
       this.form.name = ''
       this.form.price = ''
-      this.fileList.length = 0
+      this.fileList = []
       this.selectVal = ''
       this.dialogFormVisible = false
     },
@@ -531,7 +531,7 @@ export default {
     /// ////////////////////上架菜品的dialog打开事件
     activeAddFoodDialog() {
       this.dialogFormVisible = true
-      this.perSet.length = 0
+      this.perSet = []
       this.imageUrl = ''
       this.selectVal = ''
     },
@@ -560,7 +560,7 @@ export default {
             type: 'success',
             message: successMsg
           })
-          this.tableData.length = 0
+          this.tableData = []
           this.getFoodData()
         })
       })
@@ -582,7 +582,7 @@ export default {
                 type: 'success',
                 message: '删除成功!'
               })
-              this.tableData.length = 0
+              this.tableData = []
               this.getFoodData()
             }
           })
@@ -602,7 +602,7 @@ export default {
       this.formChange.id = row.id
       this.selectVal = row.type
       const id = row.id
-      this.perChange.length = 0
+      this.perChange = []
       if (this.allFood[id - 1].flavour != null) {
         for (let i = 0; i < this.allFood[id - 1].flavour.length; i++) {
           const body = {
@@ -673,7 +673,7 @@ export default {
         body.flavour.push(body1)
       }
       updateFood(body).then((res) => {
-        this.tableData.length = 0
+        this.tableData = []
         this.getFoodData()
       })
     },
@@ -746,7 +746,7 @@ export default {
       }
       addFood(body).then((res) => {
         this.dialogFormVisible = false
-        this.tableData.length = 0
+        this.tableData = []
         this.getFoodData()
       })
     },
