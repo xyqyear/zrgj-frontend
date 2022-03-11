@@ -249,14 +249,14 @@ export default {
       this.dialogVisible2 = false
     },
     changeStickSituation(notification, index) {
-      const temp = !notification.sticked
       notification.sticked = !notification.sticked
+      const sticked = notification.sticked
+      console.log('CUNT:', sticked)
       updateNotification(notification).then((res) => {
-        this.$set(this.$store.state.notificationList[index], 'sticked', temp)
-        this.$store.commit(
-          'refreshNotificationList',
-          this.$store.getters.notificationList
-        )
+        this.$store.commit('stickNotification', {
+          index,
+          sticked
+        })
       })
     },
     openEditBox(notification, index) {

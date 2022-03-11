@@ -34,8 +34,9 @@ export default {
       state.notificationList.splice(index, 1)
       state.notificationNum = state.notificationList.length
     },
-    updateNotification(state, notification, index) {
-      state.notificationList.splice(index, 1, notification)
+    stickNotification(state, obj) {
+      state.notificationList[obj.index].sticked = obj.sticked
+      state.notificationList = state.notificationList.sort(cmp)
     },
     addNotification(state, notification) {
       let i = 0
