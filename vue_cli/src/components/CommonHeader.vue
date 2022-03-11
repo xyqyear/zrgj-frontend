@@ -53,8 +53,8 @@ export default {
         case 'quit':
           this.$router.push({ name: 'login' })
           this.$store.commit('clearMenu')
+          this.$store.dispatch('destroyWebSocketConnections')
           localStorage.removeItem('token')
-
           break
       }
     }
