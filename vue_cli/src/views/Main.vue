@@ -113,7 +113,6 @@ export default {
     this.$store.dispatch('getDishFromServer')
 
     const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
-    console.log(serverInterface)
     const socket = new SockJS(serverInterface)
     const stompClient = Stomp.over(socket)
     stompClient.connect({}, () => {

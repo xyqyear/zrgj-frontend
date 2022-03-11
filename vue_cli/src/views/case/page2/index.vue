@@ -44,7 +44,7 @@
           <div>消费金额: {{ curtotalMoney }}</div>
         </div>
       </div>
-      <el-table :data="currOrderItems" height:300 style="width: 100%">
+      <el-table :data="currOrderItems" style="width: 100%">
         <el-table-column prop="index" label="序号" width="50"> </el-table-column>
         <el-table-column prop="img" label="菜品图片" width="110">
           <template slot-scope="scope">
@@ -74,7 +74,7 @@
       <el-card style="margin-top: 20px">
         <el-table
           :data="tableData"
-          height:300
+          height="300"
           style="width: 100%"
           :default-sort="{ prop: 'id', order: 'descending' }"
         >
@@ -165,7 +165,6 @@ export default {
   methods: {
     /// ////////////查看详细////////
     indexMethod(index) {
-      console.log('index', index)
       return index * 2
     },
     viewDetail(order) {
@@ -183,7 +182,6 @@ export default {
       this.currOrderItems = []
       let j = 1
       getAllFood().then((res) => {
-        console.log('getAllFood', res.data.data)
         res.data.data.forEach((element) => {
           this.curOrder.orderItems.forEach((i) => {
             if (i.dishId === element.id && i.state !== -1) {
@@ -201,17 +199,14 @@ export default {
             }
           })
         })
-        console.log('this.currOrderItems', this.currOrderItems)
         this.detailVisible = true
       })
-      console.log('this.currOrder', this.curOrder)
     },
     async populateData(start, end) {
       const rangeOrderResponse = await getGivenTimeOrders({
         from: start,
         to: end
       })
-      console.log(rangeOrderResponse.data.data)
       this.allOrders = rangeOrderResponse.data.data // 所有订单项
       this.tableData = rangeOrderResponse.data.data.map((order) => {
         return {
@@ -227,7 +222,6 @@ export default {
           state: order.state
         }
       })
-      console.log(this.tableData)
     },
     async populateUserMap() {
       const accountListResponse = await getUserlist()
@@ -291,7 +285,7 @@ div /deep/ .el-dialog__header {
   }
   .title-text {
     font-size: 20px;
-    font-weight: 600px;
+    font-weight: 600;
   }
 }
 .operation {

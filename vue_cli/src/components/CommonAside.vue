@@ -115,13 +115,10 @@ export default {
       this.clickMenu('notification')
     },
     handleOpen(key, keyPath) {
-      // console.log(key, keyPath);
     },
     handleClose(key, keyPath) {
-      // console.log(key, keyPath);
     },
     test(item) {
-      // console.log(item.name)
     },
     clickMenu(name) {
       if (this.$route.path === '/' + name) {

@@ -469,7 +469,6 @@ export default {
         }
       } else if (CardId.length === 18) {
         const idSplit = CardId.split('')
-        console.log(idSplit)
         if (this.is18Card(CardId) && this.is18CardEnd(idSplit)) {
           // && this.is18CardEnd(idSplit)
           this.go(CardId.length)
@@ -625,8 +624,7 @@ export default {
           }
           this.fullTableData = this.tableData
         })
-        .catch((error) => {
-          console.log(error)
+        .catch((_) => {
         })
     },
     handleEditSure() {

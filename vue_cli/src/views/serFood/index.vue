@@ -423,7 +423,6 @@ export default {
             this.currItem.dishId === element.dishId &&
             this.currItem.note === this.note + ';' + this.textarea
           ) {
-            // console.log('>>>'+this.currItem.note+' '+this.textarea+'>>>>'+(this.note+';'+this.textarea))
             flag = true
             element.amount += this.amount // 合并为一个item
           }
@@ -437,7 +436,6 @@ export default {
           this.orderItems.push(tempItem)
         }
       }
-      // console.log('this.orderItems',this.orderItems)
       this.amount = 0
       this.dialogFormVisible = false
     },
@@ -470,7 +468,6 @@ export default {
       }
     },
     // textFinish(){
-    //   console.log(this.note)
     // },
     /// ///////////////////////选规格////////////////////////////
     selectTable(index) {
@@ -500,7 +497,6 @@ export default {
         })
         return
       }
-      console.log('this.orderItems', this.orderItems)
       // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
       this.curOrderId = this.orderList
         .filter((order) => {
@@ -538,11 +534,9 @@ export default {
               this.tableId = 0
               this.drawer = false
             })
-            .catch((error) => {
-              console.log(error)
+            .catch((_) => {
             })
         })
-        console.log('this.curOrderId', this.curOrderId)
       } else {
         const temporderItems = []
         this.orderItems.forEach((element) => {
@@ -557,7 +551,6 @@ export default {
           tableId: this.tableId,
           orderItems: temporderItems
         }
-        console.log('newOrder', newOrder)
         addOrder(newOrder)
           .then((res) => {
             this.$message({
@@ -568,8 +561,7 @@ export default {
             this.tableId = 0
             this.drawer = false
           })
-          .catch((error) => {
-            console.log(error)
+          .catch((_) => {
             this.$message.error('网络异常，生成订单失败')
           })
       }
@@ -589,7 +581,6 @@ export default {
     handleChange2(dishId) {
       this.orderItems.forEach((element) => {
         if (element.dishId === dishId && element.amount === 0) {
-          console.log('????')
           for (let i = 0; i < this.orderItems.length; i++) {
             if (element === this.orderItems[i]) {
               this.orderItems.splice(i, i + 1)
