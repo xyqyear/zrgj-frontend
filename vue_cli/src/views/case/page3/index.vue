@@ -168,8 +168,11 @@ export default {
     // 定义一个比较器
     compare(propertyName, modelInt) {
       return function(object1, object2) {
+        console.log('propertyName', propertyName)
         const value1 = object1[propertyName]
         const value2 = object2[propertyName]
+        console.log('value1', value1)
+        console.log('value2', value2)
         if (value2 < value1) {
           return 1 * modelInt
         } else if (value2 > value1) {
@@ -181,12 +184,15 @@ export default {
     },
     // 升序
     ascendingFood() {
-      this.allFoodData.sort(this.compare('amount', 1))
+      const tempname = this.choice === '销售量' ? 'amount' : 'totalPrice'
+      console.log('this.choice', tempname)
+      this.allFoodData.sort(this.compare(tempname, 1))
       console.log('allFoodData', this.allFoodData)
       this.setColumnChart()
     },
     descendingFood() {
-      this.allFoodData.sort(this.compare('amount', -1))
+      const tempname = this.choice === '销售量' ? 'amount' : 'totalPrice'
+      this.allFoodData.sort(this.compare(tempname, -1))
       console.log('allFoodData', this.allFoodData)
       this.setColumnChart()
     },
