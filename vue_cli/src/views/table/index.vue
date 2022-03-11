@@ -203,7 +203,7 @@
         <el-dialog
           title="使用优惠"
           :visible.sync="dialogVisible"
-          width="30%"
+          width="35%"
           :before-close="handleClose"
           :data="curOrder.orderItems"
         >
@@ -482,6 +482,10 @@ export default {
       this.orderDetailVisible = true
     },
     checkout() {
+      const body= {
+          id:this.curOrder.id,
+          actuallyPaid: this.form.tempDiscounts
+        }
       this.$confirm('已确认订单项状态并完成收款', '确认结账', {
         confirmButtonText: '结束订单',
         cancelButtonText: '取消',
@@ -490,7 +494,7 @@ export default {
         .then(() => {
           // 发送结束订单请求
 
-          payOrders({ orderId: this.curOrder.id }).then((res) => {
+          payOrders(body).then((res) => {
             this.surePay()
             this.$message({
               type: 'success',
