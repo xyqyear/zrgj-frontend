@@ -40,14 +40,12 @@ export default {
     }
   },
   mounted() {
-    console.log('刷新啦')
   },
   created() {
     this.activeIndex2 = '1'
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath)
     }
   }
 }

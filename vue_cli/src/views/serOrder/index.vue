@@ -325,7 +325,6 @@ export default {
   methods: {
     /// ///////////////////////退菜/////////////////////
     updateCurrItem(currItem) {
-      console.log('currItem', currItem)
       const body = {
         id: currItem.id,
         dishId: currItem.dishId,
@@ -333,7 +332,6 @@ export default {
         amount: currItem.amount,
         note: currItem.note
       }
-      console.log(body)
       updateOrderItem(body)
         .then((res) => {
           this.$message({
@@ -402,7 +400,7 @@ export default {
   .title-text {
     margin-left: 50px;
     font-size: 20px;
-    font-weight: 600px;
+    font-weight: 600;
   }
 }
 .tableInfo {

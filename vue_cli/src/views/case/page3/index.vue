@@ -270,7 +270,6 @@ export default {
     // 设置折线图(value有两个值，一个是字符串一个是数组)
     setLineChart() {
       // 现在和选择的最终时间之间相距几天
-      console.log('value1', this.value1)
       let days = 0
       if (this.value1 !== '' && this.value1[1] !== 0) {
         const timestamp = this.getNowTimeNum() * 1000
@@ -340,10 +339,6 @@ export default {
                 )
             }
           }
-          // console.log('waliwa')
-          // console.log('fromTime', fromTime)
-          // console.log('toTime', toTime)
-          // console.log('totalPrice', totalPrice)
           seriesArray.push(totalPrice)
           totalPrice = 0
         }
@@ -499,7 +494,6 @@ export default {
       const toTime = this.getNowTimeNum()
       this.body.from = fromTime
       this.body.to = toTime
-      console.log('body', this.body)
       this.setLineChart()
       this.setColumnChart()
     }

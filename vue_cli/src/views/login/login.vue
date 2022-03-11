@@ -87,7 +87,6 @@ export default {
   },
   methods: {
     login() {
-      console.log('sessionStorage.getItem', sessionStorage.getItem('isNum'))
       const numReg = /^\d+$/
       if (numReg.test(this.form.username) && numReg.test(this.form.password)) {
         // 数字则返回true
@@ -107,11 +106,7 @@ export default {
               res.data.data.account.restaurantId
             )
             this.$store.commit('setMenu', res.data.data.account.position)
-            this.$router.push({
-              name: { 0: 'home', 1: 'serFood', 2: 'chef' }[
-                res.data.data.account.position
-              ]
-            })
+            this.$router.push('/')
           })
           .catch((error) => {
             this.$message.error(error.response.data.reason)

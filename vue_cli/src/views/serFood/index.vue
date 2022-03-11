@@ -120,11 +120,7 @@
       :span="10"
       style="position: absolute; top: 0px; bottom: 2px; left: 45%; height: 40px"
     >
-      <el-input
-        placeholder="请输入内容"
-        v-model="searchInput"
-        clearable
-      >
+      <el-input placeholder="请输入内容" v-model="searchInput" clearable>
         <el-button
           slot="append"
           icon="el-icon-search"
@@ -140,7 +136,7 @@
       width="40%"
     >
       <el-form class="specificationMenu">
-        <div class="choices" v-for="(value, inedx) in dishFlavour" :key="inedx">
+        <div class="choices" v-for="(value, index) in dishFlavour" :key="index">
           <div style="font-size: 20px; color: #8ca2aa; font-weight: 400">
             {{ value.key }}
           </div>
@@ -148,9 +144,9 @@
             <el-radio-group
               v-for="(item, i) in value.value"
               :key="i"
-              v-model="radio1"
+              v-model="radio1[index]"
               fill="#FD3E3E"
-              @change="addNote(value.key, item)"
+              @change="addNote(value.key, item, index)"
             >
               <el-radio-button :label="item"></el-radio-button>
             </el-radio-group>
@@ -308,10 +304,7 @@
 </template>
 
 <script>
-import {
-  addOrder,
-  addNewOrderItem
-} from '../../../api/data'
+import { addOrder, addNewOrderItem } from '../../../api/data'
 
 import pinyin from 'pinyin'
 
@@ -338,7 +331,7 @@ export default {
       foodName: '',
       foodMoney: '',
       dishFlavour: [],
-      radio1: '',
+      radio1: ['', '', ''],
       formLabelWidth: '120px',
       dialogFormVisible: false,
       textarea: '',
@@ -400,7 +393,10 @@ export default {
               const py = pinyin(item.name, {
                 style: pinyin.STYLE_FIRST_LETTER
               }).reduce((acc, cur) => acc + cur[0], '')
-              return !py.startsWith(this.searchInput) && py.includes(this.searchInput)
+              return (
+                !py.startsWith(this.searchInput) &&
+                py.includes(this.searchInput)
+              )
             })
           )
       } else {
@@ -440,7 +436,6 @@ export default {
             this.currItem.dishId === element.dishId &&
             this.currItem.note === this.note + ';' + this.textarea
           ) {
-            // console.log('>>>'+this.currItem.note+' '+this.textarea+'>>>>'+(this.note+';'+this.textarea))
             flag = true
             element.amount += this.amount // 合并为一个item
           }
@@ -454,7 +449,6 @@ export default {
           this.orderItems.push(tempItem)
         }
       }
-      // console.log('this.orderItems',this.orderItems)
       this.amount = 0
       this.dialogFormVisible = false
     },
@@ -466,7 +460,7 @@ export default {
       this.currItem = item
       // 如果名字一样，就不用改那些样式
       if (this.foodName !== item.name) {
-        this.radio1 = ''
+        this.radio1 = []
         this.note = ''
         this.textarea = ''
         this.addable = false
@@ -477,17 +471,18 @@ export default {
       this.dialogFormVisible = true
     },
     // 这里的note有问题嗷
-    addNote(keyname, value) {
+    addNote(keyname, value, i) {
+      console.log('i', i)
+      console.log('radio1', this.radio1)
       this.addable = false
       this.choiceClass[keyname] = value
       this.note = ''
       for (const key in this.choiceClass) {
         // 输出字典元素，如果字典的key是数字，输出时会自动按序输出
-        this.note += this.choiceClass[key]
+        this.note += this.choiceClass[key] + ';'
       }
     },
     // textFinish(){
-    //   console.log(this.note)
     // },
     /// ///////////////////////选规格////////////////////////////
     selectTable(index) {
@@ -517,7 +512,6 @@ export default {
         })
         return
       }
-      console.log('this.orderItems', this.orderItems)
       // 如果当前选择桌号对应的订单存在 (包含空订单的情况)
       this.curOrderId = this.orderList
         .filter((order) => {
@@ -555,11 +549,9 @@ export default {
               this.tableId = 0
               this.drawer = false
             })
-            .catch((error) => {
-              console.log(error)
+            .catch((_) => {
             })
         })
-        console.log('this.curOrderId', this.curOrderId)
       } else {
         const temporderItems = []
         this.orderItems.forEach((element) => {
@@ -574,7 +566,6 @@ export default {
           tableId: this.tableId,
           orderItems: temporderItems
         }
-        console.log('newOrder', newOrder)
         addOrder(newOrder)
           .then((res) => {
             this.$message({
@@ -585,8 +576,7 @@ export default {
             this.tableId = 0
             this.drawer = false
           })
-          .catch((error) => {
-            console.log(error)
+          .catch((_) => {
             this.$message.error('网络异常，生成订单失败')
           })
       }
@@ -600,7 +590,6 @@ export default {
     handleChange2(dishId) {
       this.orderItems.forEach((element) => {
         if (element.dishId === dishId && element.amount === 0) {
-          console.log('????')
           for (let i = 0; i < this.orderItems.length; i++) {
             if (element === this.orderItems[i]) {
               this.orderItems.splice(i, i + 1)

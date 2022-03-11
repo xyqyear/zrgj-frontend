@@ -167,7 +167,6 @@
     flex-flow: column;
     //flex-wrap: wrap;
     justify-content: space-between;
-    justify-items: space-between;
     text-align: left;
     .phone {
       line-height: 30px;
@@ -261,6 +260,7 @@ export default {
       },
       dishMap: {},
       // 第四行
+      // TODO: load dynamic dish num
       sale_kinds: '46',
       sale_count: '147',
       worker_count: '28',
@@ -270,7 +270,6 @@ export default {
   created() {},
   // mounted(){
 
-  //   console.log(this.todayAmount)
   // },
   async mounted() {
     await this.getStatistic()
@@ -298,14 +297,12 @@ export default {
       const body = {}
       body.from = fromTime
       body.to = this.toTime
-      // console.log(body);
       /// //////////////返回值/////////////////////////
       let todayMoney = 0
       let todayOrder = 0
       /// ///////////////////////////////////////
       getGivenTimeOrders(body)
         .then((res) => {
-          // console.log(res);
           for (let i = 0; i < res.data.data.length; i++) {
             todayMoney += res.data.data[i].orderItems
               .filter((orderItem) => orderItem.state !== -1)
@@ -318,8 +315,7 @@ export default {
           this.todayAmount.Money = todayMoney
           this.todayAmount.Order = todayOrder
         })
-        .catch((error) => {
-          console.log('getGivenTimeOrders error' + error.response)
+        .catch((_) => {
         })
     },
     getStatistic() {
@@ -332,8 +328,7 @@ export default {
           worker = res.data.data.length
           this.statistic.workers = worker
         })
-        .catch((error) => {
-          console.log(error.response.data.reason)
+        .catch((_) => {
         })
       /// ///////////////////获取商品数量///////////////////////////////
       return getAllFood()
@@ -344,8 +339,7 @@ export default {
           this.dishMap = getObjectMap(foodData)
           this.statistic.goods = good
         })
-        .catch((error) => {
-          console.log(error.response.data.reason)
+        .catch((_) => {
         })
     },
     chooseDays(value) {
@@ -376,7 +370,6 @@ export default {
       this.body.to = this.getNowTimeNum()
       // 设置横坐标xData
       this.xData.length = 0
-      // console.log(this.interval)
       for (let i = 0; i < days; i++) {
         // 啊啊啊想一想啊
         const oldTime = new Date(Date.now() - i * 24 * 3600 * 1000)
@@ -392,7 +385,6 @@ export default {
           (date.month >= 10 ? date.month : '0' + date.month) +
           '-' +
           (date.day >= 10 ? date.day : '0' + date.day)
-        // console.log(systemDate);
         this.xData.push(systemDate)
       }
       this.xData.reverse()
@@ -400,8 +392,6 @@ export default {
       const series = []
       getGivenTimeOrders(this.body).then((res) => {
         const dataArray = res.data.data
-        console.log('dataArray')
-        console.log(dataArray)
         // series.push({
         //   name: '营业额',
         //   data: res.data.data.map((item) => item[key]),//这就是一个7长度的数组，里面存数字
@@ -417,13 +407,10 @@ export default {
         let fromTime = this.getNowTimeNum()
         let toTime = 0
         keyArray.push('营业额')
-        console.log('days', days)
         for (let i = 0; i < days; i++) {
           tempTime = fromTime
           toTime = tempTime
           fromTime = this.getTimeNum(i)
-          console.log('dataArray')
-          console.log(dataArray)
           for (let j = 0; j < dataArray.length; j++) {
             if (
               dataArray[j].createTime >= fromTime &&
@@ -439,15 +426,6 @@ export default {
             }
           }
 
-          // for (let j = 0; j < dataArray.length; j++) {
-          //   if (dataArray[j].createTime >= fromTime &&
-          //   dataArray[j].createTime <= toTime) {
-          //     totalPrice += dataArray[j].totalPrice;
-          //     // console.log('dataArray[j].totalPrice')
-          //     // console.log(dataArray[j].totalPrice)
-          //   }
-          // }
-          // console.log('totalPrice',totalPrice)
           seriesArray.push(totalPrice)
           totalPrice = 0
         }

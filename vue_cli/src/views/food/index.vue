@@ -397,7 +397,6 @@ export default {
       }
     }
     const checkImage = (rule, value, callback) => {
-      console.log('value', value)
       const numReg = /^\d+$/
       if (!value) {
         callback(new Error('请输入数字'))
@@ -577,9 +576,7 @@ export default {
             id: ''
           }
           body.id = row.id
-          console.log(body.id)
           deleteFood(body).then((res) => {
-            console.log(res)
             if (res.status === 200) {
               this.$message({
                 type: 'success',
@@ -636,10 +633,8 @@ export default {
           if (this.allFood[id - 1].flavour[i].value[5] != null) {
             body.value6 = this.allFood[id - 1].flavour[i].value[5]
           }
-          console.log(body)
           this.perChange.push(body)
         }
-        console.log(this.perChange)
       }
     },
     handleEditSure() {
@@ -677,9 +672,7 @@ export default {
         }
         body.flavour.push(body1)
       }
-      console.log(body)
       updateFood(body).then((res) => {
-        console.log(res)
         this.tableData.length = 0
         this.getFoodData()
       })
@@ -688,20 +681,15 @@ export default {
       const fd = new FormData()
       fd.append('file', file.raw)
       upload(fd).then((res) => {
-        console.log(res)
         this.imageUrl = res.data.data.fileUrl
-        console.log('this.imageUrl', this.imageUrl)
       })
     },
     handle_success(res) {
-      console.log(res)
       this.$message.success('图片上传成功')
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
     },
     handlePreview(file) {
-      console.log('????')
       // sessionStorage.setItem
     },
     handleExceed(files, fileList) {
@@ -720,7 +708,6 @@ export default {
       this.selectVal = data.label
     },
     handleAdd() {
-      console.log(this.perSet)
       const body = {
         name: '',
         price: '',
@@ -758,7 +745,6 @@ export default {
         body.flavour.push(body1)
       }
       addFood(body).then((res) => {
-        console.log(res)
         this.dialogFormVisible = false
         this.tableData.length = 0
         this.getFoodData()
@@ -767,7 +753,6 @@ export default {
     getFoodData() {
       getAllFood()
         .then((res) => {
-          console.log(res)
           this.allFood = res.data.data
           res.data.data = res.data.data.filter((i) => {
             return !i.deleted
@@ -808,8 +793,7 @@ export default {
           }
           this.fullTableData = this.tableData
         })
-        .catch((error) => {
-          console.log(error.response.data.reason)
+        .catch((_) => {
         })
     },
 
