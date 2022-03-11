@@ -94,10 +94,10 @@
                       plain
                       @click="chooseMenu(item)"
                       v-if="!item.soldout"
-                      >选规格
+                    >选规格
                     </el-button>
                     <el-button type="info" plain v-if="item.soldout" disabled
-                      >售罄
+                    >售罄
                     </el-button>
                     <!-- <el-input-number
                       v-model="dishList[dishIndex].amount"
@@ -128,9 +128,9 @@
       </el-input>
     </el-col>
     <!-- --------------------------查询------------------------------ -->
-    <!-- ----------------------------Dialog表单--------------------------------------- -->
+    <!-- ----------------------------点菜Dialog表单--------------------------------------- -->
     <el-dialog
-      :title="foodName"
+      :title="currItem.name"
       :visible.sync="dialogFormVisible"
       center
       width="40%"
@@ -174,7 +174,7 @@
           <!-- 这里的条件有所改变 -->
           <div v-if="!addable">
             <el-button type="primary" @click="confirmMenu"
-              >加入购物车
+            >加入购物车
             </el-button>
           </div>
 
@@ -191,14 +191,14 @@
               type="primary"
               @click="commitOrderItem"
               style="margin-left: 10px"
-              >确认
+            >确认
             </el-button>
           </div>
 
           <el-button
             @click="dialogFormVisible = false"
             style="margin-left: 10px"
-            >取 消
+          >取 消
           </el-button>
         </div>
       </div>
@@ -216,7 +216,7 @@
         size="mini"
         style="position: absolute; right: 10px; top: 5px"
         icon="el-icon-shopping-cart-2"
-        >购物车
+      >购物车
       </el-button>
     </el-badge>
     <el-drawer
@@ -257,10 +257,10 @@
       <el-descriptions>
         <!--        <el-descriptions-item label="桌号">{{ tableId }}</el-descriptions-item>-->
         <el-descriptions-item label="总金额"
-          >{{ totalPrice }}
+        >{{ totalPrice }}
         </el-descriptions-item>
         <el-descriptions-item label="下单账号"
-          >{{ accountId }}
+        >{{ accountId }}
         </el-descriptions-item>
       </el-descriptions>
       <div class="demo-drawer__footer">
@@ -269,7 +269,7 @@
             orderItems = [];
             drawer = false;
           "
-          >清空购物车
+        >清空购物车
         </el-button>
         <el-popover
           placement="top"
@@ -293,7 +293,7 @@
             </el-button>
           </div>
           <el-button slot="reference" :disabled="disabled">
-            {{ tableId === 0 ? "选择餐桌" : tableId + "号桌" }}
+            {{ tableId === 0 ? '选择餐桌' : tableId + '号桌' }}
           </el-button>
         </el-popover>
         <el-button @click="drawer = false">取 消</el-button>
@@ -347,6 +347,7 @@ export default {
       searchInput: '',
       /// /////////////////////////加菜/////////////////////
       curOrderId: null,
+      currItem: {},
       disabled: false
     }
   },
@@ -430,21 +431,21 @@ export default {
       // 计算所有菜数量
 
       let flag = false
+      let note = this.note
+      if (this.textarea !== '') {
+        note = note + ';' + this.textarea
+      }
       if (this.currItem != null && this.amount !== 0) {
         this.orderItems.forEach((element) => {
-          if (
-            this.currItem.dishId === element.dishId &&
-            this.currItem.note === this.note + ';' + this.textarea
-          ) {
+          if (this.currItem.id === element.id && this.currItem.note === note) {
             flag = true
             element.amount += this.amount // 合并为一个item
           }
         })
-        // 如果没有相同的项就，覆盖amount,这咋全覆盖了啊
         if (!flag) {
           this.currItem.amount = this.amount
           // 存放note
-          this.currItem.note = this.note + ';' + this.textarea
+          this.currItem.note = note
           const tempItem = JSON.parse(JSON.stringify(this.currItem))
           this.orderItems.push(tempItem)
         }
@@ -459,12 +460,10 @@ export default {
     chooseMenu(item) {
       this.currItem = item
       // 如果名字一样，就不用改那些样式
-      if (this.foodName !== item.name) {
-        this.radio1 = []
-        this.note = ''
-        this.textarea = ''
-        this.addable = false
-      }
+      this.radio1 = []
+      this.note = ''
+      this.textarea = ''
+      this.addable = false
       this.foodName = item.name
       this.foodMoney = item.price
       this.dishFlavour = item.flavour
@@ -604,7 +603,8 @@ export default {
         .then((_) => {
           done()
         })
-        .catch((_) => {})
+        .catch((_) => {
+        })
     }
   }
 }
