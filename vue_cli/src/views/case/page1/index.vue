@@ -91,7 +91,7 @@
               curOrder.sum
             }}</el-descriptions-item>
             <el-descriptions-item label="实际收款">{{
-              curOrder.actualSum
+              curOrder.actuallyPaid
             }}</el-descriptions-item>
             <el-descriptions-item label="下单账号">
               {{ curOrder.waiterId }}</el-descriptions-item

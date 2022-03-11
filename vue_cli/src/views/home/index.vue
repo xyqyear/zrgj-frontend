@@ -369,7 +369,7 @@ export default {
       this.body.from = fromTime
       this.body.to = this.getNowTimeNum()
       // 设置横坐标xData
-      this.xData.length = 0
+      this.xData = []
       for (let i = 0; i < days; i++) {
         // 啊啊啊想一想啊
         const oldTime = new Date(Date.now() - i * 24 * 3600 * 1000)

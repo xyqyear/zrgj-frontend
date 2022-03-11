@@ -39,97 +39,18 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="图片" prop="iamge">
+            <el-form-item label="图片">
               <el-upload
-                class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :before-remove="beforeRemove"
-                multiple
-                :limit="3"
-                :on-exceed="handleExceed"
-                :file-list="fileList"
-              >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-
-                <div slot="tip" class="el-upload__tip">
-                  只能上传jpg/png文件，且不超过500kb
-                </div>
-              </el-upload>
-              <!-- <el-upload
                 class="avatar-uploader"
                 action=" "
                 :show-file-list="false"
                 :auto-upload="false"
-                :on-preview="handlePreview"
-                :limit="1"
-                :file-list="fileList"
                 :on-change="uploadFiles"
-                :before-remove="beforeRemove"
+                :on-success="handle_success"
               >
                 <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
-              </el-upload> -->
-            </el-form-item>
-            <el-form-item>
-              <div style="justify-content: left">个性化设置</div>
-              <el-card v-for="item in perSet" :key="item.id">
-                <el-row justify="end">
-                  <el-col :span="5">
-                    <el-input v-model="item.key" placeholder="属性名">
-                    </el-input>
-                  </el-col>
-                  <el-col :span="19">
-                    <el-row>
-                      <el-input
-                        v-model="item.value1"
-                        placeholder="属性值1"
-                        style="width: 30%"
-                      >
-                      </el-input>
-                      <el-input
-                        v-model="item.value2"
-                        placeholder="属性值2"
-                        style="width: 30%"
-                      >
-                      </el-input>
-                      <el-input
-                        v-model="item.value3"
-                        placeholder="属性值3"
-                        style="width: 30%"
-                      >
-                      </el-input>
-                    </el-row>
-                    <el-row>
-                      <el-input
-                        v-model="item.value4"
-                        placeholder="属性值4"
-                        style="width: 30%"
-                      >
-                      </el-input>
-                      <el-input
-                        v-model="item.value5"
-                        placeholder="属性值5"
-                        style="width: 30%"
-                      >
-                      </el-input>
-                      <el-input
-                        v-model="item.value6"
-                        placeholder="属性值6"
-                        style="width: 30%"
-                      >
-                      </el-input>
-                    </el-row>
-                  </el-col>
-                  <el-col>
-                    <i class="el-icon-delete" @click="delSet()"></i>
-                  </el-col>
-                </el-row>
-              </el-card>
-              <el-button type="primary" @click="addSet()">增加属性</el-button>
+              </el-upload>
             </el-form-item>
             <el-form-item>
               <div style="justify-content: left">个性化设置</div>
@@ -191,7 +112,6 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="handleAdd()">确定添加</el-button>
-            <el-button @click="dialogFormVisible = false">保存并退出</el-button>
             <el-button @click="clearForm">退 出</el-button>
           </div>
         </el-dialog>
@@ -511,7 +431,7 @@ export default {
     clearForm() {
       this.form.name = ''
       this.form.price = ''
-      this.fileList.length = 0
+      this.fileList = []
       this.selectVal = ''
       this.dialogFormVisible = false
     },
@@ -530,8 +450,11 @@ export default {
     },
     /// ////////////////////上架菜品的dialog打开事件
     activeAddFoodDialog() {
+      // 清空dialog
+      this.form.name = ''
+      this.form.price = null
       this.dialogFormVisible = true
-      this.perSet.length = 0
+      this.perSet = []
       this.imageUrl = ''
       this.selectVal = ''
     },
@@ -560,7 +483,7 @@ export default {
             type: 'success',
             message: successMsg
           })
-          this.tableData.length = 0
+          this.tableData = []
           this.getFoodData()
         })
       })
@@ -582,7 +505,7 @@ export default {
                 type: 'success',
                 message: '删除成功!'
               })
-              this.tableData.length = 0
+              this.tableData = []
               this.getFoodData()
             }
           })
@@ -602,7 +525,7 @@ export default {
       this.formChange.id = row.id
       this.selectVal = row.type
       const id = row.id
-      this.perChange.length = 0
+      this.perChange = []
       if (this.allFood[id - 1].flavour != null) {
         for (let i = 0; i < this.allFood[id - 1].flavour.length; i++) {
           const body = {
@@ -648,32 +571,35 @@ export default {
         flavour: []
       }
       for (let i = 0; i < this.perChange.length; i++) {
+        if (this.perChange[i].key == null || this.perChange[i].key === '') {
+          continue
+        }
         const body1 = {
           key: this.perChange[i].key,
           value: []
         }
-        if (this.perChange[i].value1 != null) {
+        if (this.perChange[i].value1 != null && this.perChange[i].value1 !== '') {
           body1.value.push(this.perChange[i].value1)
         }
-        if (this.perChange[i].value2 != null) {
+        if (this.perChange[i].value2 != null && this.perChange[i].value2 !== '') {
           body1.value.push(this.perChange[i].value2)
         }
-        if (this.perChange[i].value3 != null) {
+        if (this.perChange[i].value3 != null && this.perChange[i].value3 !== '') {
           body1.value.push(this.perChange[i].value3)
         }
-        if (this.perChange[i].value4 != null) {
+        if (this.perChange[i].value4 != null && this.perChange[i].value4 !== '') {
           body1.value.push(this.perChange[i].value4)
         }
-        if (this.perChange[i].value5 != null) {
+        if (this.perChange[i].value5 != null && this.perChange[i].value5 !== '') {
           body1.value.push(this.perChange[i].value5)
         }
-        if (this.perChange[i].value6 != null) {
+        if (this.perChange[i].value6 != null && this.perChange[i].value6 !== '') {
           body1.value.push(this.perChange[i].value6)
         }
         body.flavour.push(body1)
       }
       updateFood(body).then((res) => {
-        this.tableData.length = 0
+        this.tableData = []
         this.getFoodData()
       })
     },
@@ -709,44 +635,43 @@ export default {
     },
     handleAdd() {
       const body = {
-        name: '',
-        price: '',
-        imageUrl: '',
-        category: '',
+        name: this.form.name,
+        price: this.form.price,
+        imageUrl: this.imageUrl,
+        category: this.selectVal,
         flavour: []
       }
-      body.name = this.form.name
-      body.price = this.form.price
-      body.imageUrl = this.imageUrl
-      body.category = this.selectVal
       for (let i = 0; i < this.perSet.length; i++) {
+        if (this.perSet[i].key == null || this.perSet[i].key === '') {
+          continue
+        }
         const body1 = {
           key: this.perSet[i].key,
           value: []
         }
-        if (this.perSet[i].value1 != null) {
+        if (this.perSet[i].value1 != null && this.perSet[i].value1 !== '') {
           body1.value.push(this.perSet[i].value1)
         }
-        if (this.perSet[i].value2 != null) {
+        if (this.perSet[i].value2 != null && this.perSet[i].value2 !== '') {
           body1.value.push(this.perSet[i].value2)
         }
-        if (this.perSet[i].value3 != null) {
+        if (this.perSet[i].value3 != null && this.perSet[i].value3 !== '') {
           body1.value.push(this.perSet[i].value3)
         }
-        if (this.perSet[i].value4 != null) {
+        if (this.perSet[i].value4 != null && this.perSet[i].value4 !== '') {
           body1.value.push(this.perSet[i].value4)
         }
-        if (this.perSet[i].value5 != null) {
+        if (this.perSet[i].value5 != null && this.perSet[i].value5 !== '') {
           body1.value.push(this.perSet[i].value5)
         }
-        if (this.perSet[i].value6 != null) {
+        if (this.perSet[i].value6 != null && this.perSet[i].value6 !== '') {
           body1.value.push(this.perSet[i].value6)
         }
         body.flavour.push(body1)
       }
       addFood(body).then((res) => {
         this.dialogFormVisible = false
-        this.tableData.length = 0
+        this.tableData = []
         this.getFoodData()
       })
     },

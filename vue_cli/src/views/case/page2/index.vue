@@ -74,7 +74,6 @@
       <el-card style="margin-top: 20px">
         <el-table
           :data="tableData"
-          height="300"
           style="width: 100%"
           :default-sort="{ prop: 'id', order: 'descending' }"
         >
@@ -177,7 +176,7 @@ export default {
         })
       }
       this.curWaiter = order.name // 设置当前负责人
-      this.curtotalMoney = order.money // 设置全部金额
+      this.curtotalMoney = order.actuallyPaid // 设置全部金额
       // 设置currOrderItems
       this.currOrderItems = []
       let j = 1
@@ -218,6 +217,7 @@ export default {
               (acc, cur) => acc + this.dishMap[cur.dishId].price * cur.amount,
               0
             ),
+          actuallyPaid: order.actuallyPaid,
           name: this.usernameMap[order.waiterId],
           state: order.state
         }
