@@ -120,11 +120,7 @@
       :span="10"
       style="position: absolute; top: 0px; bottom: 2px; left: 45%; height: 40px"
     >
-      <el-input
-        placeholder="请输入内容"
-        v-model="searchInput"
-        clearable
-      >
+      <el-input placeholder="请输入内容" v-model="searchInput" clearable>
         <el-button
           slot="append"
           icon="el-icon-search"
@@ -141,7 +137,7 @@
       width="40%"
     >
       <el-form class="specificationMenu">
-        <div class="choices" v-for="(value, inedx) in dishFlavour" :key="inedx">
+        <div class="choices" v-for="(value, index) in dishFlavour" :key="index">
           <div style="font-size: 20px; color: #8ca2aa; font-weight: 400">
             {{ value.key }}
           </div>
@@ -149,9 +145,9 @@
             <el-radio-group
               v-for="(item, i) in value.value"
               :key="i"
-              v-model="radio1"
+              v-model="radio1[index]"
               fill="#FD3E3E"
-              @change="addNote(value.key, item)"
+              @change="addNote(value.key, item, index)"
             >
               <el-radio-button :label="item"></el-radio-button>
             </el-radio-group>
@@ -309,10 +305,7 @@
 </template>
 
 <script>
-import {
-  addOrder,
-  addNewOrderItem
-} from '../../../api/data'
+import { addOrder, addNewOrderItem } from '../../../api/data'
 
 import pinyin from 'pinyin'
 
@@ -339,7 +332,7 @@ export default {
       foodName: '',
       foodMoney: '',
       dishFlavour: [],
-      radio1: '',
+      radio1: ['', '', ''],
       formLabelWidth: '120px',
       dialogFormVisible: false,
       textarea: '',
@@ -401,7 +394,10 @@ export default {
               const py = pinyin(item.name, {
                 style: pinyin.STYLE_FIRST_LETTER
               }).reduce((acc, cur) => acc + cur[0], '')
-              return !py.startsWith(this.searchInput) && py.includes(this.searchInput)
+              return (
+                !py.startsWith(this.searchInput) &&
+                py.includes(this.searchInput)
+              )
             })
           )
       } else {
@@ -467,7 +463,7 @@ export default {
       this.currItem = item
       // 如果名字一样，就不用改那些样式
       if (this.foodName !== item.name) {
-        this.radio1 = ''
+        this.radio1 = []
         this.note = ''
         this.textarea = ''
         this.addable = false
@@ -478,13 +474,15 @@ export default {
       this.dialogFormVisible = true
     },
     // 这里的note有问题嗷
-    addNote(keyname, value) {
+    addNote(keyname, value, i) {
+      console.log('i', i)
+      console.log('radio1', this.radio1)
       this.addable = false
       this.choiceClass[keyname] = value
       this.note = ''
       for (const key in this.choiceClass) {
         // 输出字典元素，如果字典的key是数字，输出时会自动按序输出
-        this.note += this.choiceClass[key]
+        this.note += this.choiceClass[key] + ';'
       }
     },
     // textFinish(){
