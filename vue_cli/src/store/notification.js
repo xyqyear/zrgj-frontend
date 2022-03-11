@@ -50,6 +50,9 @@ export default {
     refreshNotificationList(state, notificationList) {
       state.notificationList = notificationList.sort(cmp)
       state.notificationNum = state.notificationList.length
+    },
+    confirmNotification(state, index) {
+      state.notificationList[index].confirmed = true
     }
   },
   // 过滤state中的数据
