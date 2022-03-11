@@ -90,64 +90,75 @@ el-collapse-item {
 }
 </style>
 <script>
-import { getAllFood, getCurrOrders, updateOrderItem } from '../../../api/data'
+import { updateOrderItem } from '../../../api/data'
 
 export default {
   name: 'table',
   data() {
     return {
-      orderData: {},
-      rawOrderData: {}
     }
   },
-  mounted() {
-    this.populateData()
-  },
-  methods: {
-    populateData() {
-      Promise.all([getAllFood(), getCurrOrders()]).then((res) => {
-        const dishMap = res[0].data.data.reduce((acc, curr) => {
-          acc[curr.id] = curr.name
+  computed: {
+    dishMap() {
+      return this.$store.getters.dishMap
+    },
+    rawOrderData() {
+      const orders = JSON.parse(JSON.stringify(this.$store.getters.orderList))
+      const rawOrderData = {}
+      for (const order of orders) {
+        if (
+          order.orderItems.every(
+            (item) => item.state === 0 || item.state === -1
+          )
+        ) {
+          continue
+        }
+
+        order.orderItems = order.orderItems.reduce((acc, curr) => {
+          acc[curr.id] = curr
           return acc
         }, {})
-        const orders = res[1].data.data
-        for (const order of orders) {
-          // if all items are finished, skip
-          if (
-            order.orderItems.every(
-              (item) => item.state === 0 || item.state === -1
-            )
-          ) {
-            continue
-          }
 
-          const displayOrder = {
-            id: order.id,
-            time: new Date(order.createTime).toLocaleTimeString(),
-            tableId: order.tableId,
-            orderItems: {}
-          }
-
-          for (const orderItem of order.orderItems) {
-            displayOrder.orderItems[orderItem.id] = {
-              id: orderItem.id,
-              name: dishMap[orderItem.dishId],
-              amount: orderItem.amount,
-              note: orderItem.note,
-              state: orderItem.state
-            }
-          }
-
-          order.orderItems = order.orderItems.reduce((acc, curr) => {
-            acc[curr.id] = curr
-            return acc
-          }, {})
-
-          this.$set(this.orderData, order.id, displayOrder)
-          this.$set(this.rawOrderData, order.id, order)
-        }
-      })
+        rawOrderData[order.id] = order
+      }
+      return rawOrderData
     },
+    orderData() {
+      const orders = JSON.parse(JSON.stringify(this.$store.getters.orderList))
+      const orderData = {}
+      for (const order of orders) {
+        if (
+          order.orderItems.every(
+            (item) => item.state === 0 || item.state === -1
+          )
+        ) {
+          continue
+        }
+
+        const displayOrder = {
+          id: order.id,
+          time: new Date(order.createTime).toLocaleTimeString(),
+          tableId: order.tableId,
+          orderItems: {}
+        }
+
+        for (const orderItem of order.orderItems) {
+          displayOrder.orderItems[orderItem.id] = {
+            id: orderItem.id,
+            name: this.dishMap[orderItem.dishId].name,
+            amount: orderItem.amount,
+            note: orderItem.note,
+            state: orderItem.state
+          }
+        }
+
+        orderData[order.id] = displayOrder
+      }
+      return orderData
+    }
+  },
+  mounted() {},
+  methods: {
     getOrderItemDescription(state) {
       if (state === -1) {
         return '已取消'
@@ -158,37 +169,17 @@ export default {
       switch (state) {
         case 1:
           this.rawOrderData[orderId].orderItems[orderItemId].state = 2
-          updateOrderItem(
-            this.rawOrderData[orderId].orderItems[orderItemId]
-          ).then(() => {
-            this.orderData[orderId].orderItems[orderItemId].state = 2
-          })
+          updateOrderItem(this.rawOrderData[orderId].orderItems[orderItemId])
           break
         case 2:
           this.rawOrderData[orderId].orderItems[orderItemId].state = 0
-          updateOrderItem(
-            this.rawOrderData[orderId].orderItems[orderItemId]
-          ).then(() => {
-            this.orderData[orderId].orderItems[orderItemId].state = 0
-            // if all items are finished, remove it from the list
-            if (
-              Object.values(this.rawOrderData[orderId].orderItems).every(
-                (item) => item.state === 0
-              )
-            ) {
-              delete this.orderData[orderId]
-            }
-          })
+          updateOrderItem(this.rawOrderData[orderId].orderItems[orderItemId])
           break
       }
     },
     revoke(orderId, orderItemId) {
       this.rawOrderData[orderId].orderItems[orderItemId].state = 1
-      updateOrderItem(this.rawOrderData[orderId].orderItems[orderItemId]).then(
-        () => {
-          this.orderData[orderId].orderItems[orderItemId].state = 1
-        }
-      )
+      updateOrderItem(this.rawOrderData[orderId].orderItems[orderItemId])
     }
   }
 }

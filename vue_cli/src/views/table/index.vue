@@ -359,7 +359,8 @@ export default {
         updateVip(body).then((res) => {
           console.log(res)
         })
-      } else {
+      }else if(!this.boxVisible1&&!this.boxVisible2){}
+      else {
         this.form.score += this.curOrder.actualSum
         const body = {
           telephone: this.form.telephone,
