@@ -107,12 +107,7 @@
 </template>
 <script>
 import pinyin from 'pinyin'
-import {
-  addVip,
-  getVipList,
-  deleteVip,
-  updateVip
-} from '../../../api/data.js'
+import { addVip, getVipList, deleteVip, updateVip } from '../../../api/data.js'
 export default {
   name: 'VIP',
   data() {
@@ -370,7 +365,10 @@ export default {
           )
       } else if (/^\d+$/.test(value)) {
         this.tableData = this.fullTableData.filter((item) => {
-          return item.id === Number(value)
+          return (
+            item.id === Number(value) ||
+            `${item.telephone}`.includes(`${value}`)
+          )
         })
       } else {
         this.tableData = []
