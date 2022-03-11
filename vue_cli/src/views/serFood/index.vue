@@ -128,7 +128,6 @@
         <el-button
           slot="append"
           icon="el-icon-search"
-          @click="searchFood"
         ></el-button>
       </el-input>
     </el-col>
