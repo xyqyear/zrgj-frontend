@@ -60,7 +60,7 @@ export default {
   methods: {
     handleConfirm(notification, index) {
       confirmNotification({ id: notification.id }).then((res) => {
-        this.$set(this.$store.state.notificationList[index], 'confirmed', true)
+        this.$store.commit('confirmNotification', index)
       })
     },
     getCreatedTime(ts) {

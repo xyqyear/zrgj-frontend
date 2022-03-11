@@ -43,7 +43,6 @@ export default {
       while (i < state.notificationList.length && cmp(notification, state.notificationList[i]) > 0) {
         i++
       }
-      console.log(i)
       state.notificationList.splice(i, 0, notification)
       // this.state.notificationList.push(notification);
       state.notificationNum = state.notificationList.length
@@ -51,6 +50,9 @@ export default {
     refreshNotificationList(state, notificationList) {
       state.notificationList = notificationList.sort(cmp)
       state.notificationNum = state.notificationList.length
+    },
+    confirmNotification(state, index) {
+      state.notificationList[index].confirmed = true
     }
   },
   // 过滤state中的数据
@@ -72,8 +74,7 @@ export default {
           commit('refreshNotificationList', notificationList)
           // this.refreshNotificationList(res.data.data);
         })
-        .catch(err => {
-          console.log(err)
+        .catch(_ => {
         })
     },
     // 处理新收到的通知

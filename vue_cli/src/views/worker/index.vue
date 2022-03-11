@@ -15,7 +15,8 @@
         plain
         style="margin-left: 20px"
         @click="dialogFormVisible = true"
-        >添加人员</el-button
+      >添加人员
+      </el-button
       >
       <el-dialog title="添加员工" :visible.sync="dialogFormVisible">
         <el-form :model="form" :rules="addRules">
@@ -79,34 +80,37 @@
             :disabled="
               !Object.values(this.isok).reduce((acc, cur) => acc && cur, true)
             "
-            >确 定</el-button
+          >确 定
+          </el-button
           >
         </div>
       </el-dialog>
     </div>
     <el-col :span="24">
       <el-card style="margin-top: 20px">
-        <el-table :data="tableData" height:300 style="width: 100%">
-          <el-table-column prop="index" label="序号" sortable="true">
+        <el-table :data="tableData"  style="width: 100%">
+          <el-table-column prop="index" label="序号">
           </el-table-column>
-          <el-table-column prop="id" label="员工号"> </el-table-column>
-          <el-table-column prop="username" label="姓名"> </el-table-column>
-          <el-table-column prop="type" label="员工类型"> </el-table-column>
-          <el-table-column prop="telephone" label="手机号码"> </el-table-column>
+          <el-table-column prop="id" label="员工号"></el-table-column>
+          <el-table-column prop="username" label="姓名"></el-table-column>
+          <el-table-column prop="type" label="员工类型" sortable></el-table-column>
+          <el-table-column prop="telephone" label="手机号码"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button
                 size="mini"
                 type="text"
                 @click="handleEdit(scope.$index, scope.row)"
-                >修改</el-button
+              >修改
+              </el-button
               >
 
               <el-button
                 size="mini"
                 type="text"
                 @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
+              >删除
+              </el-button
               >
             </template>
           </el-table-column>
@@ -185,7 +189,8 @@
                   true
                 )
               "
-              >确 定</el-button
+            >确 定
+            </el-button
             >
           </div>
         </el-dialog>
@@ -294,8 +299,15 @@ export default {
     return {
       changeRules: {
         username: [
-          { required: true, message: '员工姓名不能为空！', trigger: 'blur' },
-          { validator: checkName, trigger: 'blur' }
+          {
+            required: true,
+            message: '员工姓名不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkName,
+            trigger: 'blur'
+          }
         ],
         telephone: [
           {
@@ -303,19 +315,42 @@ export default {
             message: '员工电话号码不能为空！',
             trigger: 'blur'
           },
-          { validator: checkPhone, trigger: 'blur' }
+          {
+            validator: checkPhone,
+            trigger: 'blur'
+          }
         ],
-        password: [{ validator: checkPass, trigger: 'blur' }],
-        passwordSure: [{ validator: checkPassSure, trigger: 'blur' }]
+        password: [{
+          validator: checkPass,
+          trigger: 'blur'
+        }],
+        passwordSure: [{
+          validator: checkPassSure,
+          trigger: 'blur'
+        }]
       },
       addRules: {
         idCardNo: [
-          { required: true, message: '身份证号不能为空！', trigger: 'blur' },
-          { validator: this.checkCard, trigger: 'blur' }
+          {
+            required: true,
+            message: '身份证号不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: this.checkCard,
+            trigger: 'blur'
+          }
         ],
         username: [
-          { required: true, message: '员工姓名不能为空！', trigger: 'blur' },
-          { validator: checkName, trigger: 'blur' }
+          {
+            required: true,
+            message: '员工姓名不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkName,
+            trigger: 'blur'
+          }
         ],
         telephone: [
           {
@@ -323,15 +358,32 @@ export default {
             message: '员工电话号码不能为空！',
             trigger: 'blur'
           },
-          { validator: checkPhone, trigger: 'blur' }
+          {
+            validator: checkPhone,
+            trigger: 'blur'
+          }
         ],
         password: [
-          { required: true, message: '密码不能为空！', trigger: 'blur' },
-          { validator: checkPass, trigger: 'blur' }
+          {
+            required: true,
+            message: '密码不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkPass,
+            trigger: 'blur'
+          }
         ],
         passwordSure: [
-          { required: true, message: '确认密码不能为空！', trigger: 'blur' },
-          { validator: checkPassSure, trigger: 'blur' }
+          {
+            required: true,
+            message: '确认密码不能为空！',
+            trigger: 'blur'
+          },
+          {
+            validator: checkPassSure,
+            trigger: 'blur'
+          }
         ]
       },
       Wi: [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2],
@@ -344,6 +396,7 @@ export default {
       radio2: '',
       dialogFormVisible: false,
       dialogChangeVisible: false,
+      searchInput: '',
       isok: {
         idCardNo: false,
         username: false,
@@ -383,9 +436,6 @@ export default {
     }
   },
   mounted() {
-    console.log('???')
-    // axios.defaults.headers.common["Authorization"] =
-    //         localStorage.getItem("token");
     this.getUserData()
   },
   methods: {
@@ -419,7 +469,6 @@ export default {
         }
       } else if (CardId.length === 18) {
         const idSplit = CardId.split('')
-        console.log(idSplit)
         if (this.is18Card(CardId) && this.is18CardEnd(idSplit)) {
           // && this.is18CardEnd(idSplit)
           this.go(CardId.length)
@@ -511,7 +560,9 @@ export default {
         if (
           iden.substring(10, 12) < month ||
           (iden.substring(10, 12) === month && iden.substring(12, 14) <= day)
-        ) { age++ }
+        ) {
+          age++
+        }
       }
       if (val === 15) {
         age = myDate.getFullYear() - iden.substring(6, 8) - 1901
@@ -526,24 +577,26 @@ export default {
         if (
           iden.substring(8, 10) < month ||
           (iden.substring(8, 10) === month && iden.substring(10, 12) <= day)
-        ) { age++ }
+        ) {
+          age++
+        }
       }
 
-      if (sex % 2 === 0) sex = '女'
-      else sex = '男'
+      if (sex % 2 === 0) {
+        sex = '女'
+      } else {
+        sex = '男'
+      }
       this.form.sex = sex
       this.form.age = age
       this.form.birthday = birth
-      console.log(this.form)
 
       this.form.birth = birth
     },
     getUserData() {
       getUserlist()
         .then((res) => {
-          console.log(res)
           for (let i = 0; i <= res.data.data.length; i++) {
-            console.log()
             const item = {
               index: i + 1,
               id: res.data.data[i].id,
@@ -569,11 +622,9 @@ export default {
               item.idCardNo.substring(12, 14)
             this.tableData.push(item)
           }
-          console.log(this.tableData)
           this.fullTableData = this.tableData
         })
-        .catch((error) => {
-          console.log(error.response.data.reason)
+        .catch((_) => {
         })
     },
     handleEditSure() {
@@ -599,7 +650,6 @@ export default {
         body.telephone = this.formChange.telephone
         body.password = this.formChange.password
         chaAccount(body).then((res) => {
-          console.log(res)
           this.$message({
             type: 'success',
             message: '修改成功!'
@@ -610,7 +660,6 @@ export default {
       }
     },
     handleAdd() {
-      console.log(this.isok)
       if (Object.values(this.isok).reduce((acc, cur) => acc && cur, true)) {
         this.dialogFormVisible = false
         const body = {
@@ -627,13 +676,11 @@ export default {
         body.telephone = this.form.telephone
         body.idCard = this.form.idCardNo
         addAccount(body).then((res) => {
-          console.log(res)
           if (res.status === 200) {
             this.$message({
               type: 'success',
               message: '添加成功!'
             })
-            console.log('在这里')
             this.tableData.length = 0
             this.getUserData()
           }
@@ -642,7 +689,6 @@ export default {
     },
     handleEdit(index, row) {
       this.dialogChangeVisible = true
-      console.log(row)
       this.formOrigin.username = row.username
       this.formOrigin.position = '' + row.position
       this.formOrigin.telephone = row.telephone
@@ -670,9 +716,7 @@ export default {
             id: ''
           }
           body.id = row.id
-          console.log(body.id)
           deAccount(body).then((res) => {
-            console.log(res)
             if (res.status === 200) {
               this.$message({
                 type: 'success',

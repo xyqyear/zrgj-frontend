@@ -194,8 +194,7 @@ export default {
         .then((res) => {
           this.$store.dispatch('getNotificationListFromServer')
         })
-        .catch((error) => {
-          console.log(error.response.data.reason)
+        .catch((_) => {
         })
       this.text = ''
       this.textarea = ''
@@ -245,8 +244,7 @@ export default {
           })
           this.$store.dispatch('getNotificationListFromServer')
         })
-        .catch((error) => {
-          console.log(error.response.data.reason)
+        .catch((_) => {
         })
       this.dialogVisible2 = false
     },

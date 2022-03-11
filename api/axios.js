@@ -20,7 +20,6 @@ class HttpRequst {
   interceptors (instance) {
     instance.interceptors.request.use(function (config) {
       // 在发送请求之前做些什么
-      console.log('拦截处理请求');
       return config;
     }, function (error) {
       // 对请求错误做些什么
@@ -28,11 +27,9 @@ class HttpRequst {
     });
 
     instance.interceptors.response.use(function (response) {
-      console.log('处理相应');
       // 对响应数据做点什么
       return response.data;
     }, function (error) {
-      console.log(error);
       // 对响应错误做点什么
       return Promise.reject(error);
     });
@@ -47,7 +44,6 @@ class HttpRequst {
     // 技巧
     // /api // api1
     options = { ...(this.getInsideConfig()), ...options }
-    // console.log(options);
     this.interceptors(instanse)
     return instanse(options)
   }

@@ -95,6 +95,17 @@ import { apiPrefix } from '../../api/data'
 export default {
   name: 'Main',
   created() {
+    if (this.$router.currentRoute.name === 'Main'){
+      this.$router.push({
+        name: { 0: 'home', 1: 'serFood', 2: 'chef' }[
+          localStorage.getItem("position")
+          ]
+      })
+    }
+  },
+  mounted() {
+    this.$store.dispatch('getNotificationListFromServer')
+    this.$store.dispatch('getOrderListFromServer')
     this.$store.dispatch('getNotificationListFromServer')
     this.$store.dispatch('getOrderListFromServer')
     this.$store.dispatch('getRestaurantInfoFromServer')
@@ -102,7 +113,6 @@ export default {
     this.$store.dispatch('getDishFromServer')
 
     const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
-    console.log(serverInterface)
     const socket = new SockJS(serverInterface)
     const stompClient = Stomp.over(socket)
     stompClient.connect({}, () => {
