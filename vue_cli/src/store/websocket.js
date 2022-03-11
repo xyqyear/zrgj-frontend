@@ -1,13 +1,11 @@
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import { apiPrefix } from '../../api/data'
-const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
-const socket = new SockJS(serverInterface)
-const stompClient = Stomp.over(socket)
+
+let stompClient
 
 export default {
-  state: {
-  },
+  state: {},
   mutations: {
     refreshQueue(state, queue) {
       state.queue = queue
@@ -17,7 +15,10 @@ export default {
     queue: state => state.queue
   },
   actions: {
-    initWebSocketConnections({ dispatch, commit }) {
+    initWebSocketConnections({
+      dispatch,
+      commit
+    }) {
       dispatch('getNotificationListFromServer')
       dispatch('getOrderListFromServer')
       dispatch('getNotificationListFromServer')
@@ -25,7 +26,9 @@ export default {
       dispatch('getRestaurantInfoFromServer')
       dispatch('getQueueFromServer')
       dispatch('getDishFromServer')
-
+      const serverInterface = `${apiPrefix}/api/v1/ws?token=` + localStorage.getItem('token').substring(7)
+      const socket = new SockJS(serverInterface)
+      stompClient = Stomp.over(socket)
       // stompClient.debug = null
       stompClient.connect({}, () => {
         stompClient.subscribe('/notification/' + localStorage.getItem('restaurantId') + '/' + localStorage.getItem('position'), (message) => {
@@ -46,7 +49,10 @@ export default {
         })
       })
     },
-    destroyWebSocketConnections({ dispatch, commit }) {
+    destroyWebSocketConnections({
+      dispatch,
+      commit
+    }) {
       stompClient.disconnect()
     }
   }

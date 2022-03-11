@@ -203,7 +203,7 @@
         <el-dialog
           title="使用优惠"
           :visible.sync="dialogVisible"
-          width="30%"
+          width="35%"
           :before-close="handleClose"
           :data="curOrder.orderItems"
         >
