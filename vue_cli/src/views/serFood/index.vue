@@ -452,6 +452,8 @@ export default {
       }
       this.amount = 0
       this.dialogFormVisible = false
+      this.choiceClass = []
+      console.log('!!!!!',this.note)
     },
     confirmMenu() {
       this.addable = true
