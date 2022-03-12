@@ -610,7 +610,7 @@ export default {
       return tableMap
     },
     curOrder() {
-      if (this.tableName) {
+      if (this.tableName in this.tableMap) {
         const curOrder = this.tableMap[this.tableName]
         let sum = 0
         for (let i = 0; i < curOrder.orderItems.length; i++) {
